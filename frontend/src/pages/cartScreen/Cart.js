@@ -1,6 +1,6 @@
 import React from "react";
 import './Cart.css'
-import ProductCart from "../../images/Product Images/"
+import ProductCart from "../../images/Product Images/book17.png"
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaTrashCan } from "react-icons/fa6";
 
