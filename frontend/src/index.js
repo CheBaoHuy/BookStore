@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Cart from "./pages/cartScreen/Cart";
 import Checkout from "./pages/checkoutScreen/Checkout";
-
+import Login from "./pages/login/Login";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') 
@@ -14,7 +14,8 @@ root.render(
   <React.StrictMode>
     {/*<App />*/}
     {/*  <Cart />*/}
-      <Checkout />
+      {/* <Checkout /> */}
+      <Login />
   </React.StrictMode>
 );
 
