@@ -9,6 +9,7 @@ import Cart from "./pages/cartScreen/Cart";
 import Checkout from "./pages/checkoutScreen/Checkout";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import Forgot from "./pages/forgot/Forgot";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root')
@@ -22,6 +23,7 @@ root.render(
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot" element={<Forgot />} />
     </Routes>
   </BrowserRouter>
 );
