@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import './Home.css'
+import './Home.css';
 import { FaLongArrowAltRight, FaCartPlus, FaRegHeart } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Product } from "../../models";
-import axios from "axios"
-import { Link } from "react-router-dom"
-import {addToCart} from "../../redux/reducer/CartReducer";
-import {useDispatch} from "react-redux";
-import Banner from "../../images/bookstore.jpg"
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { addToCart } from "../../redux/reducer/CartReducer";
+import { useDispatch } from "react-redux";
+import Banner from "../../images/bookstore.jpg";
 export const SlideShow = () => {
 
     return (
@@ -143,11 +143,14 @@ export const Home = () => {
                                             <img src={item[1]} alt="" />
                                         </Link>
                                         <div className="product-buttons d-flex justify-content-evenly">
-                                            <p className="d-flex align-items-center mb-0 text-white">
-                                                <FaCartPlus
-                                                    className={"product-btn-icon"}
-                                                    onClick={() => handleAddToCart(item)}
-                                                />
+                                            <p className="d-flex align-items-center mb-0 text-white"
+                                                onClick={() => handleAddToCart({
+                                                    id: item[0],
+                                                    image: item[1],
+                                                    title: item[2],
+                                                    currentPrice: item[4],
+                                                } as Product)}>
+                                                <FaCartPlus className={"product-btn-icon"} />
                                                 Thêm vào giỏ hàng
                                             </p>
 
@@ -180,11 +183,11 @@ export const Home = () => {
                                 <div className="product-wrap" key={index}>
                                     <div className="product-img">
                                         <Link to={`/detail/${item.id}`}>
-                                            {item.image && <img src={item.image} alt=""/>}
+                                            {item.image && <img src={item.image} alt="" />}
                                         </Link>
                                         <div className="product-buttons d-flex justify-content-evenly">
                                             <p className="d-flex align-items-center mb-0 text-white"
-                                               onClick={() => handleAddToCart(item)}>
+                                                onClick={() => handleAddToCart(item)}>
                                                 <FaCartPlus
                                                     className={"product-btn-icon"}
 
@@ -227,8 +230,8 @@ export const Home = () => {
             </div>
             {/*<Blog />*/}
             <div className="news-letter-subscription">
-                <div className="row"> 
-                    
+                <div className="row">
+
                     <div className="col-md-6">
                         <h3 className="news-letter-heading">
                             THEO DÕI BẢN TIN CỦA CHÚNG TÔI
@@ -248,6 +251,160 @@ export const Home = () => {
         </>
     )
 }
-
+// export const Blog = () => {
+//     const responsive = {
+//         superLargeDesktop: {
+//             // the naming can be any, depends on you.
+//             breakpoint: { max: 4000, min: 3000 },
+//             items: 5
+//         },
+//         desktop: {
+//             breakpoint: { max: 3000, min: 1024 },
+//             items: 3
+//         },
+//         tablet: {
+//             breakpoint: { max: 1024, min: 464 },
+//             items: 2
+//         },
+//         mobile: {
+//             breakpoint: { max: 464, min: 0 },
+//             items: 1
+//         }
+//     };
+//     return (
+//         <div className="new-blog pt-5">
+//             <div className="container text-center">
+//                 <div className="nb-heading">
+//                     <h3 className="nb-title">
+//                         <span>Tin Tức Mới</span>
+//                     </h3>
+//                     <p className="nb-description">
+//                         We love to share our thoughts
+//                     </p>
+//                 </div>
+//                 <Carousel
+//                     swipeable={true}
+//                     draggable={true}
+//                     showDots={true}
+//                     responsive={responsive}
+//                     ssr={true}
+//                     infinite={true}
+//                     removeArrowOnDeviceType={["desktop", "tablet", "mobile"]}
+//                     renderDotsOutside={false}
+//                 >
+//                     <div className="post">
+//                         <div className="post-thumb">
+//                             <a href="" className="post-img">
+//                                 <img src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg" alt="" />
+//                             </a>
+//                         </div>
+//                         <div className="post-content">
+//                             <div className="post-date">
+//                                 10/10/2024
+//                             </div>
+//                             <div className="post-title">
+//                                 <a href="">
+//                                     An audio post
+//                                 </a>
+//                             </div>
+//                             <p>Dynamically target high-payoff intellectual capital for customized technologies. Objectively …</p>
+//                             <a className="read-more btn-link text-decoration-none text-uppercase">
+//                                 Read more <FaLongArrowAltRight />
+//                             </a>
+//                         </div>
+//                     </div>
+//                     <div className="post">
+//                         <div className="post-thumb">
+//                             <a href="" className="post-img">
+//                                 <img src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg" alt="" />
+//                             </a>
+//                         </div>
+//                         <div className="post-content">
+//                             <div className="post-date">
+//                                 10/10/2024
+//                             </div>
+//                             <div className="post-title">
+//                                 <a href="">
+//                                     An audio post
+//                                 </a>
+//                             </div>
+//                             <p>Dynamically target high-payoff intellectual capital for customized technologies. Objectively …</p>
+//                             <a className="read-more btn-link text-decoration-none text-uppercase">
+//                                 Read more <FaLongArrowAltRight />
+//                             </a>
+//                         </div>
+//                     </div>
+//                     <div className="post">
+//                         <div className="post-thumb">
+//                             <a href="" className="post-img">
+//                                 <img src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg" alt="" />
+//                             </a>
+//                         </div>
+//                         <div className="post-content">
+//                             <div className="post-date">
+//                                 10/10/2024
+//                             </div>
+//                             <div className="post-title">
+//                                 <a href="">
+//                                     An audio post
+//                                 </a>
+//                             </div>
+//                             <p>Dynamically target high-payoff intellectual capital for customized technologies. Objectively …</p>
+//                             <a className="read-more btn-link text-decoration-none text-uppercase">
+//                                 Read more <FaLongArrowAltRight />
+//                             </a>
+//                         </div>
+//                     </div>
+//                     <div className="post">
+//                         <div className="post-thumb">
+//                             <a href="" className="post-img">
+//                                 <img src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg" alt="" />
+//                             </a>
+//                         </div>
+//                         <div className="post-content">
+//                             <div className="post-date">
+//                                 10/10/2024
+//                             </div>
+//                             <div className="post-title">
+//                                 <a href="">
+//                                     An audio post
+//                                 </a>
+//                             </div>
+//                             <p>Dynamically target high-payoff intellectual capital for customized technologies. Objectively …</p>
+//                             <a className="read-more btn-link text-decoration-none text-uppercase">
+//                                 Read more <FaLongArrowAltRight />
+//                             </a>
+//                         </div>
+//                     </div>
+//                     <div className="post">
+//                         <div className="post-thumb">
+//                             <a href="" className="post-img">
+//                                 <img src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg" alt="" />
+//                             </a>
+//                         </div>
+//                         <div className="post-content">
+//                             <div className="post-date">
+//                                 10/10/2024
+//                             </div>
+//                             <div className="post-title">
+//                                 <a href="">
+//                                     An audio post
+//                                 </a>
+//                             </div>
+//                             <p>Dynamically target high-payoff intellectual capital for customized technologies. Objectively …</p>
+//                             <a className="read-more btn-link text-decoration-none text-uppercase">
+//                                 Read more <FaLongArrowAltRight />
+//                             </a>
+//                         </div>
+//                     </div>
+//                 </Carousel>
+//                 <button className="view-more">
+//                     View all posts
+//                 </button>
+//             </div>
+//
+//         </div>
+//     )
+// }
 
 
