@@ -14,6 +14,10 @@ import { CiMail } from "react-icons/ci";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import centerImg from "../../images/center.jpg";
+import centerImg2 from "../../images/center-2.jpg";
+import centerImg3 from "../../images/center-3.jpg";
+import centerImg4 from "../../images/center-4.jpg";
 
 
 // ================= SLIDESHOW =================
@@ -27,25 +31,25 @@ export const SlideShow = () => {
       <div className="carousel-inner">
         <div className="carousel-item active">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
 
         <div className="carousel-item">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg2}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
 
         <div className="carousel-item">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg3}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
       </div>
@@ -54,7 +58,7 @@ export const SlideShow = () => {
 };
 
 
-// ================= BLOG =================
+
 export const Blog = () => {
   const responsive = {
     desktop: {
@@ -82,7 +86,7 @@ export const Blog = () => {
           infinite={true}
           showDots={true}
         >
-          {[1,2,3,4].map((item)=>(
+          {[1, 2, 3, 4].map((item) => (
             <div className="post" key={item}>
               <img
                 src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg"
@@ -195,7 +199,7 @@ const Home = () => {
           infinite={true}
           className="mt-5"
         >
-          {[1,2,3,4,5].map((item)=>(
+          {[1, 2, 3, 4, 5].map((item) => (
             <div
               className="product-wrap"
               key={item}
@@ -203,7 +207,7 @@ const Home = () => {
               <div className="product-img">
 
                 <img
-                  src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/book17-216x265.png"
+                  src={centerImg4}
                   alt=""
                 />
 
@@ -242,15 +246,17 @@ const Home = () => {
 
       <div className="subscribe-for-deals mt-5">
 
-        <h3 className="text-center">
-          Join 100,321 Happy Readers
-        </h3>
+        <div className="sfd-wrapper">
 
-        <div className="text-center mt-3">
+          <h3>
+            Join <span>100,321</span> Happy Readers
+          </h3>
+
           <button className="sfd-button">
             SIGN UP TODAY
             <FaLongArrowAltRight />
           </button>
+
         </div>
 
       </div>
@@ -258,31 +264,43 @@ const Home = () => {
 
       <Blog />
 
-
-      <div className="news-letter-subscription mt-5">
+      <div className="news-letter-subscription">
 
         <div className="container">
 
-          <h3>
-            SUBSCRIBE TO OUR NEWSLETTER
-          </h3>
+          <div className="newsletter-wrapper">
 
-          <div className="d-flex">
+            <div className="newsletter-text">
 
-            <input
-              type="email"
-              placeholder="Email address"
-            />
+              <h3 className="news-letter-heading">
+                SUBSCRIBE TO OUR NEWSLETTER
+              </h3>
 
-            <CiMail />
+              <p className="news-letter-content">
+                Get the latest updates, offers and book releases directly in your inbox.
+              </p>
+
+            </div>
+
+            <div className="news-letter-form">
+
+              <input
+                type="email"
+                placeholder="Enter your email address"
+              />
+
+              <button className="newsletter-btn">
+                <CiMail className="news-letter-icon" />
+              </button>
+
+            </div>
 
           </div>
 
         </div>
 
       </div>
-
-      <Footer />
+<Footer />
     </>
   );
 };
