@@ -23,43 +23,43 @@ export const Footer = () => {
                                 </li>
                                 <li className="widget-list">
                                     <FaPhone className={"widget-icon"}/>
-                                    <p>Phone: 0912314211</p>
+                                    <p>Phone: 0793684680</p>
                                 </li>
                                 <li className="widget-list">
                                     <CiMail className={"widget-icon"}/>
-                                    <p>Email: nlu@hcmuaf.edu.vn</p>
+                                    <p>Email: 201030277@st.hcmuaf.edu.vn</p>
                                 </li>
                             </ul>
                         </div>
                         <div className="col-lg-3 col-md-3 col-sm-6">
                             <div className="widget-nav-menu">
                                 <h2 className="widget-title">
-                                    Mẹo mua sắm
+                                    SHOPPING GUIDE
                                 </h2>
                                 <ul className="menu-footer-container">
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Cách thức mua</a>
+                                        <a href="">How to buy</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Hỏi đáp</a>
+                                        <a href="">Fag</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Vị trí cửa hàng</a>
+                                        <a href="">Store Locations</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Điều khoản đổi trả</a>
+                                        <a href="">Return Policy</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Phương thức thanh toán</a>
+                                        <a href="">Payment</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Dịch vụ vận chuyển</a>
+                                        <a href="">Shipment</a>
                                     </li>
                                 </ul>
                             </div>
@@ -67,32 +67,32 @@ export const Footer = () => {
                         <div className="col-lg-3 col-md-3 col-sm-6">
                             <div className="widget-nav-menu">
                                 <h2 className="widget-title">
-                                    Thông tin
+                                    information
                                 </h2>
                                 <ul className="menu-footer-container">
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href="">Về chúng tôi</a>
+                                        <a href="">About Us</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Thông tin giao hàng</a>
+                                        <a href="">Delivery information</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Điều khoản riêng tư</a>
+                                        <a href="">Primary policy</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Chính sách giảm giá</a>
+                                        <a href="">Discount</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Chăm sóc khách hàng</a>
+                                        <a href="">Customer service</a>
                                     </li>
                                     <li className="menu-item">
                                         <FaRegCircle className="menu-item-icon"/>
-                                        <a href=""> Điều khoản dịch vụ</a>
+                                        <a href="">Terms & condition</a>
                                     </li>
                                 </ul>
                             </div>
@@ -100,7 +100,7 @@ export const Footer = () => {
                         <div className="col-lg-3 col-md-3 col-sm-6">
                             <div className="widget-nav-menu">
                                 <h2 className="widget-title">
-                                    Vị trí cửa hàng
+                                    store locations
                                 </h2>
                                 <div className="text-widget">
                                     <img src="http://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/worldmap.png" alt="store locations"/>
