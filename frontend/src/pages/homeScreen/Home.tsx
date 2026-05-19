@@ -21,41 +21,37 @@ import centerImg4 from "../../images/center-4.jpg";
 
 // ================= SLIDESHOW =================
 export const SlideShow = () => {
+  const bannerResponsive = {
+    all: {
+      breakpoint: { max: 4000, min: 0 },
+      items: 1
+    }
+  };
+
   return (
-    <div
-      id="carouselExampleAutoplaying"
-      className="carousel slide"
-      data-bs-ride="carousel"
-    >
-      <div className="carousel-inner">
-        <div className="carousel-item active">
-          <img
-            src={centerImg}
-            className="d-block w-100"
-            alt="center"
-          />
+    <div className="main-banner-slider">
+      <Carousel
+        responsive={bannerResponsive}
+        infinite={true}
+        autoPlay={true}
+        autoPlaySpeed={4000}
+        showDots={true}
+        arrows={true}
+        itemClass="banner-item"
+      >
+        <div>
+          <img src={centerImg} className="d-block w-100" alt="Banner 1" />
         </div>
-
-        <div className="carousel-item">
-          <img
-            src={centerImg2}
-            className="d-block w-100"
-            alt="center"
-          />
+        <div>
+          <img src={centerImg2} className="d-block w-100" alt="Banner 2" />
         </div>
-
-        <div className="carousel-item">
-          <img
-            src={centerImg3}
-            className="d-block w-100"
-            alt="center"
-          />
+        <div>
+          <img src={centerImg3} className="d-block w-100" alt="Banner 3" />
         </div>
-      </div>
+      </Carousel>
     </div>
   );
 };
-
 
 
 export const Blog = () => {
@@ -135,7 +131,8 @@ const Home = () => {
       <SlideShow />
 
       <div className="container mt-5">
-        <div className="tabs-list d-flex gap-4">
+      <div className="products-slider">
+        <div className="tabs-list d-flex gap-0">
           <div
             className={carousel === 1 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(1)}
@@ -158,11 +155,9 @@ const Home = () => {
           </div>
         </div>
 
-
         <Carousel
           responsive={responsive}
           infinite={true}
-          className="mt-5"
         >
           {[1, 2, 3, 4, 5].map((item) => (
             <div
@@ -172,7 +167,7 @@ const Home = () => {
               <div className="product-img">
                 <img
                   src={centerImg4}
-                  alt=""
+                  alt={`Colorless Tsukuru ${item}`}
                 />
 
                 <div className="product-buttons d-flex justify-content-evenly">
@@ -188,6 +183,7 @@ const Home = () => {
             </div>
           ))}
         </Carousel>
+      </div>
       </div>
 
       <div className="subscribe-for-deals mt-5">

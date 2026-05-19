@@ -193,7 +193,7 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                                 fullWidth
                                 size="small"
                                 value={fullName}
-                                onChange={e => setFullName(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                             />
                         </div>
                         <div className="editPhone">
@@ -206,7 +206,7 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                                 fullWidth
                                 size="small"
                                 value={phone}
-                                onChange={e => setPhone(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
                             />
                         </div>
                     </div>
@@ -222,7 +222,7 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                             variant="outlined"
                             fullWidth
                             size="small"
-                            onChange={e => handleChangeProvince(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeProvince(e.target.value)}
                         >
                             {provinces.map((province) => (
                                 <MenuItem key={province.ProvinceID} value={province.ProvinceID}>
@@ -243,7 +243,7 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                             variant="outlined"
                             fullWidth
                             size="small"
-                            onChange={e => handleChangeDistrict(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeDistrict(e.target.value)}
                         >
                             {districts.map((dis) => (
                                 <MenuItem key={dis.DistrictID} value={dis.DistrictID}>
@@ -264,7 +264,7 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                             variant="outlined"
                             fullWidth
                             size="small"
-                            onChange={e => handleChangeWard(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeWard(e.target.value)}
                         >
                             {wards.map((ward) => (
                                 <MenuItem key={ward.WardCode} value={ward.WardCode}>
@@ -283,13 +283,13 @@ const PopupAddress = forwardRef((props: PopupAddressProps, ref) => {
                             fullWidth
                             size="small"
                             value={street}
-                            onChange={e => setStreet(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStreet(e.target.value)}
                         />
                     </div>
                     <div className="addressDefault">
                         <input type="checkbox" id="addressDefault" name="isDefault"
                                checked={isDefault}
-                               onChange={e => setIsDefault(e.target.checked)}
+                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsDefault(e.target.checked)}
                         />
                         <label htmlFor="addressDefault">Đặt làm địa chỉ mặc định</label>
                     </div>

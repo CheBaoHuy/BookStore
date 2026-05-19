@@ -103,7 +103,7 @@ const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, us
                         name="product-rating"
                         size={'large'}
                         value={stars}
-                        onChange={(event, newValue) => setStars(newValue)}
+                        onChange={(event: React.SyntheticEvent, newValue: number | null) => setStars(newValue)}
                         sx={{ mt: -0.5 }}
                     />
                 </div>
@@ -113,7 +113,7 @@ const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, us
                     multiline
                     rows={4}
                     value={reviewContent}
-                    onChange={(e) => setReviewContent(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReviewContent(e.target.value)}
                     variant="outlined"
                     fullWidth
                     sx={{ mt: 2 }}
