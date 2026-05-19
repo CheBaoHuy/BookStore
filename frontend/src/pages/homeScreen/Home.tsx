@@ -19,44 +19,39 @@ import centerImg2 from "../../images/center-2.jpg";
 import centerImg3 from "../../images/center-3.jpg";
 import centerImg4 from "../../images/center-4.jpg";
 
-
 // ================= SLIDESHOW =================
 export const SlideShow = () => {
+  const bannerResponsive = {
+    all: {
+      breakpoint: { max: 4000, min: 0 },
+      items: 1
+    }
+  };
+
   return (
-    <div
-      id="carouselExampleAutoplaying"
-      className="carousel slide"
-      data-bs-ride="carousel"
-    >
-      <div className="carousel-inner">
-        <div className="carousel-item active">
-          <img
-            src={centerImg}
-            className="d-block w-100"
-            alt="center"
-          />
+    <div className="main-banner-slider">
+      <Carousel
+        responsive={bannerResponsive}
+        infinite={true}
+        autoPlay={true}
+        autoPlaySpeed={4000}
+        showDots={true}
+        arrows={true}
+        itemClass="banner-item"
+      >
+        <div>
+          <img src={centerImg} className="d-block w-100" alt="Banner 1" />
         </div>
-
-        <div className="carousel-item">
-          <img
-            src={centerImg2}
-            className="d-block w-100"
-            alt="center"
-          />
+        <div>
+          <img src={centerImg2} className="d-block w-100" alt="Banner 2" />
         </div>
-
-        <div className="carousel-item">
-          <img
-            src={centerImg3}
-            className="d-block w-100"
-            alt="center"
-          />
+        <div>
+          <img src={centerImg3} className="d-block w-100" alt="Banner 3" />
         </div>
-      </div>
+      </Carousel>
     </div>
   );
 };
-
 
 
 export const Blog = () => {
@@ -78,7 +73,6 @@ export const Blog = () => {
   return (
     <div className="new-blog pt-5">
       <div className="container text-center">
-
         <h3>Tin Tức Mới</h3>
 
         <Carousel
@@ -96,10 +90,7 @@ export const Blog = () => {
               <div className="post-content">
                 <h5>An Audio Post</h5>
 
-                <p>
-                  Dynamically target high-payoff intellectual
-                  capital...
-                </p>
+                <p>Dynamically target high-payoff intellectual capital...</p>
 
                 <button className="btn">
                   Read more
@@ -109,39 +100,24 @@ export const Blog = () => {
             </div>
           ))}
         </Carousel>
-
       </div>
     </div>
   );
 };
 
-
 // ================= HOME =================
-
 const Home = () => {
-
   const responsive = {
     desktop: {
-      breakpoint: {
-        max: 3000,
-        min: 1024
-      },
+      breakpoint: { max: 3000, min: 1024 },
       items: 4
     },
-
     tablet: {
-      breakpoint: {
-        max: 1024,
-        min: 464
-      },
+      breakpoint: { max: 1024, min: 464 },
       items: 3
     },
-
     mobile: {
-      breakpoint: {
-        max: 464,
-        min: 0
-      },
+      breakpoint: { max: 464, min: 0 },
       items: 2
     }
   };
@@ -155,49 +131,33 @@ const Home = () => {
       <SlideShow />
 
       <div className="container mt-5">
-
-        <div className="tabs-list d-flex gap-4">
-
+      <div className="products-slider">
+        <div className="tabs-list d-flex gap-0">
           <div
-            className={
-              carousel === 1
-                ? "tab-title active"
-                : "tab-title"
-            }
+            className={carousel === 1 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(1)}
           >
             Best Selling
           </div>
 
           <div
-            className={
-              carousel === 2
-                ? "tab-title active"
-                : "tab-title"
-            }
+            className={carousel === 2 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(2)}
           >
             E-books
           </div>
 
           <div
-            className={
-              carousel === 3
-                ? "tab-title active"
-                : "tab-title"
-            }
+            className={carousel === 3 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(3)}
           >
             Text Book
           </div>
-
         </div>
-
 
         <Carousel
           responsive={responsive}
           infinite={true}
-          className="mt-5"
         >
           {[1, 2, 3, 4, 5].map((item) => (
             <div
@@ -205,50 +165,30 @@ const Home = () => {
               key={item}
             >
               <div className="product-img">
-
                 <img
                   src={centerImg4}
-                  alt=""
+                  alt={`Colorless Tsukuru ${item}`}
                 />
 
                 <div className="product-buttons d-flex justify-content-evenly">
-
-                  <FaCartPlus
-                    className="product-btn-icon"
-                  />
-
-                  <FaRegHeart
-                    className="product-btn-icon"
-                  />
-
+                  <FaCartPlus className="product-btn-icon" />
+                  <FaRegHeart className="product-btn-icon" />
                 </div>
-
               </div>
 
               <div className="product-content">
-
-                <h4>
-                  Colorless Tsukuru {item}
-                </h4>
-
-                <span>
-                  100.000 VNĐ
-                </span>
-
+                <h4>Colorless Tsukuru {item}</h4>
+                <span className="price">100.000 VNĐ</span>
               </div>
-
             </div>
           ))}
         </Carousel>
-
+      </div>
       </div>
 
-
       <div className="subscribe-for-deals mt-5">
-
         <div className="sfd-wrapper">
-
-          <h3>
+          <h3 className="text-center mb-5">
             Join <span>100,321</span> Happy Readers
           </h3>
 
@@ -256,11 +196,8 @@ const Home = () => {
             SIGN UP TODAY
             <FaLongArrowAltRight />
           </button>
-
         </div>
-
       </div>
-
 
       <Blog />
 
@@ -296,9 +233,7 @@ const Home = () => {
             </div>
 
           </div>
-
         </div>
-
       </div>
 <Footer />
     </>

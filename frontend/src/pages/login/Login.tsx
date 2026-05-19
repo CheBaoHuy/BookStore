@@ -1,47 +1,78 @@
 import React from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Header } from "../../components/header/Header";
+import { Footer } from "../../components/footer/Footer";
+import logo from "../../images/logo_green.png";
+import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 
 function Login() {
     return (
-        <div className={"container"}>
-            <div className={"login_label"}>
-                <div className={"login_title"}>
-                    <h2 className={"title"}>Đăng nhập</h2>
-                </div>
-                <div className={"login_page"}>
-                    <a><h6 className={"login_home"}>Trang chủ /</h6></a>
-                    <h5 className={"login_name"}>Đăng nhập</h5>
-                </div>
-            </div>
-            <div className={"content"}>
-                <div className={"form"}>
-                    <h2 className={"login_heading"}>Đăng nhập</h2>
-                    <div className={"login_section"}>
-                        <div className={"username"}>
-                            <input className={"user_input"} type={"text"} placeholder={" "}/>
-                            <label className={"label_username"}>Tên đăng nhập hoặc email</label>
-                        </div>
-                        <div className={"password"}>
-                            <input className={"password_input"} type={"password"} placeholder={" "}/>
-                            <label className={"label_password"}>Mật khẩu</label>
-                        </div>
-                        <div className={"remember"}>
-                            <input type={"checkbox"}/>
-                            <p>Nhớ mật khẩu</p>
-                        </div>
-                        <div className={"login_button"}>
-                            <input type={"submit"} className={"login_button"} value={"Đăng nhập"}/>
-                        </div>
-                        <div className={"forgot"}>
-                            {/*<Link to={""}>Quên mật khẩu?</Link>*/}
-                            <p className={"link_forgot"}>Quên mật khẩu?</p>
+        <>
+            <Header />
+            <div className="login-page">
+                <div className="login-card">
+
+                    {/* Logo */}
+                    <div className="login-logo-area">
+                        <img src={logo} alt="BookStore Logo" />
+                    </div>
+
+                    <h2 className="login-card-title">Chào mừng trở lại!</h2>
+                    <p className="login-card-subtitle">Đăng nhập để tiếp tục mua sắm sách</p>
+
+                    {/* Username */}
+                    <div className="login-field">
+                        <label htmlFor="login-username">Tên đăng nhập hoặc Email</label>
+                        <div className="login-field-inner">
+                            <FaUser className="login-field-icon" />
+                            <input
+                                id="login-username"
+                                type="text"
+                                placeholder="Nhập tên đăng nhập..."
+                            />
                         </div>
                     </div>
+
+                    {/* Password */}
+                    <div className="login-field">
+                        <label htmlFor="login-password">Mật khẩu</label>
+                        <div className="login-field-inner">
+                            <FaLock className="login-field-icon" />
+                            <input
+                                id="login-password"
+                                type="password"
+                                placeholder="Nhập mật khẩu..."
+                            />
+                        </div>
+                    </div>
+
+                    {/* Remember + Forgot */}
+                    <div className="login-extras">
+                        <label className="login-remember">
+                            <input type="checkbox" />
+                            Nhớ mật khẩu
+                        </label>
+                        <a href="/forgot" className="login-forgot">Quên mật khẩu?</a>
+                    </div>
+
+                    {/* Submit */}
+                    <button type="submit" className="login-submit-btn">
+                        <FaSignInAlt />
+                        Đăng nhập
+                    </button>
+
+                    {/* Divider */}
+                    <div className="login-divider">hoặc</div>
+
+                    {/* Register link */}
+                    <p className="login-register-link">
+                        Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+                    </p>
                 </div>
             </div>
-        </div>
-    )
+            <Footer />
+        </>
+    );
 }
 
 export default Login;

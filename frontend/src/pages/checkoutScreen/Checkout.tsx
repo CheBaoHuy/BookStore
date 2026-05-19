@@ -1,125 +1,151 @@
 import React from "react";
 import "./Checkout.css";
-import ProductCart from "../../images/Product Images/book17.png";
-import {FaCircleCheck} from "react-icons/fa6";
+import { Header } from "../../components/header/Header";
+import { Footer } from "../../components/footer/Footer";
+import { FaCircleCheck } from "react-icons/fa6";
 
 function Checkout() {
     return (
-        <div className={"checkout_container"}>
-            <div className={"checkout_label"}>
-                <div className={"checkout_title"}>
-                    <h2 className={"title"}>Thanh toán</h2>
-                </div>
-                <div className={"checkout_page"}>
-                    <a><h6 className={"checkout_home"}>Trang chủ /</h6></a>
-                    <h5 className={"checkout_name"}>Thanh toán</h5>
-                </div>
-            </div>
-            <div className={"coupon_noti"}>
-                <FaCircleCheck className={"check-icon"}/>
-                <p>Bạn có mã giảm giá? Nhập ngay tại đây!</p>
-            </div>
-            <div className="coupon">
-                <input type="text" name="coupon_code"
-                       className="input-text"
-                       id="coupon_code" value=""
-                       placeholder="Mã giảm giá"/>
-                <input type="submit" className="button" name="apply_coupon"
-                       value="Nhập mã giảm giá"/>
-            </div>
-            <div className={"delivery_info"}>
-                <div className={"main_info"}>
-                    <h3>Thông tin giao hàng</h3>
-                    <div className={"half_section"}>
-                        <div className={"half_input"}>
-                            <label>Họ<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
-                        <div className={"half_input"}>
-                            <label>Tên<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
-                    </div>
-                    <div className={"half_section"}>
-                        <div className={"half_input"}>
-                            <label>Email<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
-                        <div className={"half_input"}>
-                            <label>Số điện thoại<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
-                    </div>
-                    <div className={"full-type"}>
-                        <label>Quốc gia<span className={"notice"}>*</span></label>
-                        <input type={"text"} className={"full_input"}/>
-                    </div>
-                    <div className={"full-type"}>
-                        <label>Địa chỉ<span className={"notice"}>*</span></label>
-                        <input type={"text"} className={"full_input"}/>
-                    </div>
-                    <div className={"half_section"}>
-                        <div className={"half_input"}>
-                            <label>Mã ZIP<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
-                        <div className={"half_input"}>
-                            <label>Tỉnh/Thành phố<span className={"notice"}>*</span></label>
-                            <input type={"text"} className={"info_name"}/>
-                        </div>
+        <div className="checkout-page">
+            <Header />
+
+            {/* HERO */}
+            <div className="checkout-hero">
+                <div className="container">
+                    <h1>Thanh toán</h1>
+                    <div className="checkout-breadcrumb">
+                        <a href="/">Trang chủ</a>
+                        <span>/</span>
+                        <span>Thanh toán</span>
                     </div>
                 </div>
-                <div className={"note_info"}>
-                    <h3>Thông tin ghi thích thêm</h3>
-                    <label>Ghi chú đơn hàng</label>
-                    <input type={"text"} className={"note_input"} placeholder={"Vui lòng điền thêm ghi chú về đơn hàng của bạn!"}/>
+            </div>
+
+            {/* COUPON BANNER */}
+            <div className="checkout-coupon-banner">
+                <div className="checkout-coupon-toggle">
+                    <FaCircleCheck className="coupon-icon" />
+                    <span>Bạn có mã giảm giá? Nhập ngay tại đây!</span>
+                </div>
+                <div className="coupon-inline-form">
+                    <input
+                        type="text"
+                        className="coupon-inline-input"
+                        placeholder="Nhập mã giảm giá..."
+                    />
+                    <button className="coupon-apply-btn">Áp dụng</button>
                 </div>
             </div>
-            <div className={"order_info"}>
-                <h3>Đơn hàng của bạn</h3>
-                <div className={"table_order"}>
-                    <div className={"table_title"}>
-                        <h4>Tên sản phẩm</h4>
-                        <h4>Giá tiền</h4>
-                    </div>
-                    <div className={"table_product"}>
-                        <div className={"products"}>
-                            <div className={"product"}>
-                                <p className={"book_name"}>The Book Of Love</p>
-                                <p className={"quantity_text"}>x 1</p>
+
+            {/* MAIN CONTENT */}
+            <div className="checkout-main">
+
+                {/* LEFT COLUMN */}
+                <div>
+                    {/* DELIVERY INFO */}
+                    <div className="checkout-card">
+                        <h3 className="checkout-section-title">Thông tin giao hàng</h3>
+
+                        <div className="form-row">
+                            <div className="form-field">
+                                <label>Họ <span className="required">*</span></label>
+                                <input type="text" placeholder="Nhập họ..." />
                             </div>
-                            <div className={"product_price"}>
-                                <p className={"price"}>300.000</p>
-                                <p className={"currency"}>VND</p>
+                            <div className="form-field">
+                                <label>Tên <span className="required">*</span></label>
+                                <input type="text" placeholder="Nhập tên..." />
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-field">
+                                <label>Email <span className="required">*</span></label>
+                                <input type="email" placeholder="Nhập địa chỉ email..." />
+                            </div>
+                            <div className="form-field">
+                                <label>Số điện thoại <span className="required">*</span></label>
+                                <input type="tel" placeholder="Nhập số điện thoại..." />
+                            </div>
+                        </div>
+
+                        <div className="form-field">
+                            <label>Quốc gia <span className="required">*</span></label>
+                            <input type="text" placeholder="Nhập quốc gia..." />
+                        </div>
+
+                        <div className="form-field">
+                            <label>Địa chỉ <span className="required">*</span></label>
+                            <input type="text" placeholder="Số nhà, tên đường..." />
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-field">
+                                <label>Mã ZIP <span className="required">*</span></label>
+                                <input type="text" placeholder="Nhập mã ZIP..." />
+                            </div>
+                            <div className="form-field">
+                                <label>Tỉnh/Thành phố <span className="required">*</span></label>
+                                <input type="text" placeholder="Chọn tỉnh/thành..." />
                             </div>
                         </div>
                     </div>
-                    <div className={"total"}>
-                        <div className={"title_sum"}>
-                            <h4>Tổng cộng</h4>
+
+                    {/* ORDER NOTES */}
+                    <div className="checkout-card">
+                        <h3 className="checkout-section-title">Ghi chú đơn hàng</h3>
+                        <div className="form-field">
+                            <label>Ghi chú</label>
+                            <textarea placeholder="Vui lòng điền thêm ghi chú về đơn hàng của bạn..." />
                         </div>
-                        <div className={"price_total"}>
-                            <p className={"price"}>300.000</p>
-                            <p className={"currency"}>VND</p>
+                    </div>
+
+                    {/* PAYMENT */}
+                    <div className="checkout-card">
+                        <h3 className="checkout-section-title">Phương thức thanh toán</h3>
+                        <div className="payment-methods">
+                            <label className="payment-method">
+                                <input type="radio" name="payment" defaultChecked />
+                                <span className="payment-method-label">🏦 Thanh toán qua ngân hàng</span>
+                            </label>
+                            <label className="payment-method">
+                                <input type="radio" name="payment" />
+                                <span className="payment-method-label">💵 Thanh toán khi nhận hàng (COD)</span>
+                            </label>
                         </div>
+                    </div>
+                </div>
+
+                {/* RIGHT: ORDER SUMMARY */}
+                <div className="order-sidebar">
+                    <div className="order-sidebar-card">
+                        <h3 className="order-sidebar-title">Đơn hàng của bạn</h3>
+
+                        <div className="order-table-header">
+                            <span>Sản phẩm</span>
+                            <span>Giá tiền</span>
+                        </div>
+
+                        <div className="order-table-row">
+                            <div>
+                                <div>The Book Of Love</div>
+                                <div className="item-qty">x 1</div>
+                            </div>
+                            <span>300.000 VND</span>
+                        </div>
+
+                        <div className="order-total-line">
+                            <span>Thành tiền</span>
+                            <span className="order-total-amount">300.000 VND</span>
+                        </div>
+
+                        <button className="place-order-btn">
+                            Đặt hàng ngay
+                        </button>
                     </div>
                 </div>
             </div>
-            <div className={"payment"}>
-                <div className={"option"}>
-                    <div className={"method"}>
-                        <input type={"radio"}/>
-                        <p>Thanh toán qua ngân hàng</p>
-                    </div>
-                    <div className={"method"}>
-                        <input type={"radio"}/>
-                        <p>Thanh toán khi nhận hàng</p>
-                    </div>
-                </div>
-                <div className={"place_order"}>
-                    <input type={"submit"} className={"order_button"} value={"Đặt hàng"}/>
-                </div>
-            </div>
+
+            <Footer />
         </div>
     );
 }

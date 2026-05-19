@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ============================================================
+   FORGOT PAGE
+   ============================================================ */
+.forgot-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f0ff 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative circles */
+.forgot-page::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(23,71,157,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.forgot-page::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(30,95,196,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.forgot-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(23, 71, 157, 0.12);
+    padding: 50px 48px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Icon at top */
+.forgot-icon-area {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.forgot-icon-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8eeff 0%, #f0f4ff 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #17479D;
+    margin-bottom: 4px;
+}
+
+.forgot-card-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 8px;
+    text-align: center;
+}
+
+.forgot-card-subtitle {
+    font-size: 14px;
+    color: #718096;
+    text-align: center;
+    margin: 0 0 32px;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   STEP INDICATOR
+   ============================================================ */
+.forgot-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 32px;
+}
+
+.forgot-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.forgot-step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #a0aec0;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.forgot-step.active .forgot-step-circle {
+    background: #17479D;
+    color: white;
+    box-shadow: 0 4px 12px rgba(23,71,157,0.3);
+}
+
+.forgot-step-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #a0aec0;
+    white-space: nowrap;
+}
+
+.forgot-step.active .forgot-step-label {
+    color: #17479D;
+}
+
+.forgot-step-line {
+    width: 48px;
+    height: 2px;
+    background: #e2e8f0;
+    margin-bottom: 22px;
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+.forgot-field {
+    margin-bottom: 20px;
+}
+
+.forgot-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.forgot-field-inner {
+    position: relative;
+}
+
+.forgot-field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.forgot-field input {
+    width: 100%;
+    height: 48px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0 16px 0 42px;
+    font-size: 15px;
+    color: #1a202c;
+    background: #fafafa;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.forgot-field input:focus {
+    border-color: #17479D;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.1);
+}
+
+.forgot-field input::placeholder {
+    color: #a0aec0;
+}
+
+/* ============================================================
+   SUBMIT BUTTON
+   ============================================================ */
+.forgot-submit-btn {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(23, 71, 157, 0.3);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.forgot-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(23, 71, 157, 0.4);
+}
+
+.forgot-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================================
+   FOOTER LINKS
+   ============================================================ */
+.forgot-back-link {
+    text-align: center;
+    font-size: 14px;
+    color: #718096;
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.forgot-back-link a {
+    color: #17479D;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.forgot-back-link a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================
+   INFO BOX
+   ============================================================ */
+.forgot-info-box {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-left: 4px solid #17479D;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #1e40af;
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.forgot-info-box svg {
+    flex-shrink: 0;
+    font-size: 16px;
+    margin-top: 1px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 520px) {
+    .forgot-card {
+        padding: 36px 24px;
+    }
+
+    .forgot-card-title {
+        font-size: 22px;
+    }
+}
