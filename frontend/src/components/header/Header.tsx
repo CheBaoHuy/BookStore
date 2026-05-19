@@ -1,66 +1,178 @@
+
 import React from "react";
-import '../header/Header.css'
-import { FaMapMarkerAlt, FaSearch, FaShoppingCart   } from "react-icons/fa";
+import "./Header.css";
+
+import {
+    FaMapMarkerAlt,
+    FaSearch,
+    FaShoppingCart
+} from "react-icons/fa";
+
 import { IoMdPhonePortrait } from "react-icons/io";
-export const Header =()=> {
+
+import logo from "../../images/logo_green.png";
+
+export const Header = () => {
+
     return (
         <>
+
+            {/* TOP BAR */}
             <div className="top-bar">
+
                 <div className="container">
-                    <div className="row">
-                        <div className="col-xs-12 col-sm-6 col-md-6 text-start">
-                            <FaMapMarkerAlt className="top-bar-icon"/>
-                            Đại học Nông Lâm Thành phố Hồ Chí Minh
-                            <IoMdPhonePortrait  className="top-bar-icon"/>
-                            0000000000
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-6 text-end">
-                            <ul className="menu mb-0">
-                                <li className="menu-item"><a href="">Yêu thích</a></li>
-                                <li className="menu-item"><a href="">Tài khoản của tôi</a></li>
-                                <li className="menu-item"><a href="">Thanh toán</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <header className="header">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-xs-12 col-sm-6 col-lg-8 col-md-6 logo">
-                            <a href="">
-                                <img src="http://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/01/logo_green.png" alt=""/>
-                            </a>
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-6 col-lg-4 bks-cart-widget ">
-                            <nav className="navbar ">
-                                <div className="container-fluid d-flex align-items-center">
-                                    <form className="d-flex" role="search">
-                                        <input className="form-control me-2" type="search" placeholder="Search"
-                                               aria-label="Search"/>
-                                            <button className="btn " type="submit"><FaSearch/></button>
-                                    </form>
-                                    <div className="mini-cart">
-                                        <FaShoppingCart />
-                                    </div>
-                                </div>
-                            </nav>
+
+                    <div className="row align-items-center">
+
+                        <div className="col-lg-6 col-md-6 col-sm-12 top-left">
+
+                            <div className="top-contact">
+
+                            <span>
+    <FaMapMarkerAlt className="top-bar-icon" />
+    <a
+        href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+h%E1%BB%8Dc+N%C3%B4ng+L%C3%A2m+TP.+H%E1%BB%93+Ch%C3%AD+Minh/@10.8712764,106.7891868,865m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3175276398969f7b:0x9672b7efd0893fc4!8m2!3d10.8712764!4d106.7917617!16s%2Fm%2F02q4yqq?entry=ttu&g_ep=EgoyMDI2MDUxMy4wIKXMDSoASAFQAw%3D%3D"
+        target="_blank"
+        rel="noreferrer"
+        style={{ color: "inherit", textDecoration: "none" }}
+    >
+        Đại học Nông Lâm TP.HCM
+    </a>
+</span>
+                                <span>
+                                    <IoMdPhonePortrait className="top-bar-icon" />
+                                    0123456789
+                                </span>
+
+                            </div>
 
                         </div>
+
+                        <div className="col-lg-6 col-md-6 col-sm-12 text-end">
+
+                            <ul className="top-menu mb-0">
+
+                                <li className="menu-item">
+                                    <a href="/">Yêu thích</a>
+                                </li>
+
+                                <li className="menu-item">
+                                    <a href="/">Tài khoản</a>
+                                </li>
+
+                                <li className="menu-item">
+                                    <a href="/">Thanh toán</a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
                     </div>
+
                 </div>
-            </header>
-            <nav className="main-menu">
+
+            </div>
+
+            {/* HEADER */}
+            <header className="header">
+
                 <div className="container">
-                    <ul className="menu">
-                        <li className="menu-item">Trang chủ</li>
-                        <li className="menu-item">Học tập</li>
-                        <li className="menu-item">Tiểu thuyết</li>
-                        <li className="menu-item">Kinh doanh</li>
-                        <li className="menu-item">Sức khỏe  </li>
-                    </ul>
+
+                    <div className="row align-items-center">
+
+                        {/* LOGO */}
+                        <div className="col-lg-4 col-md-4 col-sm-12">
+
+                            <div className="logo">
+
+                                <a href="/">
+                                    <img
+                                        src={logo}
+                                        alt="Book Store Logo"
+                                    />
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                        {/* SEARCH + CART */}
+                        <div className="col-lg-8 col-md-8 col-sm-12">
+
+                            <div className="header-right">
+
+                                {/* SEARCH */}
+                                <form
+                                    className="search-form"
+                                    role="search"
+                                >
+
+                                    <input
+                                        type="search"
+                                        placeholder="Search books..."
+                                    />
+
+                                    <button type="submit">
+                                        <FaSearch />
+                                    </button>
+
+                                </form>
+
+                                {/* CART */}
+                                <div className="mini-cart">
+
+                                    <FaShoppingCart />
+
+                                    <span className="cart-count">
+                                        0
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
+            </header>
+
+            {/* MAIN MENU */}
+            <nav className="main-menu">
+
+                <div className="container">
+
+                    <ul className="menu">
+
+                        <li className="menu-item">
+                            <a href="/">Trang chủ</a>
+                        </li>
+
+                        <li className="menu-item">
+                            <a href="/">Học tập</a>
+                        </li>
+
+                        <li className="menu-item">
+                            <a href="/">Tiểu thuyết</a>
+                        </li>
+
+                        <li className="menu-item">
+                            <a href="/">Kinh doanh</a>
+                        </li>
+
+                        <li className="menu-item">
+                            <a href="/">Sức khỏe</a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
             </nav>
+
         </>
-    )
-}
+    );
+};

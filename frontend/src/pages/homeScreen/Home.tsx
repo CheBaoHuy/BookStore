@@ -14,6 +14,10 @@ import { CiMail } from "react-icons/ci";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import centerImg from "../../images/center.jpg";
+import centerImg2 from "../../images/center-2.jpg";
+import centerImg3 from "../../images/center-3.jpg";
+import centerImg4 from "../../images/center-4.jpg";
 
 // ================= SLIDESHOW =================
 export const SlideShow = () => {
@@ -26,25 +30,25 @@ export const SlideShow = () => {
       <div className="carousel-inner">
         <div className="carousel-item active">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
 
         <div className="carousel-item">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg2}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
 
         <div className="carousel-item">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTmdcZ7EdLJAP3mi6SpE3nDsJj4x8z8lNQxlgV4x_V&s"
+            src={centerImg3}
             className="d-block w-100"
-            alt=""
+            alt="center"
           />
         </div>
       </div>
@@ -52,7 +56,8 @@ export const SlideShow = () => {
   );
 };
 
-// ================= BLOG =================
+
+
 export const Blog = () => {
   const responsive = {
     desktop: {
@@ -72,9 +77,13 @@ export const Blog = () => {
   return (
     <div className="new-blog pt-5">
       <div className="container text-center">
-        <h3>Tin T?c M?i</h3>
+        <h3>Tin Tức Mới</h3>
 
-        <Carousel responsive={responsive} infinite={true} showDots={true}>
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          showDots={true}
+        >
           {[1, 2, 3, 4].map((item) => (
             <div className="post" key={item}>
               <img
@@ -149,12 +158,20 @@ const Home = () => {
           </div>
         </div>
 
-        <Carousel responsive={responsive} infinite={true} className="mt-5">
+
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          className="mt-5"
+        >
           {[1, 2, 3, 4, 5].map((item) => (
-            <div className="product-wrap" key={item}>
+            <div
+              className="product-wrap"
+              key={item}
+            >
               <div className="product-img">
                 <img
-                  src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/book17-216x265.png"
+                  src={centerImg4}
                   alt=""
                 />
 
@@ -166,7 +183,7 @@ const Home = () => {
 
               <div className="product-content">
                 <h4>Colorless Tsukuru {item}</h4>
-                <span className="price">100.000 VN�</span>
+                <span className="price">100.000 VNĐ</span>
               </div>
             </div>
           ))}
@@ -176,32 +193,53 @@ const Home = () => {
       <div className="subscribe-for-deals mt-5">
         <div className="sfd-wrapper">
           <h3 className="text-center mb-5">
-            Join 100,321 Happy Readers
+            Join <span>100,321</span> Happy Readers
           </h3>
 
-          <div className="text-center mt-3">
-            <button className="sfd-button">
-              SIGN UP TODAY
-              <FaLongArrowAltRight />
-            </button>
-          </div>
+          <button className="sfd-button">
+            SIGN UP TODAY
+            <FaLongArrowAltRight />
+          </button>
         </div>
       </div>
 
       <Blog />
 
-      <div className="news-letter-subscription mt-5">
-        <div className="container">
-          <h3>SUBSCRIBE TO OUR NEWSLETTER</h3>
+      <div className="news-letter-subscription">
 
-          <div className="d-flex">
-            <input type="email" placeholder="Email address" />
-            <CiMail />
+        <div className="container">
+
+          <div className="newsletter-wrapper">
+
+            <div className="newsletter-text">
+
+              <h3 className="news-letter-heading">
+                SUBSCRIBE TO OUR NEWSLETTER
+              </h3>
+
+              <p className="news-letter-content">
+                Get the latest updates, offers and book releases directly in your inbox.
+              </p>
+
+            </div>
+
+            <div className="news-letter-form">
+
+              <input
+                type="email"
+                placeholder="Enter your email address"
+              />
+
+              <button className="newsletter-btn">
+                <CiMail className="news-letter-icon" />
+              </button>
+
+            </div>
+
           </div>
         </div>
       </div>
-
-      <Footer />
+<Footer />
     </>
   );
 };

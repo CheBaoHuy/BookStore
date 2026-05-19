@@ -1,5 +1,5 @@
 .container {
-    background-color: #20d275;
+    background-color: #17479D;
 }
 
 .login_label {
@@ -87,7 +87,7 @@
 
 .user_input:focus,
 .user_input:not(:placeholder-shown).user_input:not(:focus){
-    border: 1px solid #27ae61;
+    border: 1px solid #17479D;
 }
 
 
@@ -95,7 +95,7 @@
 .user_input:not(:placeholder-shown).user_input:not(:focus) + .label_username
 {
     top: -10px;
-    color: #27ae61;
+    color: #17479D;
     background-color: #fff;
 }
 
@@ -130,7 +130,7 @@
 
 .password_input:focus,
 .password_input:not(:placeholder-shown).password_input:not(:focus){
-    border: 1px solid #27ae61;
+    border: 1px solid #17479D;
 }
 
 
@@ -138,7 +138,7 @@
 .password_input:not(:placeholder-shown).password_input:not(:focus) + .label_password
 {
     top: -10px;
-    color: #27ae61;
+    color: #17479D;
     background-color: #fff;
 }
 
@@ -161,19 +161,19 @@
 
 .confirm_password_input:focus,
 .confirm_password_input:not(:placeholder-shown).confirm_password_input:not(:focus){
-    border: 1px solid #27ae61;
+    border: 1px solid #17479D;
 }
 
 .confirm_password_input:focus + .label_password,
 .confirm_password_input:not(:placeholder-shown).confirm_password_input:not(:focus) + .label_password
 {
     top: -10px;
-    color: #27ae61;
+    color: #17479D;
     background-color: #fff;
 }
 
 .register_button {
-    background-color: #27ae61;
+    background-color: #17479D;
     color: white;
     text-transform: uppercase;
     font-weight: 600;

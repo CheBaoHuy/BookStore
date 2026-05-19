@@ -41,7 +41,7 @@
     font-size: 25px;
     font-weight: bold;
     margin-top: 20px;
-    color: #27ae61;
+    color: #17479D;
 }
 .home-category-img .home-category-text a {
     color: #323232;
@@ -70,7 +70,7 @@
     cursor: pointer;
 }
 .products-slider .tabs-list .active {
-    background-color: #27ae61 !important;
+    background-color: #17479D !important;
     color: #ffffff !important;
 }
 .products-slider .tabs-list .active:after {
@@ -83,7 +83,7 @@
     left: 50%;
     border-width: 10px;
     border-style: solid;
-    border-color: #27ae61 rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+    border-color: #17479D rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
 }
 .product-wrap {
     border: 1px solid #f5f5f5;
@@ -94,7 +94,7 @@
     padding-bottom: 20px;
 }
 .product-wrap:hover {
-    border: 1px solid #27ae61;
+    border: 1px solid #17479D;
 }
 .product-wrap:before {
     content: " ";
@@ -106,7 +106,7 @@
     z-index: -1;
     transform: skewY(14deg);
     transform-origin: 0px 0px 0px;
-    background-color: #f5f5f5;
+    background-color: #17479D;
 }
 .hide-carousel-container {
     display: none !important;
@@ -123,7 +123,7 @@
     width: 100%;
     z-index: 999;
     transform-origin: 50% 100% 0px;
-    background-color: #27ae61;
+    background-color: #17479D;
     transform: perspective(600px) rotateX(90deg);
 }
 .product-wrap:hover .product-img .product-buttons {
@@ -154,54 +154,96 @@
     outline: none;
 }
 .product-content .price {
-    color: #27ae61 !important;
+    color: #17479D!important;
     font-size: 18px;
     font-weight: bold;
 }
 .subscribe-for-deals {
+    position: relative;
+    padding: 90px 20px;
+    background-image: url("../../images/subscribe.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     display: flex;
     justify-content: center;
-    position: relative;
-    padding: 60px 20px !important;
-    background: #424242 url(http://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/01/ada9a09acea936d776a6f55c82778c43_XL.jpg?id=10) !important;
+    align-items: center;
+
+    overflow: hidden;
 }
-.subscribe-for-deals:before {
+
+/* lớp phủ màu */
+.subscribe-for-deals::before {
     content: "";
-    display: block;
-    width: 100%;
-    height: 100%;
-    left: 0px;
-    top: 0px;
     position: absolute;
-    background-color: rgba(0, 0, 0, 0.6);
+    inset: 0;
+
+    background: linear-gradient(
+        rgba(10, 35, 120, 0.75),
+        rgba(0, 0, 0, 0.55)
+    );
+
     z-index: 1;
 }
+
+/* content */
 .subscribe-for-deals .sfd-wrapper {
     position: relative;
     z-index: 2;
+
     width: 60%;
+    text-align: center;
 }
+
+/* mobile */
+@media (max-width: 768px) {
+    .subscribe-for-deals .sfd-wrapper {
+        width: 100%;
+    }
+}
+
+/* title */
 .subscribe-for-deals .sfd-wrapper h3 {
-    color: #ffffff;
+    color: white;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 25px;
 }
-.subscribe-for-deals .sfd-wrapper h3>span {
-    color: #27ae61;
+
+.subscribe-for-deals .sfd-wrapper h3 span {
+    color: #ffd54f;
 }
+
+/* button */
 .subscribe-for-deals .sfd-wrapper .sfd-button {
-    border-color: rgb(255, 255, 255);
-    color: rgb(255, 255, 255);
-    background-color: transparent;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border-width: 2px;
-    word-wrap: break-word;
-    vertical-align: middle;
-    transition: all .2s ease-in-out;
-    font-size: 14px;
+    border: 2px solid white;
+    color: white;
+    background: transparent;
+
+    padding: 14px 28px;
+    border-radius: 50px;
+
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
 }
+
+/* hover */
 .subscribe-for-deals .sfd-wrapper .sfd-button:hover {
-    color: #27ae61;
-    background-color: rgb(255, 255, 255);
+    background: white;
+    color: #17479D;
+
+    transform: translateY(-3px);
 }
 .new-blog {
     background-color: #f5f5f5 !important;
@@ -276,7 +318,7 @@
     text-align: left;
 }
 .new-blog .post .post-content .post-date {
-    background-color: #27ae61 !important;
+    background-color: #17479D !important;
     position: absolute;
     padding: 5px 22px 5px;
     font-weight: normal;
@@ -298,7 +340,7 @@
     height: 0px;
     border-style: solid;
     border-width: 0px 7px 20px 0px;
-    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #27ae61 rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #17479D rgba(0, 0, 0, 0);
 }
 .new-blog .post .post-content .post-title a {
     font-size: 18px;
@@ -316,22 +358,22 @@
     font-weight: 300;
 }
 .new-blog .post .post-content .read-more {
-    color: #27ae61 !important;
+    color: #17479D !important;
     display: inline-block;
     font-weight: bold;
     font-size: 13px;
     cursor: pointer;
 }
 .read-more:hover, .read-more:focus {
-    color: #229955;
+    color: #17479D;
     text-decoration: none;
     background-color: transparent;
 }
 .new-blog .view-more {
     margin: 30px 0px;
     color: #ffffff;
-    background: #27ae61;
-    border: 2px solid #27ae61;
+    background: #17479D;
+    border: 2px solid #17479D;
     border-radius: 2px;
     text-transform: uppercase;
     font-size: 13px;
@@ -349,49 +391,126 @@
     user-select: none;
 }
 .news-letter-subscription {
-    margin: 0 !important;
-    padding: 30px 50px !important;
-    background-color: #27ae61 !important;
+    padding: 70px 20px;
+    background: linear-gradient(
+        135deg,
+        #17479D,
+        #0f2d66
+    );
 }
-.news-letter-subscription .news-letter-heading {
+
+/* wrapper */
+.newsletter-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* text */
+.newsletter-text {
+    flex: 1;
+    min-width: 280px;
+}
+
+.news-letter-heading {
     color: #ffffff;
-    font-weight: bold;
+    font-size: 34px;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
-.news-letter-subscription .news-letter-content {
-    width: 70%;
-    text-align: justify;
-    color: #ffffff;
-    margin-bottom: 0;
+
+.news-letter-content {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0;
 }
-.news-letter-subscription .news-letter-form {
+
+/* form */
+.news-letter-form {
+    flex: 1;
+    min-width: 300px;
+
     position: relative;
+    display: flex;
+    align-items: center;
 }
-.news-letter-subscription .news-letter-form input {
-    border: 2px solid #ffffff !important;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.6);
-    height: 50px;
-    -webkit-border-radius: 1px;
-    -moz-border-radius: 1px;
-    border-radius: 1px;
-    padding: 0 10px;
-    width: 80%;
-}
-.news-letter-subscription .news-letter-form input::placeholder {
-    color: #ffffff;
-}
-.news-letter-subscription .news-letter-form input:focus {
+
+/* input */
+.news-letter-form input {
+    width: 100%;
+    height: 60px;
+
+    border: none;
     outline: none;
-}
-.news-letter-subscription .news-letter-form .news-letter-icon {
-    position: absolute;
-    right: 10px;
-    top: 25%;
-    font-size: 25px;
+
+    border-radius: 50px;
+
+    padding: 0 70px 0 25px;
+
+    font-size: 15px;
+
+    background: rgba(255,255,255,0.15);
+
     color: #ffffff;
+
+    backdrop-filter: blur(10px);
 }
+
+/* placeholder */
+.news-letter-form input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+/* button */
+.newsletter-btn {
+    position: absolute;
+    right: 8px;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+/* icon */
+.news-letter-icon {
+    font-size: 22px;
+    color: #17479D;
+}
+
+/* hover */
+.newsletter-btn:hover {
+    transform: scale(1.08);
+    background: #ffd54f;
+}
+
+/* mobile */
 @media (max-width: 768px) {
-    .subscribe-for-deals .sfd-wrapper {
+
+    .newsletter-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .news-letter-form {
         width: 100%;
+    }
+
+    .news-letter-heading {
+        font-size: 28px;
     }
 }
