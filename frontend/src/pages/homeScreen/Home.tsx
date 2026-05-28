@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Home.css";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/reducer/CartReducer";
+import { Product } from "../../models";
+import { Link } from "react-router-dom";
 
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
@@ -122,7 +127,41 @@ const Home = () => {
     }
   };
 
+  const dispatch = useDispatch();
   const [carousel, setCarousel] = useState(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        let url = "http://localhost:8080/api/products?size=8";
+        if (carousel === 2) {
+          url = "http://localhost:8080/api/products?categoryId=2&size=8"; // Category ID 2 = Tiểu thuyết
+        } else if (carousel === 3) {
+          url = "http://localhost:8080/api/products?categoryId=1&size=8"; // Category ID 1 = Học tập
+        }
+        const response = await axios.get(url);
+        if (response.data && response.data.content) {
+          setProducts(response.data.content);
+        } else {
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [carousel]);
+
+  const handleAddToCart = (product: Product) => {
+    dispatch(addToCart(product));
+  };
 
   return (
     <>
@@ -144,45 +183,64 @@ const Home = () => {
             className={carousel === 2 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(2)}
           >
-            E-books
+            Tiểu Thuyết
           </div>
 
           <div
             className={carousel === 3 ? "tab-title active" : "tab-title"}
             onClick={() => setCarousel(3)}
           >
-            Text Book
+            Học Tập
           </div>
         </div>
 
-        <Carousel
-          responsive={responsive}
-          infinite={true}
-        >
-          {[1, 2, 3, 4, 5].map((item) => (
-            <div
-              className="product-wrap"
-              key={item}
-            >
-              <div className="product-img">
-                <img
-                  src={centerImg4}
-                  alt={`Colorless Tsukuru ${item}`}
-                />
+        {loading ? (
+          <div className="text-center my-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-2 text-muted">Đang tải sản phẩm...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center my-5 py-4">
+            <h5 className="text-muted">Không có sản phẩm nào thuộc danh mục này</h5>
+          </div>
+        ) : (
+          <Carousel
+            responsive={responsive}
+            infinite={true}
+          >
+            {products.map((product) => (
+              <div
+                className="product-wrap"
+                key={product.id}
+              >
+                <div className="product-img" style={{ height: "240px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  <Link to={`/product/${product.id}`} className="w-100 h-100 d-flex align-items-center justify-content-center">
+                    <img
+                      src={product.image || centerImg4}
+                      alt={product.title}
+                      style={{ maxHeight: "200px", maxWidth: "100%", objectFit: "contain" }}
+                    />
+                  </Link>
 
-                <div className="product-buttons d-flex justify-content-evenly">
-                  <FaCartPlus className="product-btn-icon" />
-                  <FaRegHeart className="product-btn-icon" />
+                  <div className="product-buttons d-flex justify-content-evenly">
+                    <FaCartPlus className="product-btn-icon" onClick={() => handleAddToCart(product)} title="Thêm vào giỏ hàng" />
+                    <FaRegHeart className="product-btn-icon" title="Yêu thích" />
+                  </div>
+                </div>
+
+                <div className="product-content">
+                  <Link to={`/product/${product.id}`} className="text-decoration-none">
+                    <h4 title={product.title} style={{ color: "#1a202c" }}>{product.title}</h4>
+                  </Link>
+                  <p style={{ fontSize: "12px", color: "#718096", margin: "2px 0 6px" }}>{product.author}</p>
+                  <span className="price">{product.currentPrice.toLocaleString("vi-VN")} VNĐ</span>
                 </div>
               </div>
-
-              <div className="product-content">
-                <h4>Colorless Tsukuru {item}</h4>
-                <span className="price">100.000 VNĐ</span>
-              </div>
-            </div>
-          ))}
-        </Carousel>
+            ))}
+          </Carousel>
+        )}
       </div>
       </div>
 

@@ -11,6 +11,9 @@ import Learning from "./pages/learning/Learning";
 import Novel from "./pages/novel/Novel";
 import Business from "./pages/business/Business";
 import Health from "./pages/health/Health";
+import ProductDetail from "./pages/productDetail/ProductDetail";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Profile from "./pages/profile/Profile";
 
 import "./App.css";
 import "./index.css";
@@ -30,6 +33,9 @@ function App() {
         <Route path="/novel" element={<Novel />} />
         <Route path="/business" element={<Business />} />
         <Route path="/health" element={<Health />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

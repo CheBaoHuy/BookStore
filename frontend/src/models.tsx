@@ -5,6 +5,7 @@ export interface User {
     phone: number,
     fullName: string,
     avatar: string,
+    role: string,
     updatedAt: string,
     createdAt: string,
     status: boolean
@@ -37,16 +38,20 @@ export interface Product {
 
 export interface Order {
     id: number;
-    user: User; // Assume User interface is defined elsewhere
+    user: User;
     fullName: string;
     email: string;
     phone: string;
     address: string;
     note: string;
-    payment_method: string;
-    payment_status: boolean;
-    total_amount: number;
-    shipping_cost: number;
+    paymentMethod?: string;
+    payment_method?: string;
+    paymentStatus?: boolean;
+    payment_status?: boolean;
+    totalAmount?: number;
+    total_amount?: number;
+    shippingCost?: number;
+    shipping_cost?: number;
     createdAt: string;
     orderStatus: OrderStatus;
 }
