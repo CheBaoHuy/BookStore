@@ -1,12 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import './Cart.css';
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
-import ProductCart from "../../images/ProductImages/book17.png";
-import { FaCircleCheck } from "react-icons/fa6";
-import { FaTrashCan } from "react-icons/fa6";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../redux/store";
+import { addToCart, removeFromCart, decreaseCart, clearCart, getTotals } from "../../redux/reducer/CartReducer";
+import { Product } from "../../models";
+import { FaCircleCheck, FaTrashCan } from "react-icons/fa6";
+import centerImg4 from "../../images/center-4.jpg"; // Default fallback
 
 function Cart() {
+    const dispatch = useDispatch();
+    const { cartItems, cartTotalAmount } = useSelector((state: RootState) => state.carts);
+
+    useEffect(() => {
+        dispatch(getTotals());
+    }, [cartItems, dispatch]);
+
+    const handleAddToCart = (product: Product) => {
+        dispatch(addToCart(product));
+    };
+
+    const handleDecreaseCart = (product: Product) => {
+        dispatch(decreaseCart(product));
+    };
+
+    const handleRemoveFromCart = (product: Product) => {
+        dispatch(removeFromCart(product));
+    };
+
+    const handleClearCart = () => {
+        dispatch(clearCart());
+    };
+
     return (
         <div className="cart-page">
             <Header />
@@ -27,10 +53,12 @@ function Cart() {
             <div className="cart-content">
                 {/* LEFT: ITEMS */}
                 <div>
-                    <div className="cart-notification">
-                        <FaCircleCheck className="cart-check-icon" />
-                        <span>Cập nhật giỏ hàng thành công!</span>
-                    </div>
+                    {cartItems.length > 0 && (
+                        <div className="cart-notification">
+                            <FaCircleCheck className="cart-check-icon" />
+                            <span>Cập nhật giỏ hàng thành công!</span>
+                        </div>
+                    )}
 
                     <div className="cart-table-card">
                         {/* Header */}
@@ -44,35 +72,53 @@ function Cart() {
                         </div>
 
                         {/* Items */}
-                        <div className="cart-item-row">
-                            <img className="cart-item-img" src={ProductCart} alt="The Book Of Love" />
-                            <div className="cart-item-name">The Book Of Love</div>
-                            <div className="cart-item-price">300.000 VND</div>
-                            <div>
-                                <div className="cart-qty-controls">
-                                    <button className="cart-qty-btn">−</button>
-                                    <input className="cart-qty-input" type="number" value={1} min={1} readOnly />
-                                    <button className="cart-qty-btn">+</button>
-                                </div>
+                        {cartItems.length === 0 ? (
+                            <div className="text-center py-5">
+                                <h4>Giỏ hàng của bạn đang trống!</h4>
+                                <a href="/" className="btn btn-primary mt-3">Tiếp tục mua sắm</a>
                             </div>
-                            <div className="cart-item-subtotal">300.000 VND</div>
-                            <button className="cart-delete-btn" aria-label="Xóa">
-                                <FaTrashCan />
-                            </button>
-                        </div>
+                        ) : (
+                            cartItems.map((item) => (
+                                <div className="cart-item-row" key={item.id}>
+                                    <img className="cart-item-img" src={item.image || centerImg4} alt={item.title} />
+                                    <div className="cart-item-name">
+                                        <strong>{item.title}</strong>
+                                        <div className="text-muted" style={{ fontSize: "12px" }}>{item.author}</div>
+                                    </div>
+                                    <div className="cart-item-price">{item.currentPrice.toLocaleString("vi-VN")} VND</div>
+                                    <div>
+                                        <div className="cart-qty-controls">
+                                            <button className="cart-qty-btn" onClick={() => handleDecreaseCart(item)}>−</button>
+                                            <input className="cart-qty-input" type="number" value={item.cartTotal || 1} min={1} readOnly />
+                                            <button className="cart-qty-btn" onClick={() => handleAddToCart(item)}>+</button>
+                                        </div>
+                                    </div>
+                                    <div className="cart-item-subtotal">
+                                        {((item.cartTotal || 1) * item.currentPrice).toLocaleString("vi-VN")} VND
+                                    </div>
+                                    <button className="cart-delete-btn" onClick={() => handleRemoveFromCart(item)} aria-label="Xóa">
+                                        <FaTrashCan />
+                                    </button>
+                                </div>
+                            ))
+                        )}
 
                         {/* Actions */}
-                        <div className="cart-actions-bar">
-                            <div className="coupon-form">
-                                <input
-                                    type="text"
-                                    className="coupon-input"
-                                    placeholder="Mã giảm giá..."
-                                />
-                                <button className="coupon-btn">Áp dụng</button>
+                        {cartItems.length > 0 && (
+                            <div className="cart-actions-bar">
+                                <div className="coupon-form">
+                                    <input
+                                        type="text"
+                                        className="coupon-input"
+                                        placeholder="Mã giảm giá..."
+                                    />
+                                    <button className="coupon-btn">Áp dụng</button>
+                                </div>
+                                <button className="update-cart-btn btn-danger text-white bg-danger border-0" onClick={handleClearCart}>
+                                    Xóa sạch giỏ hàng
+                                </button>
                             </div>
-                            <button className="update-cart-btn">Cập nhật giỏ hàng</button>
-                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -82,7 +128,7 @@ function Cart() {
 
                     <div className="order-summary-row">
                         <span>Tổng cộng</span>
-                        <span>300.000 VND</span>
+                        <span>{cartTotalAmount.toLocaleString("vi-VN")} VND</span>
                     </div>
                     <div className="order-summary-row">
                         <span>Phí vận chuyển</span>
@@ -90,13 +136,19 @@ function Cart() {
                     </div>
                     <div className="order-summary-row total">
                         <span>Thành tiền</span>
-                        <span className="order-total-price">300.000 VND</span>
+                        <span className="order-total-price">{cartTotalAmount.toLocaleString("vi-VN")} VND</span>
                     </div>
 
-                    <a href="/checkout" className="checkout-btn">
-                        Tiến hành thanh toán
-                    </a>
-                    <a href="/" className="continue-shopping-btn">
+                    {cartItems.length > 0 ? (
+                        <a href="/checkout" className="checkout-btn text-center text-white" style={{ textDecoration: "none" }}>
+                            Tiến hành thanh toán
+                        </a>
+                    ) : (
+                        <button className="checkout-btn text-center text-white w-100 border-0 opacity-50" disabled>
+                            Tiến hành thanh toán
+                        </button>
+                    )}
+                    <a href="/" className="continue-shopping-btn text-center" style={{ textDecoration: "none" }}>
                         Tiếp tục mua sắm
                     </a>
                 </div>

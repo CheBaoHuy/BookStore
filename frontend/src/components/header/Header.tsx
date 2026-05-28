@@ -1,4 +1,3 @@
-
 import React from "react";
 import "./Header.css";
 
@@ -9,10 +8,24 @@ import {
 } from "react-icons/fa";
 
 import { IoMdPhonePortrait } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 import logo from "../../images/logo_green.png";
 
 export const Header = () => {
+    const { cartItems } = useSelector((state: RootState) => state.carts);
+    const cartCount = cartItems.reduce((total, item) => total + (item.cartTotal || 1), 0);
+
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    };
+
     return (
         <>
             {/* TOP BAR */}
@@ -46,9 +59,29 @@ export const Header = () => {
                                 <li className="menu-item">
                                     <a href="/">Yêu thích</a>
                                 </li>
-                                <li className="menu-item">
-                                    <a href="/login">Tài khoản</a>
-                                </li>
+                                {user ? (
+                                    <>
+                                        {user.role === "ADMIN" && (
+                                            <li className="menu-item">
+                                                <a href="/admin" style={{ color: "#fef08a", fontWeight: "bold" }}>Quản trị</a>
+                                            </li>
+                                        )}
+                                        <li className="menu-item">
+                                            <a href="/profile" style={{ color: "rgba(255, 255, 255, 0.9)", fontWeight: "600", textDecoration: "none" }} title="Xem thông tin cá nhân">
+                                                Hi, {user.fullName || user.username}
+                                            </a>
+                                        </li>
+                                        <li className="menu-item">
+                                            <button onClick={handleLogout} style={{ background: "none", border: "none", color: "#feb2b2", fontWeight: "600", cursor: "pointer", padding: 0 }}>
+                                                Đăng xuất
+                                            </button>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <li className="menu-item">
+                                        <a href="/login">Tài khoản</a>
+                                    </li>
+                                )}
                                 <li className="menu-item">
                                     <a href="/checkout">Thanh toán</a>
                                 </li>
@@ -92,7 +125,7 @@ export const Header = () => {
                                 <a href="/cart" className="mini-cart-link" aria-label="Giỏ hàng">
                                     <div className="mini-cart">
                                         <FaShoppingCart />
-                                        <span className="cart-count">0</span>
+                                        <span className="cart-count">{cartCount}</span>
                                     </div>
                                 </a>
 
