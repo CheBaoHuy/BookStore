@@ -83,53 +83,131 @@ function AdminDashboard() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // =============================================
+    // MOCK DATA (fallback khi backend offline)
+    // =============================================
+    const MOCK_CATEGORIES = [
+        { id: 1, name: "Văn học" },
+        { id: 2, name: "Kinh tế - Kinh doanh" },
+        { id: 3, name: "Kỹ năng sống" },
+        { id: 4, name: "Thiếu nhi" },
+        { id: 5, name: "Khoa học - Công nghệ" },
+        { id: 6, name: "Lịch sử - Địa lý" },
+    ];
+
+    const MOCK_PRODUCTS = [
+        { id: 1, title: "Đắc Nhân Tâm", author: "Dale Carnegie", publisher: "NXB Tổng Hợp", publishYear: 2023, currentPrice: 68000, oldPrice: 85000, quantity: 124, description: "Cuốn sách kỹ năng sống bán chạy nhất mọi thời đại", category: MOCK_CATEGORIES[2], image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400", active: true },
+        { id: 2, title: "Nhà Giả Kim", author: "Paulo Coelho", publisher: "NXB Hội Nhà Văn", publishYear: 2022, currentPrice: 79000, oldPrice: 98000, quantity: 87, description: "Câu chuyện về hành trình theo đuổi ước mơ", category: MOCK_CATEGORIES[0], image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400", active: true },
+        { id: 3, title: "Tư Duy Nhanh Và Chậm", author: "Daniel Kahneman", publisher: "NXB Thế Giới", publishYear: 2023, currentPrice: 125000, oldPrice: 155000, quantity: 43, description: "Khám phá hai hệ thống tư duy của não bộ", category: MOCK_CATEGORIES[1], image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=400", active: true },
+        { id: 4, title: "Dám Nghĩ Lớn", author: "David J. Schwartz", publisher: "NXB Lao Động", publishYear: 2021, currentPrice: 55000, oldPrice: null, quantity: 200, description: "Bí quyết thành công trong công việc và cuộc sống", category: MOCK_CATEGORIES[2], image: "https://images.unsplash.com/photo-1476275466078-4cdc8bea8b44?auto=format&fit=crop&q=80&w=400", active: true },
+        { id: 5, title: "Sapiens: Lược Sử Loài Người", author: "Yuval Noah Harari", publisher: "NXB Tri Thức", publishYear: 2022, currentPrice: 189000, oldPrice: 220000, quantity: 61, description: "Hành trình của loài người từ thời tiền sử đến hiện đại", category: MOCK_CATEGORIES[5], image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&q=80&w=400", active: true },
+    ];
+
+    const MOCK_ORDERS = [
+        { id: 1001, fullName: "Nguyễn Văn An", email: "nguyenan@gmail.com", phone: "0901234567", address: "123 Lê Lợi, Q.1, TP.HCM", totalAmount: 247000, paymentMethod: "COD", createdAt: "2026-06-17T08:30:00Z", orderStatus: { id: 4, status: "Đã giao hàng" } },
+        { id: 1002, fullName: "Trần Thị Bích", email: "bichtran@gmail.com", phone: "0912345678", address: "45 Nguyễn Huệ, Q.1, TP.HCM", totalAmount: 379000, paymentMethod: "VNPay", createdAt: "2026-06-17T09:15:00Z", orderStatus: { id: 3, status: "Đang giao hàng" } },
+        { id: 1003, fullName: "Lê Hoàng Nam", email: "namle@gmail.com", phone: "0923456789", address: "67 Trần Phú, Hà Đông, Hà Nội", totalAmount: 125000, paymentMethod: "COD", createdAt: "2026-06-16T14:22:00Z", orderStatus: { id: 2, status: "Đã xác nhận" } },
+        { id: 1004, fullName: "Phạm Minh Châu", email: "chaupham@gmail.com", phone: "0934567890", address: "89 Bùi Thị Xuân, Đà Nẵng", totalAmount: 568000, paymentMethod: "MoMo", createdAt: "2026-06-16T11:05:00Z", orderStatus: { id: 4, status: "Đã giao hàng" } },
+        { id: 1005, fullName: "Võ Thị Hoa", email: "hoavo@gmail.com", phone: "0945678901", address: "12 Phan Chu Trinh, Cần Thơ", totalAmount: 193000, paymentMethod: "COD", createdAt: "2026-06-15T16:40:00Z", orderStatus: { id: 1, status: "Chờ xác nhận" } },
+        { id: 1006, fullName: "Đặng Quốc Bảo", email: "baodang@gmail.com", phone: "0956789012", address: "34 Hùng Vương, Huế", totalAmount: 447000, paymentMethod: "VNPay", createdAt: "2026-06-15T10:20:00Z", orderStatus: { id: 5, status: "Đã hủy" } },
+        { id: 1007, fullName: "Ngô Thanh Tùng", email: "tungngo@gmail.com", phone: "0967890123", address: "56 Nguyễn Trãi, Q.5, TP.HCM", totalAmount: 312000, paymentMethod: "COD", createdAt: "2026-06-14T09:00:00Z", orderStatus: { id: 4, status: "Đã giao hàng" } },
+        { id: 1008, fullName: "Bùi Lan Anh", email: "anhbui@gmail.com", phone: "0978901234", address: "78 Đinh Tiên Hoàng, Nha Trang", totalAmount: 89000, paymentMethod: "COD", createdAt: "2026-06-14T13:35:00Z", orderStatus: { id: 2, status: "Đã xác nhận" } },
+    ];
+
+    const MOCK_USERS = [
+        { id: 1, username: "admin", fullName: "Quản Trị Viên", email: "admin@bookstore.vn", phone: "0901111111", role: "ADMIN", status: true, avatar: "" },
+        { id: 2, username: "nguyenan", fullName: "Nguyễn Văn An", email: "nguyenan@gmail.com", phone: "0901234567", role: "USER", status: true, avatar: "" },
+        { id: 3, username: "bichtran", fullName: "Trần Thị Bích", email: "bichtran@gmail.com", phone: "0912345678", role: "USER", status: true, avatar: "" },
+        { id: 4, username: "namle", fullName: "Lê Hoàng Nam", email: "namle@gmail.com", phone: "0923456789", role: "USER", status: true, avatar: "" },
+        { id: 5, username: "chaupham", fullName: "Phạm Minh Châu", email: "chaupham@gmail.com", phone: "0934567890", role: "USER", status: false, avatar: "" },
+        { id: 6, username: "hoavo", fullName: "Võ Thị Hoa", email: "hoavo@gmail.com", phone: "0945678901", role: "USER", status: true, avatar: "" },
+        { id: 7, username: "baodang", fullName: "Đặng Quốc Bảo", email: "baodang@gmail.com", phone: "0956789012", role: "USER", status: true, avatar: "" },
+        { id: 8, username: "reader2024", fullName: "Ngô Thanh Tùng", email: "tungngo@gmail.com", phone: "0967890123", role: "USER", status: false, avatar: "" },
+    ];
+
+    const MOCK_VOUCHERS: Voucher[] = [
+        { code: "WELCOME20", discountType: "percentage", discountValue: 20, minOrderAmount: 150000, active: true },
+        { code: "SALE50K", discountType: "fixed", discountValue: 50000, minOrderAmount: 300000, active: true },
+        { code: "BOOK30", discountType: "percentage", discountValue: 30, minOrderAmount: 200000, active: true },
+        { code: "FREESHIP", discountType: "fixed", discountValue: 30000, minOrderAmount: 100000, active: true },
+        { code: "VIP100K", discountType: "fixed", discountValue: 100000, minOrderAmount: 500000, active: true },
+    ];
+
     const fetchInitialData = async () => {
         setLoading(true);
+        let usedMock = false;
+
+        // --- Products ---
         try {
-            // Fetch Products
             const prodRes = await axios.get("http://localhost:8080/api/products?page=0&size=100");
-            if (prodRes.data && prodRes.data.content) {
-                setProducts(prodRes.data.content);
-            }
+            if (prodRes.data && prodRes.data.content) setProducts(prodRes.data.content);
+        } catch {
+            setProducts(MOCK_PRODUCTS as any);
+            usedMock = true;
+        }
 
-            // Fetch Categories
+        // --- Categories ---
+        try {
             const catRes = await axios.get("http://localhost:8080/api/categories");
-            if (catRes.data) {
-                setCategories(catRes.data);
-            }
+            if (catRes.data) setCategories(catRes.data);
+        } catch {
+            setCategories(MOCK_CATEGORIES as any);
+        }
 
-            // Fetch Orders
+        // --- Orders ---
+        try {
             const orderRes = await axios.get("http://localhost:8080/api/orders", getAuthHeaders());
             if (orderRes.data) {
-                setOrders(orderRes.data);
+                const localUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+                // Trộn đơn hàng từ localStorage với đơn hàng từ API, ưu tiên đơn hàng trong localStorage trước
+                const merged = [...localUserOrders, ...orderRes.data]
+                    .filter((o, i, arr) => arr.findIndex(x => x.id === o.id) === i)
+                    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                setOrders(merged as any);
             }
-
-            // Fetch Users
-            const userRes = await axios.get("http://localhost:8080/api/users", getAuthHeaders());
-            if (userRes.data) {
-                setUsers(userRes.data);
-            }
-
-            // Fetch Vouchers from localStorage
-            const storedVouchers = localStorage.getItem("bookstore_vouchers");
-            if (storedVouchers) {
-                setVouchers(JSON.parse(storedVouchers));
-            } else {
-                const defaultVouchers: Voucher[] = [
-                    { code: "GIAM20", discountType: "percentage", discountValue: 20, minOrderAmount: 200000, active: true },
-                    { code: "KM50K", discountType: "fixed", discountValue: 50000, minOrderAmount: 300000, active: true }
-                ];
-                localStorage.setItem("bookstore_vouchers", JSON.stringify(defaultVouchers));
-                setVouchers(defaultVouchers);
-            }
-
-        } catch (err: any) {
-            console.error("Error loading admin data:", err);
-            setErrorMsg("Không thể tải thông tin hệ thống. Vui lòng kiểm tra lại kết nối.");
-        } finally {
-            setLoading(false);
+        } catch {
+            const localUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+            // Trộn đơn hàng từ localStorage với MOCK_ORDERS, ưu tiên đơn hàng trong localStorage trước để tránh đè trạng thái cũ
+            const merged = [...localUserOrders, ...MOCK_ORDERS]
+                .filter((o, i, arr) => arr.findIndex(x => x.id === o.id) === i)
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setOrders(merged as any);
+            usedMock = true;
         }
+
+        // --- Users ---
+        try {
+            const userRes = await axios.get("http://localhost:8080/api/users", getAuthHeaders());
+            if (userRes.data) setUsers(userRes.data);
+        } catch {
+            setUsers(MOCK_USERS as any);
+            usedMock = true;
+        }
+
+        // --- Vouchers ---
+        const storedVouchers = localStorage.getItem("bookstore_vouchers");
+        if (storedVouchers) {
+            const parsed = JSON.parse(storedVouchers);
+            // Nếu chỉ có dữ liệu default cũ (2 items), thay bằng mock đầy đủ hơn
+            if (parsed.length <= 2) {
+                localStorage.setItem("bookstore_vouchers", JSON.stringify(MOCK_VOUCHERS));
+                setVouchers(MOCK_VOUCHERS);
+            } else {
+                setVouchers(parsed);
+            }
+        } else {
+            localStorage.setItem("bookstore_vouchers", JSON.stringify(MOCK_VOUCHERS));
+            setVouchers(MOCK_VOUCHERS);
+        }
+
+        if (usedMock) {
+            setErrorMsg("⚠️ Backend chưa kết nối — đang hiển thị dữ liệu mẫu để demo giao diện.");
+            setTimeout(() => setErrorMsg(""), 5000);
+        }
+
+        setLoading(false);
     };
+
 
     // Access Denied Banner
     if (!adminUser || adminUser.role !== "ADMIN") {
@@ -265,7 +343,36 @@ function AdminDashboard() {
             }
         } catch (err: any) {
             console.error("Error updating order:", err);
-            triggerNotification("", "Không thể cập nhật trạng thái đơn hàng.");
+            
+            // Cập nhật ngoại tuyến (offline fallback)
+            const statusMap: Record<number, string> = {
+                1: "Chờ xác nhận",
+                2: "Đã xác nhận",
+                3: "Đang giao hàng",
+                4: "Đã giao hàng",
+                5: "Đã hủy"
+            };
+            const newStatus = { id: statusId, status: statusMap[statusId] || "Chờ xác nhận" };
+            
+            const updatedOrders = orders.map(o => o.id === orderId ? { ...o, orderStatus: newStatus } : o);
+            setOrders(updatedOrders);
+            
+            const localUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+            const index = localUserOrders.findIndex((o: any) => o.id === orderId);
+            if (index !== -1) {
+                localUserOrders[index].orderStatus = newStatus;
+                localStorage.setItem("user_orders", JSON.stringify(localUserOrders));
+            } else {
+                // Nếu order đang sửa là mock order và chưa có trong localStorage, ta copy nó vào localStorage
+                const targetOrder = orders.find(o => o.id === orderId);
+                if (targetOrder) {
+                    const updatedOrder = { ...targetOrder, orderStatus: newStatus };
+                    localUserOrders.push(updatedOrder);
+                    localStorage.setItem("user_orders", JSON.stringify(localUserOrders));
+                }
+            }
+            
+            triggerNotification("Cập nhật trạng thái đơn hàng thành công (offline)!");
         }
     };
 
@@ -741,104 +848,211 @@ function AdminDashboard() {
                             {/* VOUCHERS TAB */}
                             {activeTab === "vouchers" && (
                                 <div className="admin-tab-content">
-                                    <h2 className="tab-title">Quản lý Vouchers giảm giá</h2>
+                                    <div className="tab-header-row">
+                                        <div>
+                                            <h2 className="tab-title" style={{ marginBottom: 4 }}>Quản lý Vouchers giảm giá</h2>
+                                            <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
+                                                Tạo và quản lý các mã giảm giá cho khách hàng
+                                            </p>
+                                        </div>
+                                        <div className="voucher-count-badge">
+                                            <FaPercentage />
+                                            {vouchers.length} mã đang hoạt động
+                                        </div>
+                                    </div>
 
                                     <div className="voucher-manager-row">
-                                        {/* List Vouchers */}
-                                        <div className="vouchers-list-card">
-                                            <div className="table-responsive">
-                                                <table className="table admin-table align-middle">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Mã CODE</th>
-                                                            <th>Loại giảm giá</th>
-                                                            <th>Mức giảm</th>
-                                                            <th>Đơn tối thiểu</th>
-                                                            <th>Thao tác</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {vouchers.map(v => (
-                                                            <tr key={v.code}>
-                                                                <td className="fw-bold text-primary" style={{ fontSize: "16px", letterSpacing: "0.05em" }}>{v.code}</td>
-                                                                <td>
-                                                                    <span className="badge bg-secondary-subtle text-secondary-emphasis border px-2 py-1">
+
+                                        {/* ===== DANH SÁCH VOUCHERS ===== */}
+                                        <div className="vouchers-list-panel">
+                                            <div className="vouchers-list-header">
+                                                <span>Danh sách mã giảm giá</span>
+                                                <span className="vl-count">{vouchers.length} mã</span>
+                                            </div>
+
+                                            {vouchers.length === 0 ? (
+                                                <div className="vouchers-empty">
+                                                    <div className="vouchers-empty-icon">🎟️</div>
+                                                    <p>Chưa có voucher nào</p>
+                                                    <small>Tạo mã giảm giá đầu tiên bên phải →</small>
+                                                </div>
+                                            ) : (
+                                                <div className="vouchers-card-grid">
+                                                    {vouchers.map(v => (
+                                                        <div key={v.code} className={`voucher-card ${v.discountType === "percentage" ? "vc-percent" : "vc-fixed"}`}>
+                                                            <div className="vc-left">
+                                                                <div className="vc-icon-wrap">
+                                                                    {v.discountType === "percentage" ? "%" : "₫"}
+                                                                </div>
+                                                            </div>
+                                                            <div className="vc-body">
+                                                                <div className="vc-code">{v.code}</div>
+                                                                <div className="vc-meta">
+                                                                    <span className="vc-type-badge">
                                                                         {v.discountType === "percentage" ? "Giảm theo %" : "Giảm tiền mặt"}
                                                                     </span>
-                                                                </td>
-                                                                <td className="fw-bold text-success">
-                                                                    {v.discountType === "percentage" ? `${v.discountValue}%` : formatCurrency(v.discountValue)}
-                                                                </td>
-                                                                <td className="fw-semibold">{formatCurrency(v.minOrderAmount)}</td>
-                                                                <td>
-                                                                    <button
-                                                                        className="btn-action-delete"
-                                                                        title="Xóa voucher"
-                                                                        onClick={() => handleDeleteVoucher(v.code)}
-                                                                    >
-                                                                        <FaTrash />
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                                </div>
+                                                                <div className="vc-details">
+                                                                    <span className="vc-detail-item">
+                                                                        🏷️ Giảm:&nbsp;
+                                                                        <strong>
+                                                                            {v.discountType === "percentage"
+                                                                                ? `${v.discountValue}%`
+                                                                                : formatCurrency(v.discountValue)
+                                                                            }
+                                                                        </strong>
+                                                                    </span>
+                                                                    <span className="vc-detail-item">
+                                                                        🛒 Tối thiểu:&nbsp;
+                                                                        <strong>{formatCurrency(v.minOrderAmount)}</strong>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="vc-right">
+                                                                <div className="vc-value">
+                                                                    {v.discountType === "percentage"
+                                                                        ? `−${v.discountValue}%`
+                                                                        : `−${(v.discountValue / 1000).toFixed(0)}K`
+                                                                    }
+                                                                </div>
+                                                                <button
+                                                                    className="vc-delete-btn"
+                                                                    title="Xóa voucher"
+                                                                    onClick={() => handleDeleteVoucher(v.code)}
+                                                                >
+                                                                    <FaTrash />
+                                                                </button>
+                                                            </div>
+                                                            <div className="vc-notch vc-notch-left"></div>
+                                                            <div className="vc-notch vc-notch-right"></div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
 
-                                        {/* Add Voucher Form */}
-                                        <div className="add-voucher-card">
-                                            <h4>Tạo Voucher mới</h4>
-                                            <form onSubmit={handleAddVoucher} className="add-voucher-form">
-                                                <div className="mb-3">
-                                                    <label className="form-label">Mã Code (viết liền không dấu)</label>
+                                        {/* ===== FORM TẠO VOUCHER ===== */}
+                                        <div className="add-voucher-panel">
+
+                                            {/* Header */}
+                                            <div className="avp-header">
+                                                <div className="avp-header-icon">🎟️</div>
+                                                <div>
+                                                    <div className="avp-header-title">Tạo Voucher mới</div>
+                                                    <div className="avp-header-sub">Mã giảm giá sẽ áp dụng ngay</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Live Preview */}
+                                            <div className={`avp-preview ${vDiscountType === "percentage" ? "prev-percent" : "prev-fixed"}`}>
+                                                <div className="avp-preview-label">Xem trước thẻ voucher</div>
+                                                <div className="avp-preview-code">
+                                                    {vCode || "BOOKSTORE30"}
+                                                </div>
+                                                <div className="avp-preview-value">
+                                                    {vDiscountValue
+                                                        ? vDiscountType === "percentage"
+                                                            ? `GIẢM ${vDiscountValue}%`
+                                                            : `GIẢM ${vDiscountValue.toLocaleString("vi-VN")}₫`
+                                                        : "GIẢM ???"
+                                                    }
+                                                </div>
+                                                {vMinOrderAmount > 0 && (
+                                                    <div className="avp-preview-min">
+                                                        Đơn tối thiểu {vMinOrderAmount.toLocaleString("vi-VN")}₫
+                                                    </div>
+                                                )}
+                                                <div className="avp-preview-notch avp-preview-notch-l"></div>
+                                                <div className="avp-preview-notch avp-preview-notch-r"></div>
+                                            </div>
+
+                                            {/* Form */}
+                                            <form onSubmit={handleAddVoucher} className="avp-form">
+
+                                                <div className="avp-field">
+                                                    <label className="avp-label">
+                                                        Mã Code <span className="required-star">*</span>
+                                                    </label>
                                                     <input
                                                         type="text"
-                                                        className="form-control"
-                                                        placeholder="VÍ DỤ: BOOKSTORE30"
+                                                        className="avp-input"
+                                                        placeholder="VD: BOOKSTORE30, SALE50..."
                                                         value={vCode}
-                                                        onChange={(e) => setVCode(e.target.value)}
+                                                        onChange={(e) => setVCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
+                                                        required
                                                     />
+                                                    <span className="avp-hint">Viết liền, không dấu, tự động in hoa</span>
                                                 </div>
-                                                <div className="mb-3">
-                                                    <label className="form-label">Loại chiết khấu</label>
-                                                    <select
-                                                        className="form-select"
-                                                        value={vDiscountType}
-                                                        onChange={(e) => setVDiscountType(e.target.value as "percentage" | "fixed")}
-                                                    >
-                                                        <option value="percentage">Giảm theo tỷ lệ phần trăm (%)</option>
-                                                        <option value="fixed">Giảm theo số tiền mặt cố định (VNĐ)</option>
-                                                    </select>
+
+                                                <div className="avp-field">
+                                                    <label className="avp-label">Loại chiết khấu</label>
+                                                    <div className="avp-type-selector">
+                                                        <button
+                                                            type="button"
+                                                            className={`avp-type-btn ${vDiscountType === "percentage" ? "active" : ""}`}
+                                                            onClick={() => setVDiscountType("percentage")}
+                                                        >
+                                                            <span className="avp-type-icon">%</span>
+                                                            <span>Theo phần trăm</span>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className={`avp-type-btn ${vDiscountType === "fixed" ? "active" : ""}`}
+                                                            onClick={() => setVDiscountType("fixed")}
+                                                        >
+                                                            <span className="avp-type-icon">₫</span>
+                                                            <span>Tiền mặt cố định</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="mb-3">
-                                                    <label className="form-label">Giá trị chiết khấu</label>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control"
-                                                        placeholder="VÍ DỤ: 20 (nếu là %) hoặc 50000 (nếu là VNĐ)"
-                                                        value={vDiscountValue || ""}
-                                                        onChange={(e) => setVDiscountValue(Number(e.target.value))}
-                                                    />
+
+                                                <div className="avp-row-2">
+                                                    <div className="avp-field">
+                                                        <label className="avp-label">
+                                                            Giá trị giảm <span className="required-star">*</span>
+                                                        </label>
+                                                        <div className="avp-input-addon">
+                                                            <input
+                                                                type="number"
+                                                                className="avp-input"
+                                                                placeholder={vDiscountType === "percentage" ? "VD: 20" : "VD: 50000"}
+                                                                min={0}
+                                                                max={vDiscountType === "percentage" ? 100 : undefined}
+                                                                value={vDiscountValue || ""}
+                                                                onChange={(e) => setVDiscountValue(Number(e.target.value))}
+                                                                required
+                                                            />
+                                                            <span className="avp-addon">
+                                                                {vDiscountType === "percentage" ? "%" : "₫"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="avp-field">
+                                                        <label className="avp-label">Đơn tối thiểu</label>
+                                                        <div className="avp-input-addon">
+                                                            <input
+                                                                type="number"
+                                                                className="avp-input"
+                                                                placeholder="0"
+                                                                min={0}
+                                                                value={vMinOrderAmount || ""}
+                                                                onChange={(e) => setVMinOrderAmount(Number(e.target.value))}
+                                                            />
+                                                            <span className="avp-addon">₫</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="mb-4">
-                                                    <label className="form-label">Giá trị đơn hàng tối thiểu</label>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control"
-                                                        placeholder="Mức tiền đơn hàng tối thiểu để áp dụng"
-                                                        value={vMinOrderAmount || ""}
-                                                        onChange={(e) => setVMinOrderAmount(Number(e.target.value))}
-                                                    />
-                                                </div>
-                                                <button type="submit" className="btn-submit-voucher">
-                                                    Tạo mã giảm giá
+
+                                                <button type="submit" className="avp-btn-submit">
+                                                    <FaPlus /> Tạo mã giảm giá
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             )}
+
                         </>
                     )}
                 </main>
@@ -846,122 +1060,285 @@ function AdminDashboard() {
 
             {/* PRODUCT ADD/EDIT MODAL */}
             {showProductModal && (
-                <div className="admin-modal-overlay">
-                    <div className="admin-modal-container">
-                        <div className="admin-modal-header">
-                            <h3>{editingProduct ? "Cập nhật đầu sách" : "Thêm sách mới vào kho"}</h3>
-                            <button className="btn-close-modal" onClick={() => setShowProductModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSaveProduct} className="admin-modal-form">
-                            <div className="modal-form-grid">
-                                <div className="form-group full-width">
-                                    <label>Tên đầu sách <span className="text-danger">*</span></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Nhập tên sách..."
-                                        value={pTitle}
-                                        onChange={(e) => setPTitle(e.target.value)}
-                                        required
-                                    />
+                <div className="admin-modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowProductModal(false)}>
+                    <div className="admin-modal-container premium-modal">
+
+                        {/* HEADER */}
+                        <div className="premium-modal-header">
+                            <div className="premium-modal-header-left">
+                                <div className="premium-modal-icon">
+                                    <FaBook />
                                 </div>
-                                <div className="form-group">
-                                    <label>Tác giả</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Tên tác giả..."
-                                        value={pAuthor}
-                                        onChange={(e) => setPAuthor(e.target.value)}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Nhà xuất bản</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Nhà xuất bản..."
-                                        value={pPublisher}
-                                        onChange={(e) => setPPublisher(e.target.value)}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Năm xuất bản</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        value={pPublishYear}
-                                        onChange={(e) => setPPublishYear(Number(e.target.value))}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Danh mục sách <span className="text-danger">*</span></label>
-                                    <select
-                                        className="form-select"
-                                        value={pCategoryId}
-                                        onChange={(e) => setPCategoryId(e.target.value !== "" ? Number(e.target.value) : "")}
-                                        required
-                                    >
-                                        <option value="">Chọn danh mục...</option>
-                                        {categories.map(c => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Giá bán hiện tại (VNĐ) <span className="text-danger">*</span></label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Giá bán thực tế..."
-                                        value={pCurrentPrice || ""}
-                                        onChange={(e) => setPCurrentPrice(Number(e.target.value))}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Giá bìa cũ (VNĐ)</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Để trống nếu không có..."
-                                        value={pOldPrice}
-                                        onChange={(e) => setPOldPrice(e.target.value !== "" ? Number(e.target.value) : "")}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Số lượng trong kho</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        value={pQuantity}
-                                        onChange={(e) => setPQuantity(Number(e.target.value))}
-                                    />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Đường dẫn hình ảnh bìa sách (Image URL)</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="https://..."
-                                        value={pImage}
-                                        onChange={(e) => setPImage(e.target.value)}
-                                    />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Tóm tắt nội dung / Mô tả chi tiết</label>
-                                    <textarea
-                                        className="form-control"
-                                        rows={4}
-                                        placeholder="Nhập giới thiệu hoặc mô tả chi tiết của sách..."
-                                        value={pDescription}
-                                        onChange={(e) => setPDescription(e.target.value)}
-                                    />
+                                <div>
+                                    <h3 className="premium-modal-title">
+                                        {editingProduct ? "Cập nhật đầu sách" : "Thêm sách mới vào kho"}
+                                    </h3>
+                                    <p className="premium-modal-subtitle">
+                                        {editingProduct ? "Chỉnh sửa thông tin sách đã có trong hệ thống" : "Điền đầy đủ thông tin để thêm sách vào kho"}
+                                    </p>
                                 </div>
                             </div>
-                            <div className="admin-modal-footer">
-                                <button type="button" className="btn-cancel" onClick={() => setShowProductModal(false)}>Hủy</button>
-                                <button type="submit" className="btn-save">Lưu thay đổi</button>
+                            <button className="premium-btn-close" onClick={() => setShowProductModal(false)}>×</button>
+                        </div>
+
+                        <form onSubmit={handleSaveProduct}>
+                            <div className="premium-modal-body">
+
+                                {/* COT TRAI */}
+                                <div className="premium-form-left">
+
+                                    {/* Section: Thông tin sách */}
+                                    <div className="pf-section">
+                                        <div className="pf-section-title">
+                                            <span className="pf-section-dot dot-blue"></span>
+                                            Thông tin sách
+                                        </div>
+
+                                        <div className="pf-field">
+                                            <label className="pf-label">
+                                                Tên đầu sách <span className="required-star">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="pf-input"
+                                                placeholder="VD: Dám Nghĩ Lớn, Đắc Nhân Tâm..."
+                                                value={pTitle}
+                                                onChange={(e) => setPTitle(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="pf-row-2">
+                                            <div className="pf-field">
+                                                <label className="pf-label">Tác giả</label>
+                                                <input
+                                                    type="text"
+                                                    className="pf-input"
+                                                    placeholder="Tên tác giả..."
+                                                    value={pAuthor}
+                                                    onChange={(e) => setPAuthor(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="pf-field">
+                                                <label className="pf-label">Nhà xuất bản</label>
+                                                <input
+                                                    type="text"
+                                                    className="pf-input"
+                                                    placeholder="NXB Trẻ, NXB Kim Đồng..."
+                                                    value={pPublisher}
+                                                    onChange={(e) => setPPublisher(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="pf-row-2">
+                                            <div className="pf-field">
+                                                <label className="pf-label">Năm xuất bản</label>
+                                                <input
+                                                    type="number"
+                                                    className="pf-input"
+                                                    min={1900}
+                                                    max={new Date().getFullYear() + 1}
+                                                    value={pPublishYear}
+                                                    onChange={(e) => setPPublishYear(Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className="pf-field">
+                                                <label className="pf-label">
+                                                    Danh mục <span className="required-star">*</span>
+                                                </label>
+                                                <select
+                                                    className="pf-input pf-select"
+                                                    value={pCategoryId}
+                                                    onChange={(e) => setPCategoryId(e.target.value !== "" ? Number(e.target.value) : "")}
+                                                    required
+                                                >
+                                                    <option value="">— Chọn danh mục —</option>
+                                                    {categories.map(c => (
+                                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Section: Giá */}
+                                    <div className="pf-section">
+                                        <div className="pf-section-title">
+                                            <span className="pf-section-dot dot-green"></span>
+                                            Thông tin giá & Kho
+                                        </div>
+
+                                        <div className="pf-row-3">
+                                            <div className="pf-field">
+                                                <label className="pf-label">
+                                                    Giá bán (VNĐ) <span className="required-star">*</span>
+                                                </label>
+                                                <div className="pf-input-addon">
+                                                    <input
+                                                        type="number"
+                                                        className="pf-input"
+                                                        placeholder="0"
+                                                        min={0}
+                                                        value={pCurrentPrice || ""}
+                                                        onChange={(e) => setPCurrentPrice(Number(e.target.value))}
+                                                        required
+                                                    />
+                                                    <span className="pf-addon">₫</span>
+                                                </div>
+                                            </div>
+                                            <div className="pf-field">
+                                                <label className="pf-label">Giá bìa gốc (VNĐ)</label>
+                                                <div className="pf-input-addon">
+                                                    <input
+                                                        type="number"
+                                                        className="pf-input"
+                                                        placeholder="Để trống"
+                                                        min={0}
+                                                        value={pOldPrice}
+                                                        onChange={(e) => setPOldPrice(e.target.value !== "" ? Number(e.target.value) : "")}
+                                                    />
+                                                    <span className="pf-addon">₫</span>
+                                                </div>
+                                            </div>
+                                            <div className="pf-field">
+                                                <label className="pf-label">Số lượng kho</label>
+                                                <div className="pf-input-addon">
+                                                    <input
+                                                        type="number"
+                                                        className="pf-input"
+                                                        min={0}
+                                                        value={pQuantity}
+                                                        onChange={(e) => setPQuantity(Number(e.target.value))}
+                                                    />
+                                                    <span className="pf-addon">cuốn</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Discount badge preview */}
+                                        {pOldPrice !== "" && Number(pOldPrice) > 0 && pCurrentPrice > 0 && (
+                                            <div className="pf-discount-preview">
+                                                <span className="pf-discount-badge">
+                                                    -{Math.round((1 - pCurrentPrice / Number(pOldPrice)) * 100)}% GIẢM GIÁ
+                                                </span>
+                                                <span className="pf-discount-label">
+                                                    Khách hàng tiết kiệm: {(Number(pOldPrice) - pCurrentPrice).toLocaleString("vi-VN")}₫
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Section: Mô tả */}
+                                    <div className="pf-section">
+                                        <div className="pf-section-title">
+                                            <span className="pf-section-dot dot-amber"></span>
+                                            Mô tả & Giới thiệu
+                                        </div>
+                                        <div className="pf-field">
+                                            <label className="pf-label">Tóm tắt nội dung</label>
+                                            <textarea
+                                                className="pf-input pf-textarea"
+                                                rows={5}
+                                                placeholder="Nhập giới thiệu ngắn hoặc nội dung tóm tắt của cuốn sách..."
+                                                value={pDescription}
+                                                onChange={(e) => setPDescription(e.target.value)}
+                                            />
+                                            <span className="pf-hint">Mô tả hấp dẫn giúp tăng tỷ lệ chuyển đổi</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* COT PHAI */}
+                                <div className="premium-form-right">
+
+                                    {/* Section: Ảnh bìa */}
+                                    <div className="pf-section pf-image-section">
+                                        <div className="pf-section-title">
+                                            <span className="pf-section-dot dot-violet"></span>
+                                            Ảnh bìa sách
+                                        </div>
+
+                                        {/* Book Cover Preview */}
+                                        <div className="book-cover-preview">
+                                            {pImage ? (
+                                                <div className="book-cover-img-wrap">
+                                                    <img src={pImage} alt="Bìa sách" className="book-cover-img" />
+                                                    <div className="book-cover-overlay">
+                                                        <button
+                                                            type="button"
+                                                            className="book-cover-remove"
+                                                            onClick={() => setPImage("")}
+                                                        >
+                                                            × Xóa ảnh
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="book-cover-placeholder">
+                                                    <div className="book-cover-spine"></div>
+                                                    <div className="book-cover-empty">
+                                                        <div className="book-icon-large">📚</div>
+                                                        <span>Chưa có ảnh bìa</span>
+                                                        <small>Nhập URL bên dưới</small>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="pf-field">
+                                            <label className="pf-label">URL hình ảnh bìa sách</label>
+                                            <input
+                                                type="text"
+                                                className="pf-input"
+                                                placeholder="https://example.com/book-cover.jpg"
+                                                value={pImage}
+                                                onChange={(e) => setPImage(e.target.value)}
+                                            />
+                                            <span className="pf-hint">Dán link ảnh từ internet (PNG, JPG, WEBP)</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Summary card */}
+                                    <div className="pf-summary-card">
+                                        <div className="pf-summary-title">📋 Xem trước thông tin</div>
+                                        <div className="pf-summary-row">
+                                            <span>Tên sách</span>
+                                            <strong>{pTitle || "—"}</strong>
+                                        </div>
+                                        <div className="pf-summary-row">
+                                            <span>Tác giả</span>
+                                            <strong>{pAuthor || "—"}</strong>
+                                        </div>
+                                        <div className="pf-summary-row">
+                                            <span>Giá bán</span>
+                                            <strong className="pf-price-highlight">
+                                                {pCurrentPrice ? pCurrentPrice.toLocaleString("vi-VN") + "₫" : "—"}
+                                            </strong>
+                                        </div>
+                                        <div className="pf-summary-row">
+                                            <span>Tồn kho</span>
+                                            <strong>{pQuantity} cuốn</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* FOOTER */}
+                            <div className="premium-modal-footer">
+                                <div className="premium-footer-left">
+                                    <span className="required-note">
+                                        <span className="required-star">*</span> Trường bắt buộc
+                                    </span>
+                                </div>
+                                <div className="premium-footer-right">
+                                    <button type="button" className="pf-btn-cancel" onClick={() => setShowProductModal(false)}>
+                                        Hủy bỏ
+                                    </button>
+                                    <button type="submit" className="pf-btn-save">
+                                        {editingProduct ? "💾 Cập nhật sách" : "✚ Thêm vào kho"}
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
