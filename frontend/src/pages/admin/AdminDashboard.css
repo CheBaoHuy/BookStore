@@ -1736,3 +1736,273 @@
     }
     .avp-row-2 { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   STATISTICS OVERVIEW AND INTERACTIVE CHARTS
+   ============================================================ */
+
+/* Filter Toolbar */
+.stats-filters-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 8px 16px 8px 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-select:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.filter-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+/* Charts Grid Layout */
+.dashboard-charts-row {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.chart-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-panel:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035);
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SVG Line Chart Tooltip & Interactive Dots */
+.chart-dot-group {
+    cursor: pointer;
+}
+
+.chart-dot-group circle {
+    transition: r 0.2s ease, stroke-width 0.2s ease, fill 0.2s ease;
+}
+
+.chart-dot-group:hover circle {
+    r: 7;
+    stroke-width: 3;
+    fill: #2563eb;
+}
+
+.chart-tooltip {
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+    pointer-events: none;
+}
+
+.chart-dot-group:hover .chart-tooltip {
+    opacity: 1;
+}
+
+/* Category Share Progress Bars styling */
+.category-share-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.category-share-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.cs-info {
+    font-size: 13.5px;
+}
+
+.cs-name {
+    font-weight: 600;
+    color: #475569;
+}
+
+.cs-val {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.cs-bar-wrap {
+    width: 100%;
+    height: 8px;
+    background-color: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.cs-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Split Tables Row */
+.dashboard-tables-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.table-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-panel:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035);
+}
+
+.panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+/* Rank Badges */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: #e2e8f0;
+    color: #64748b;
+}
+
+.rank-1 {
+    background: linear-gradient(135deg, #fef08a, #eab308);
+    color: #854d0e;
+    box-shadow: 0 2px 6px rgba(234, 179, 8, 0.2);
+}
+
+.rank-2 {
+    background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
+    color: #334155;
+    box-shadow: 0 2px 6px rgba(203, 213, 225, 0.2);
+}
+
+.rank-3 {
+    background: linear-gradient(135deg, #ffedd5, #ea580c);
+    color: #7c2d12;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.2);
+}
+
+/* Extra responsiveness for new dashboard overview components */
+@media (max-width: 992px) {
+    .dashboard-charts-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .dashboard-tables-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* ============================================================
+   ADMIN DASHBOARD PAGINATION CONTROLS
+   ============================================================ */
+
+.admin-pagination {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #64748b;
+    padding: 8px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+
+.pagination-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pagination-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.pagination-btn:disabled {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.pagination-dots {
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 14px;
+}
+

@@ -54,6 +54,7 @@ export interface Order {
     shipping_cost?: number;
     createdAt: string;
     orderStatus: OrderStatus;
+    orderDetails?: any[];
 }
 export interface Rate {
     id: number;
