@@ -125,8 +125,8 @@
 
 .detail-category-badge {
     align-self: flex-start;
-    background-color: #eff6ff;
-    color: #1d4ed8;
+    background-color: var(--primary-bg);
+    color: var(--primary);
     font-size: 12px;
     font-weight: 700;
     padding: 6px 16px;
@@ -134,7 +134,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 16px;
-    border: 1px solid #dbeafe;
+    border: 1px solid var(--border);
 }
 
 .detail-title {
@@ -329,7 +329,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: #ffffff;
     border: none;
     padding: 12px 28px;
@@ -339,13 +339,13 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 .detail-add-btn:hover {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .detail-add-btn svg {
@@ -407,8 +407,8 @@
 }
 
 .detail-tab-btn.active {
-    color: #1d4ed8;
-    border-bottom-color: #1d4ed8;
+    color: var(--primary);
+    border-bottom-color: var(--primary);
     background: #ffffff;
 }
 

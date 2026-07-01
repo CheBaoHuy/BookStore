@@ -28,7 +28,7 @@
 }
 
 .profile-back-link a:hover {
-    color: #17479D;
+    color: var(--primary);
 }
 
 /* Dashboard Grid Layout */
@@ -143,7 +143,7 @@
 }
 
 .dashboard-menu .menu-item.active {
-    background: #17479D;
+    background: var(--primary);
     color: #ffffff;
 }
 
@@ -244,7 +244,7 @@
 }
 
 .profile-form-group .form-control:focus {
-    border-color: #17479D;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.15);
     outline: none;
 }
@@ -275,7 +275,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: #ffffff;
     border: none;
     padding: 12px 28px;
@@ -314,7 +314,7 @@
 }
 
 .ot-search:focus-within {
-    border-color: #17479D;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.1);
 }
 
@@ -356,13 +356,13 @@
 }
 
 .ot-tab:hover {
-    border-color: #17479D;
-    color: #17479D;
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 .ot-tab.active {
-    background: #17479D;
-    border-color: #17479D;
+    background: var(--primary);
+    border-color: var(--primary);
     color: #ffffff;
 }
 
@@ -400,7 +400,7 @@
 }
 
 .ot-card.expanded {
-    border-color: #17479D;
+    border-color: var(--primary);
     box-shadow: 0 6px 20px rgba(23, 71, 157, 0.1);
 }
 
@@ -463,7 +463,7 @@
 .ot-order-amount {
     font-size: 16px;
     font-weight: 800;
-    color: #17479D;
+    color: var(--primary);
 }
 
 /* Expanded Card Content */
@@ -512,8 +512,8 @@
 }
 
 .ot-step.current .ot-step-dot {
-    background: #17479D;
-    border-color: #17479D;
+    background: var(--primary);
+    border-color: var(--primary);
     color: #ffffff;
     box-shadow: 0 0 0 4px rgba(23, 71, 157, 0.15);
 }
@@ -598,7 +598,7 @@
 }
 
 .ot-price {
-    color: #17479D;
+    color: var(--primary);
     font-size: 14.5px;
 }
 
@@ -627,7 +627,7 @@
 }
 
 .btn-ot-reorder {
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: #ffffff;
     border: none;
     padding: 8px 16px;
@@ -675,7 +675,7 @@
     width: 32px;
     height: 32px;
     border: 3.5px solid #e2e8f0;
-    border-top-color: #17479D;
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: otSpin 0.8s linear infinite;
 }
@@ -713,7 +713,7 @@
 
 .btn-ot-shop {
     display: inline-block;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: #ffffff;
     text-decoration: none !important;
     padding: 10px 24px;
@@ -757,7 +757,7 @@
 .btn-login-redirect {
     display: inline-flex;
     align-items: center;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     text-decoration: none !important;
     padding: 10px 28px;

@@ -9,7 +9,7 @@
 
 /* HERO */
 .checkout-hero {
-    background: linear-gradient(135deg, #17479D 0%, #1e5fc4 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     padding: 40px 0;
     text-align: center;
@@ -47,18 +47,18 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #f0f7ff;
-    border: 1px solid #bfdbfe;
-    border-left: 4px solid #17479D;
+    background: var(--primary-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
     border-radius: 10px;
     padding: 14px 20px;
     font-size: 14px;
-    color: #1e40af;
+    color: var(--primary-dark);
     font-weight: 500;
     margin-bottom: 12px;
 }
 
-.checkout-coupon-toggle .coupon-icon { font-size: 18px; color: #17479D; }
+.checkout-coupon-toggle .coupon-icon { font-size: 18px; color: var(--primary); }
 
 .coupon-inline-form {
     display: flex;
@@ -80,12 +80,12 @@
     transition: border-color 0.2s;
 }
 
-.coupon-inline-input:focus { border-color: #17479D; }
+.coupon-inline-input:focus { border-color: var(--primary); }
 
 .coupon-apply-btn {
     height: 44px;
     padding: 0 24px;
-    background: #17479D;
+    background: var(--primary);
     color: white;
     border: none;
     border-radius: 8px;
@@ -95,7 +95,7 @@
     transition: background 0.2s;
 }
 
-.coupon-apply-btn:hover { background: #1035a0; }
+.coupon-apply-btn:hover { background: var(--primary-dark); }
 
 /* MAIN GRID */
 .checkout-main {
@@ -156,6 +156,7 @@
 .form-field .required { color: #e53e3e; margin-left: 3px; }
 
 .form-field input,
+.form-field select,
 .form-field textarea {
     width: 100%;
     height: 44px;
@@ -177,10 +178,11 @@
 }
 
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus {
-    border-color: #17479D;
+    border-color: var(--primary);
     background: white;
-    box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 /* PAYMENT */
@@ -202,14 +204,14 @@
 }
 
 .payment-method:hover {
-    border-color: #17479D;
-    background: #f0f7ff;
+    border-color: var(--primary);
+    background: var(--primary-bg);
 }
 
 .payment-method input[type="radio"] {
     width: 18px;
     height: 18px;
-    accent-color: #17479D;
+    accent-color: var(--primary);
     cursor: pointer;
     flex-shrink: 0;
 }
@@ -283,7 +285,7 @@
 }
 
 .order-total-amount {
-    color: #17479D;
+    color: var(--primary);
     font-size: 22px;
 }
 
@@ -293,7 +295,7 @@
     justify-content: center;
     width: 100%;
     height: 54px;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border: none;
     border-radius: 12px;
@@ -301,14 +303,14 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(23, 71, 157, 0.35);
+    box-shadow: 0 4px 15px var(--primary-glow);
     margin-top: 24px;
     letter-spacing: 0.5px;
 }
 
 .place-order-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(23, 71, 157, 0.45);
+    box-shadow: 0 8px 30px var(--primary-glow);
 }
 
 .place-order-btn:disabled {
@@ -397,13 +399,13 @@
     transition: all 0.2s;
 }
 .payment-method.selected {
-    border-color: #17479D;
-    background: #eff6ff;
+    border-color: var(--primary);
+    background: var(--primary-bg);
 }
-.payment-method:hover { border-color: #17479D; background: #f0f7ff; }
+.payment-method:hover { border-color: var(--primary); background: var(--primary-bg); }
 .payment-method input[type="radio"] {
     width: 18px; height: 18px;
-    accent-color: #17479D;
+    accent-color: var(--primary);
     cursor: pointer; flex-shrink: 0;
 }
 .pm-icon {
@@ -641,7 +643,7 @@
 }
 
 .qr-detail-row strong.text-blue {
-    color: #17479D;
+    color: var(--primary);
     font-size: 18px;
     font-weight: 700;
 }
@@ -672,8 +674,8 @@
 }
 
 .btn-copy:hover {
-    background: #17479D;
-    border-color: #17479D;
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
 }
 
@@ -726,8 +728,8 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: #17479D;
-    box-shadow: 0 0 12px #17479D;
+    background: var(--primary);
+    box-shadow: 0 0 12px var(--primary-light);
     animation: qrLaserScan 3s linear infinite;
     opacity: 0.8;
 }
@@ -806,7 +808,7 @@
     width: 60px;
     height: 60px;
     border: 5px solid #f1f5f9;
-    border-top: 5px solid #17479D;
+    border-top: 5px solid var(--primary);
     border-radius: 50%;
     animation: qrSpinnerSpin 1s linear infinite;
     margin-bottom: 24px;
@@ -877,7 +879,7 @@
 }
 
 .btn-qr-retry {
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border: none;
     border-radius: 10px;
@@ -886,11 +888,11 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(23, 71, 157, 0.3);
+    box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 .btn-qr-retry:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(23, 71, 157, 0.4);
+    box-shadow: 0 6px 16px var(--primary-glow);
 }
 

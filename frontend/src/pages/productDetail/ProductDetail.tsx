@@ -8,6 +8,7 @@ import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import { FaCartPlus, FaHeart, FaStar, FaChevronRight, FaPlus, FaMinus } from "react-icons/fa";
 import centerImg4 from "../../images/center-4.jpg"; // Default fallback
+import { getBookCover } from "../../common/imageHelper";
 import "./ProductDetail.css";
 
 function ProductDetail() {
@@ -122,7 +123,7 @@ function ProductDetail() {
                     <div className="product-detail-left">
                         <div className="detail-image-box">
                             <img
-                                src={product.image || centerImg4}
+                                src={getBookCover(product.image, product.id)}
                                 alt={product.title}
                             />
                         </div>

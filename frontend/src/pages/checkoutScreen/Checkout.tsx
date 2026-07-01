@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTag, FaTimesCircle, FaTruck, FaLock, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
+import { fetchData } from "../../services/AddressAPI";
 
 interface Voucher {
     code: string;
@@ -33,11 +34,17 @@ function Checkout() {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
-    const [city, setCity] = useState("");
-    const [zipCode, setZipCode] = useState("");
+    const [address, setAddress] = useState(""); // street address
     const [note, setNote] = useState("");
     const [paymentMethod, setPaymentMethod] = useState<"COD" | "VNPay" | "MoMo">("COD");
+
+    // Address selector states
+    const [provinces, setProvinces] = useState<any[]>([]);
+    const [districts, setDistricts] = useState<any[]>([]);
+    const [wards, setWards] = useState<any[]>([]);
+    const [provinceId, setProvinceId] = useState("");
+    const [districtId, setDistrictId] = useState("");
+    const [wardId, setWardId] = useState("");
 
     // Voucher state
     const [voucherCode, setVoucherCode] = useState("");
@@ -56,6 +63,47 @@ function Checkout() {
     const [pendingOrderId, setPendingOrderId] = useState<number | null>(null);
     const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
     const [paymentVerified, setPaymentVerified] = useState(false);
+
+    // Fetch provinces when component mounts
+    useEffect(() => {
+        const loadProvinces = async () => {
+            try {
+                const data = await fetchData("province");
+                if (data) setProvinces(data);
+            } catch (error) {
+                console.error("Lỗi tải tỉnh/thành:", error);
+            }
+        };
+        loadProvinces();
+    }, []);
+
+    const handleProvinceChange = async (provId: string) => {
+        setProvinceId(provId);
+        setDistrictId("");
+        setWardId("");
+        setDistricts([]);
+        setWards([]);
+        if (!provId) return;
+        try {
+            const data = await fetchData("district", { province_id: provId });
+            if (data) setDistricts(data);
+        } catch (error) {
+            console.error("Lỗi tải quận/huyện:", error);
+        }
+    };
+
+    const handleDistrictChange = async (distId: string) => {
+        setDistrictId(distId);
+        setWardId("");
+        setWards([]);
+        if (!distId) return;
+        try {
+            const data = await fetchData("ward", { district_id: distId });
+            if (data) setWards(data);
+        } catch (error) {
+            console.error("Lỗi tải xã/phường:", error);
+        }
+    };
 
     // Countdown timer for QR payment modal
     useEffect(() => {
@@ -159,18 +207,35 @@ function Checkout() {
             setErrorMsg("Vui lòng nhập số điện thoại!");
             return;
         }
+        if (!provinceId) {
+            setErrorMsg("Vui lòng chọn Tỉnh/Thành phố!");
+            return;
+        }
+        if (!districtId) {
+            setErrorMsg("Vui lòng chọn Quận/Huyện!");
+            return;
+        }
+        if (!wardId) {
+            setErrorMsg("Vui lòng chọn Xã/Phường!");
+            return;
+        }
         if (!address.trim()) {
-            setErrorMsg("Vui lòng nhập địa chỉ giao hàng!");
+            setErrorMsg("Vui lòng nhập Địa chỉ chi tiết (số nhà, tên đường...)!");
             return;
         }
 
         setLoading(true);
 
+        const selectedProv = provinces.find(p => String(p.ProvinceID) === String(provinceId));
+        const selectedDist = districts.find(d => String(d.DistrictID) === String(districtId));
+        const selectedW = wards.find(w => String(w.WardCode) === String(wardId));
+        const fullAddress = `${address.trim()}, ${selectedW?.WardName || ""}, ${selectedDist?.DistrictName || ""}, ${selectedProv?.ProvinceName || ""}`;
+
         const orderPayload = {
             fullName: `${firstName} ${lastName}`.trim(),
             email,
             phone,
-            address: address + (city ? `, ${city}` : "") + (zipCode ? ` ${zipCode}` : ""),
+            address: fullAddress,
             note,
             paymentMethod,
             paymentStatus: paymentMethod !== "COD",
@@ -407,34 +472,67 @@ function Checkout() {
                                 </div>
                             </div>
 
-                            <div className="form-field">
-                                <label>Địa chỉ nhận hàng <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    placeholder="Số nhà, tên đường, phường/xã..."
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-field">
+                                    <label>Tỉnh/Thành phố <span className="required">*</span></label>
+                                    <select
+                                        value={provinceId}
+                                        onChange={(e) => handleProvinceChange(e.target.value)}
+                                        required
+                                    >
+                                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                        {provinces.map(p => (
+                                            <option key={p.ProvinceID} value={p.ProvinceID}>
+                                                {p.ProvinceName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-field">
+                                    <label>Quận/Huyện <span className="required">*</span></label>
+                                    <select
+                                        value={districtId}
+                                        onChange={(e) => handleDistrictChange(e.target.value)}
+                                        disabled={!provinceId}
+                                        required
+                                    >
+                                        <option value="">-- Chọn Quận/Huyện --</option>
+                                        {districts.map(d => (
+                                            <option key={d.DistrictID} value={d.DistrictID}>
+                                                {d.DistrictName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="form-row">
                                 <div className="form-field">
-                                    <label>Tỉnh/Thành phố</label>
-                                    <input
-                                        type="text"
-                                        placeholder="VD: TP. Hồ Chí Minh..."
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                    />
+                                    <label>Xã/Phường <span className="required">*</span></label>
+                                    <select
+                                        value={wardId}
+                                        onChange={(e) => setWardId(e.target.value)}
+                                        disabled={!districtId}
+                                        required
+                                    >
+                                        <option value="">-- Chọn Xã/Phường --</option>
+                                        {wards.map(w => (
+                                            <option key={w.WardCode} value={w.WardCode}>
+                                                {w.WardName}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
+
                                 <div className="form-field">
-                                    <label>Mã bưu điện</label>
+                                    <label>Địa chỉ chi tiết <span className="required">*</span></label>
                                     <input
                                         type="text"
-                                        placeholder="VD: 700000"
-                                        value={zipCode}
-                                        onChange={(e) => setZipCode(e.target.value)}
+                                        placeholder="Số nhà, tên đường..."
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        required
                                     />
                                 </div>
                             </div>
@@ -629,21 +727,21 @@ function Checkout() {
                                                     <>
                                                         <div className="qr-detail-row">
                                                             <span>Ngân hàng thụ hưởng:</span>
-                                                            <strong>MB Bank (Ngân hàng Quân Đội)</strong>
+                                                            <strong>BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)</strong>
                                                         </div>
                                                         <div className="qr-detail-row">
                                                             <span>Số tài khoản:</span>
                                                             <div className="copy-wrapper">
-                                                                <strong>8888 6666 9999</strong>
+                                                                <strong>3144063905</strong>
                                                                 <button type="button" className="btn-copy" onClick={() => {
-                                                                    navigator.clipboard.writeText("888866669999");
+                                                                    navigator.clipboard.writeText("3144063905");
                                                                     alert("Đã sao chép số tài khoản!");
                                                                 }}>Sao chép</button>
                                                             </div>
                                                         </div>
                                                         <div className="qr-detail-row">
                                                             <span>Chủ tài khoản:</span>
-                                                            <strong>CONG TY BOOKSTORE VIET NAM</strong>
+                                                            <strong>Nguyễn Hồ Minh Cảnh</strong>
                                                         </div>
                                                     </>
                                                 ) : (
@@ -655,16 +753,16 @@ function Checkout() {
                                                         <div className="qr-detail-row">
                                                             <span>Số điện thoại:</span>
                                                             <div className="copy-wrapper">
-                                                                <strong>0901234567</strong>
+                                                                <strong>0357951378</strong>
                                                                 <button type="button" className="btn-copy" onClick={() => {
-                                                                    navigator.clipboard.writeText("0901234567");
+                                                                    navigator.clipboard.writeText("0357951378");
                                                                     alert("Đã sao chép số điện thoại!");
                                                                 }}>Sao chép</button>
                                                             </div>
                                                         </div>
                                                         <div className="qr-detail-row">
                                                             <span>Chủ tài khoản:</span>
-                                                            <strong>BOOKSTORE VIET NAM</strong>
+                                                            <strong>Nguyễn Hồ Minh Cảnh</strong>
                                                         </div>
                                                     </>
                                                 )}
@@ -702,13 +800,13 @@ function Checkout() {
                                             <div className="qr-code-wrapper">
                                                 {paymentMethod === "VNPay" ? (
                                                     <img 
-                                                        src={`https://img.vietqr.io/image/MB-888866669999-compact.png?amount=${finalTotal}&addInfo=BOOKSTORE%20${pendingOrderId}&accountName=CONG%20TY%20BOOKSTORE%20VIET%20NAM`} 
+                                                        src={`https://img.vietqr.io/image/BIDV-3144063905-compact.png?amount=${finalTotal}&addInfo=BOOKSTORE%20${pendingOrderId}&accountName=NGUYEN%20HO%20MINH%20CANH`} 
                                                         alt="VietQR code" 
                                                         className="qr-code-img"
                                                     />
                                                 ) : (
                                                     <img 
-                                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=MOMO_PAYMENT_BOOKSTORE_${pendingOrderId}_AMOUNT_${finalTotal}`} 
+                                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://nhantien.momo.vn/0357951378`} 
                                                         alt="MoMo QR code" 
                                                         className="qr-code-img"
                                                     />

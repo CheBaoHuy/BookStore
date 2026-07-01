@@ -137,14 +137,14 @@
 }
 
 .login-field input:focus {
-    border-color: #17479D;
+    border-color: var(--primary);
     background: white;
-    box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .login-field input:focus ~ .login-field-icon,
 .login-field-inner:focus-within .login-field-icon {
-    color: #17479D;
+    color: var(--primary);
 }
 
 /* EXTRAS */
@@ -168,12 +168,12 @@
 .login-remember input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #17479D;
+    accent-color: var(--primary);
     cursor: pointer;
 }
 
 .login-forgot {
-    color: #17479D;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 500;
     font-size: 13px;
@@ -182,7 +182,7 @@
 }
 
 .login-forgot:hover {
-    color: #1035a0;
+    color: var(--primary-dark);
     text-decoration: underline;
 }
 
@@ -190,7 +190,7 @@
 .login-submit-btn {
     width: 100%;
     height: 50px;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border: none;
     border-radius: 10px;
@@ -199,7 +199,7 @@
     letter-spacing: 0.4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(23, 71, 157, 0.3);
+    box-shadow: 0 4px 15px var(--primary-glow);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -208,7 +208,7 @@
 
 .login-submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(23, 71, 157, 0.4);
+    box-shadow: 0 8px 25px var(--primary-glow);
 }
 
 .login-submit-btn:active {
@@ -246,7 +246,7 @@
 }
 
 .login-register-link a {
-    color: #17479D;
+    color: var(--primary);
     font-weight: 600;
     text-decoration: none;
 }

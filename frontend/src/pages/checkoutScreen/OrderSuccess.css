@@ -101,7 +101,7 @@
 .success-info-row span { color: #64748b; }
 .success-info-row strong { color: #0f172a; }
 
-.success-total { color: #17479D; font-size: 18px; }
+.success-total { color: var(--primary); font-size: 18px; }
 
 .success-status-badge {
     background: #fef3c7;
@@ -177,7 +177,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: #fff;
     text-decoration: none;
     padding: 14px;
@@ -185,12 +185,12 @@
     font-size: 15px;
     font-weight: 700;
     transition: all 0.2s;
-    box-shadow: 0 4px 15px rgba(23,71,157,0.3);
+    box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .btn-track-order:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(23,71,157,0.4);
+    box-shadow: 0 8px 25px var(--primary-glow);
     color: #fff;
     text-decoration: none;
 }
@@ -208,9 +208,9 @@
 }
 
 .btn-continue-shop:hover {
-    border-color: #17479D;
-    color: #17479D;
-    background: #f0f7ff;
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-bg);
     text-decoration: none;
 }
 
