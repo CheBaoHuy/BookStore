@@ -8,6 +8,7 @@ import { addToCart, removeFromCart, decreaseCart, clearCart, getTotals } from ".
 import { Product } from "../../models";
 import { FaCircleCheck, FaTrashCan } from "react-icons/fa6";
 import centerImg4 from "../../images/center-4.jpg"; // Default fallback
+import { getBookCover } from "../../common/imageHelper";
 
 function Cart() {
     const dispatch = useDispatch();
@@ -80,7 +81,7 @@ function Cart() {
                         ) : (
                             cartItems.map((item) => (
                                 <div className="cart-item-row" key={item.id}>
-                                    <img className="cart-item-img" src={item.image || centerImg4} alt={item.title} />
+                                    <img className="cart-item-img" src={getBookCover(item.image, item.id)} alt={item.title} />
                                     <div className="cart-item-name">
                                         <strong>{item.title}</strong>
                                         <div className="text-muted" style={{ fontSize: "12px" }}>{item.author}</div>

@@ -23,6 +23,7 @@ import centerImg from "../../images/center.jpg";
 import centerImg2 from "../../images/center-2.jpg";
 import centerImg3 from "../../images/center-3.jpg";
 import centerImg4 from "../../images/center-4.jpg";
+import { getBookCover } from "../../common/imageHelper";
 
 // ================= SLIDESHOW =================
 export const SlideShow = () => {
@@ -218,7 +219,7 @@ const Home = () => {
                 <div className="product-img" style={{ height: "240px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                   <Link to={`/product/${product.id}`} className="w-100 h-100 d-flex align-items-center justify-content-center">
                     <img
-                      src={product.image || centerImg4}
+                      src={getBookCover(product.image, product.id)}
                       alt={product.title}
                       style={{ maxHeight: "200px", maxWidth: "100%", objectFit: "contain" }}
                     />

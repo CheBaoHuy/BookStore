@@ -17,7 +17,7 @@ footer::before {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #17479D, #1e5fc4, #ffd54f, #1e5fc4, #17479D);
+    background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--accent), var(--primary-light), var(--primary));
 }
 
 /* Decorative blob */
@@ -28,7 +28,7 @@ footer::after {
     right: -80px;
     width: 360px;
     height: 360px;
-    background: radial-gradient(circle, rgba(23,71,157,0.12) 0%, transparent 65%);
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 65%);
     border-radius: 50%;
     pointer-events: none;
 }
@@ -49,7 +49,7 @@ footer::after {
 
 .footer-logo img:hover {
     transform: scale(1.04);
-    box-shadow: 0 6px 20px rgba(23,71,157,0.4);
+    box-shadow: var(--shadow-lg);
 }
 
 /* ============================================================
@@ -69,7 +69,7 @@ footer::after {
 }
 
 .widget .widget-list .widget-icon {
-    color: #60a5fa;
+    color: var(--primary-light);
     font-size: 20px;
     min-width: 20px;
     margin-top: 2px;
@@ -103,7 +103,7 @@ footer::after {
     bottom: -12px;
     width: 36px;
     height: 3px;
-    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
     border-radius: 20px;
 }
 
@@ -123,7 +123,7 @@ footer::after {
 }
 
 .widget-nav-menu .menu-footer-container .menu-item .menu-item-icon {
-    color: #3b82f6;
+    color: var(--primary-light);
     font-size: 7px;
     margin-right: 10px;
     flex-shrink: 0;
@@ -138,7 +138,7 @@ footer::after {
 }
 
 .widget-nav-menu .menu-footer-container .menu-item a:hover {
-    color: #60a5fa;
+    color: var(--primary-light);
     padding-left: 6px;
 }
 
@@ -181,8 +181,8 @@ footer::after {
 }
 
 .footer-social a:hover {
-    background: #17479D;
-    border-color: #17479D;
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
     transform: translateY(-2px);
 }

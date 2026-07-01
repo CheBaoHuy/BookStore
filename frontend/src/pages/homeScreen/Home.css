@@ -14,12 +14,12 @@
 }
 
 .main-banner-slider .react-multiple-carousel__arrow {
-  background: rgba(23, 71, 157, 0.6);
+  background: rgba(15, 118, 110, 0.6);
   z-index: 10;
 }
 
 .main-banner-slider .react-multiple-carousel__arrow:hover {
-  background: rgba(23, 71, 157, 0.9);
+  background: rgba(15, 118, 110, 0.9);
 }
 
 /* ============================================================
@@ -49,7 +49,7 @@
   bottom: -10px;
   width: 48px;
   height: 3px;
-  background: linear-gradient(90deg, #17479D, #1e5fc4);
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
   border-radius: 20px;
 }
 
@@ -81,32 +81,32 @@
 }
 
 .products-slider .tabs-list .tab-title:hover {
-  color: #17479D;
+  color: var(--primary);
 }
 
 .products-slider .tabs-list .active {
-  color: #17479D;
-  border-bottom-color: #17479D;
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
 /* ============================================================
    PRODUCT CARDS
    ============================================================ */
 .product-wrap {
-  border: 1px solid #f0f4ff;
+  border: 1px solid var(--border);
   margin: 0 6px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
   padding-bottom: 16px;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
 }
 
 .product-wrap:hover {
-  border-color: #17479D;
-  box-shadow: 0 8px 30px rgba(23, 71, 157, 0.15);
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
   transform: translateY(-4px);
 }
 
@@ -141,7 +141,7 @@
   justify-content: center;
   gap: 12px;
   padding: 12px;
-  background: linear-gradient(to top, rgba(23,71,157,0.9), rgba(23,71,157,0.6));
+  background: linear-gradient(to top, rgba(15, 118, 110, 0.95), rgba(15, 118, 110, 0.7));
   transform: translateY(100%);
   transition: transform 0.3s ease;
 }
@@ -186,7 +186,7 @@
 }
 
 .product-content .price {
-  color: #17479D !important;
+  color: var(--primary) !important;
   font-size: 15px;
   font-weight: 700;
 }
@@ -213,8 +213,8 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(10, 35, 120, 0.82) 0%,
-    rgba(0, 0, 0, 0.58) 100%
+    rgba(17, 94, 89, 0.85) 0%,
+    rgba(0, 0, 0, 0.6) 100%
   );
   z-index: 1;
 }
@@ -236,7 +236,7 @@
 }
 
 .subscribe-for-deals .sfd-wrapper h3 span {
-  color: #ffd54f;
+  color: var(--accent-light);
 }
 
 .subscribe-for-deals .sfd-wrapper p {
@@ -263,9 +263,9 @@
 
 .subscribe-for-deals .sfd-wrapper .sfd-button:hover {
   background: white;
-  color: #17479D;
+  color: var(--primary);
   transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {
@@ -306,7 +306,7 @@
   bottom: -12px;
   width: 48px;
   height: 3px;
-  background: linear-gradient(90deg, #17479D, #1e5fc4);
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
   border-radius: 20px;
 }
 
@@ -355,7 +355,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #17479D;
+  color: var(--primary);
   font-size: 13px;
   font-weight: 600;
   padding: 0;
@@ -368,7 +368,7 @@
 
 .new-blog .post .post-content .btn:hover {
   gap: 10px;
-  color: #1035a0;
+  color: var(--primary-dark);
 }
 
 /* ============================================================
@@ -376,7 +376,7 @@
    ============================================================ */
 .news-letter-subscription {
   padding: 70px 20px;
-  background: linear-gradient(135deg, #17479D 0%, #0f2d66 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -481,12 +481,12 @@
 
 .news-letter-icon {
   font-size: 22px;
-  color: #17479D;
+  color: var(--primary);
 }
 
 .newsletter-btn:hover {
   transform: scale(1.1);
-  background: #ffd54f;
+  background: var(--accent-light);
 }
 
 @media (max-width: 768px) {

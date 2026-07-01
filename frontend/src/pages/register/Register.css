@@ -137,13 +137,13 @@
 }
 
 .register-field input:focus {
-    border-color: #17479D;
+    border-color: var(--primary);
     background: white;
-    box-shadow: 0 0 0 3px rgba(23, 71, 157, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .register-field-inner:focus-within .register-field-icon {
-    color: #17479D;
+    color: var(--primary);
 }
 
 /* PASSWORD STRENGTH */
@@ -164,7 +164,7 @@
 .register-submit-btn {
     width: 100%;
     height: 50px;
-    background: linear-gradient(135deg, #17479D, #1e5fc4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border: none;
     border-radius: 10px;
@@ -173,7 +173,7 @@
     letter-spacing: 0.4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(23, 71, 157, 0.3);
+    box-shadow: 0 4px 15px var(--primary-glow);
     margin-top: 10px;
     display: flex;
     align-items: center;
@@ -183,7 +183,7 @@
 
 .register-submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(23, 71, 157, 0.4);
+    box-shadow: 0 8px 25px var(--primary-glow);
 }
 
 .register-submit-btn:active {
@@ -204,14 +204,14 @@
 .register-terms input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #17479D;
+    accent-color: var(--primary);
     cursor: pointer;
     margin-top: 2px;
     flex-shrink: 0;
 }
 
 .register-terms a {
-    color: #17479D;
+    color: var(--primary);
     font-weight: 600;
     text-decoration: none;
 }
@@ -229,7 +229,7 @@
 }
 
 .register-login-link a {
-    color: #17479D;
+    color: var(--primary);
     font-weight: 600;
     text-decoration: none;
 }
