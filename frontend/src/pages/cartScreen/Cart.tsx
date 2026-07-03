@@ -140,15 +140,7 @@ function Cart() {
                         <span className="order-total-price">{cartTotalAmount.toLocaleString("vi-VN")} VND</span>
                     </div>
 
-                    {cartItems.length > 0 ? (
-                        <a href="/checkout" className="checkout-btn text-center text-white" style={{ textDecoration: "none" }}>
-                            Tiến hành thanh toán
-                        </a>
-                    ) : (
-                        <button className="checkout-btn text-center text-white w-100 border-0 opacity-50" disabled>
-                            Tiến hành thanh toán
-                        </button>
-                    )}
+
                     <a href="/" className="continue-shopping-btn text-center" style={{ textDecoration: "none" }}>
                         Tiếp tục mua sắm
                     </a>
