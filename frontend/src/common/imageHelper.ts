@@ -19,5 +19,12 @@ export const getBookCover = (imagePath: string | null | undefined, bookId?: numb
     }
     return centerImg4;
   }
+  const normalized = imagePath.trim().toLowerCase();
+  if (normalized.includes("tikicdn.com") || normalized.includes("salt.tikicdn")) {
+    if (bookId !== undefined) {
+      return PLACEHOLDER_COVERS[bookId % PLACEHOLDER_COVERS.length];
+    }
+    return centerImg4;
+  }
   return imagePath;
 };

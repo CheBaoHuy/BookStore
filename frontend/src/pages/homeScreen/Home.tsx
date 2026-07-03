@@ -22,7 +22,6 @@ import "react-multi-carousel/lib/styles.css";
 import centerImg from "../../images/center.jpg";
 import centerImg2 from "../../images/center-2.jpg";
 import centerImg3 from "../../images/center-3.jpg";
-import centerImg4 from "../../images/center-4.jpg";
 import { getBookCover } from "../../common/imageHelper";
 
 // ================= SLIDESHOW =================

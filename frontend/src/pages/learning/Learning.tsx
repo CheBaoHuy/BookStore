@@ -14,6 +14,7 @@ function Learning() {
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -38,6 +39,13 @@ function Learning() {
     const handleAddToCart = (product: Product) => {
         dispatch(addToCart(product));
     };
+
+    const displayedProducts = (() => {
+        const list = [...products];
+        if (priceSort === "asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+        if (priceSort === "desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
+        return list;
+    })();
 
     return (
         <div className="category-page">
@@ -67,8 +75,22 @@ function Learning() {
                         <p style={{ color: "#718096", marginTop: "10px" }}>Vui lòng quay lại sau nhé!</p>
                     </div>
                 ) : (
-                    <div className="row">
-                        {products.map((product) => (
+                    <>
+                        <div className="product-toolbar product-toolbar--compact">
+                            <span className="sort-label">Sắp xếp</span>
+                            <select
+                                className="sort-select"
+                                value={priceSort}
+                                onChange={(e) => setPriceSort(e.target.value as any)}
+                            >
+                                <option value="default">Mặc định</option>
+                                <option value="asc">Giá: Thấp → Cao</option>
+                                <option value="desc">Giá: Cao → Thấp</option>
+                            </select>
+                        </div>
+
+                        <div className="row">
+                            {displayedProducts.map((product) => (
                             <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.id}>
                                 <div className="product-wrap m-0 h-100 d-flex flex-column justify-content-between">
                                     <div>
@@ -97,8 +119,9 @@ function Learning() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
             <Footer />
