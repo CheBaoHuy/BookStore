@@ -14,6 +14,7 @@ function Health() {
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState<"default" | "title_asc" | "title_desc" | "price_asc" | "price_desc">("default");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -38,6 +39,15 @@ function Health() {
     const handleAddToCart = (product: Product) => {
         dispatch(addToCart(product));
     };
+
+    const displayedProducts = (() => {
+        const list = [...products];
+        if (sortBy === "title_asc") return list.sort((a, b) => (a.title || "").localeCompare((b.title || ""), "vi", { sensitivity: "base" }));
+        if (sortBy === "title_desc") return list.sort((a, b) => (b.title || "").localeCompare((a.title || ""), "vi", { sensitivity: "base" }));
+        if (sortBy === "price_asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+        if (sortBy === "price_desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
+        return list;
+    })();
 
     return (
         <div className="category-page">
@@ -67,8 +77,24 @@ function Health() {
                         <p style={{ color: "#718096", marginTop: "10px" }}>Vui lòng quay lại sau nhé!</p>
                     </div>
                 ) : (
-                    <div className="row">
-                        {products.map((product) => (
+                    <>
+                        <div className="product-toolbar product-toolbar--compact">
+                            <span className="sort-label">Sắp xếp</span>
+                            <select
+                                className="sort-select"
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                            >
+                                <option value="default">Mặc định</option>
+                                <option value="title_asc">Tên: A → Z</option>
+                                <option value="title_desc">Tên: Z → A</option>
+                                <option value="price_asc">Giá: Thấp → Cao</option>
+                                <option value="price_desc">Giá: Cao → Thấp</option>
+                            </select>
+                        </div>
+
+                        <div className="row">
+                        {displayedProducts.map((product) => (
                             <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.id}>
                                 <div className="product-wrap m-0 h-100 d-flex flex-column justify-content-between">
                                     <div>
@@ -98,7 +124,8 @@ function Health() {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                        </div>
+                    </>
                 )}
             </div>
             <Footer />

@@ -14,7 +14,7 @@ function Learning() {
     const dispatch = useDispatch();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
+    const [sortBy, setSortBy] = useState<"default" | "title_asc" | "title_desc" | "price_asc" | "price_desc">("default");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -42,8 +42,10 @@ function Learning() {
 
     const displayedProducts = (() => {
         const list = [...products];
-        if (priceSort === "asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
-        if (priceSort === "desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
+        if (sortBy === "title_asc") return list.sort((a, b) => (a.title || "").localeCompare((b.title || ""), "vi", { sensitivity: "base" }));
+        if (sortBy === "title_desc") return list.sort((a, b) => (b.title || "").localeCompare((a.title || ""), "vi", { sensitivity: "base" }));
+        if (sortBy === "price_asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+        if (sortBy === "price_desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
         return list;
     })();
 
@@ -80,12 +82,14 @@ function Learning() {
                             <span className="sort-label">Sắp xếp</span>
                             <select
                                 className="sort-select"
-                                value={priceSort}
-                                onChange={(e) => setPriceSort(e.target.value as any)}
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
                             >
                                 <option value="default">Mặc định</option>
-                                <option value="asc">Giá: Thấp → Cao</option>
-                                <option value="desc">Giá: Cao → Thấp</option>
+                                <option value="title_asc">Tên: A → Z</option>
+                                <option value="title_desc">Tên: Z → A</option>
+                                <option value="price_asc">Giá: Thấp → Cao</option>
+                                <option value="price_desc">Giá: Cao → Thấp</option>
                             </select>
                         </div>
 

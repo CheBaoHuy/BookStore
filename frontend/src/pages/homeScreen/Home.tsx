@@ -61,6 +61,7 @@ export const SlideShow = () => {
 
 
 export const Blog = () => {
+  const blogImages = [centerImg4, centerImg3, centerImg2, centerImg];
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -89,8 +90,8 @@ export const Blog = () => {
           {[1, 2, 3, 4].map((item) => (
             <div className="post" key={item}>
               <img
-                src="https://wp.acmeedesign.com/bookstore/wp-content/uploads/2016/02/497109-1280x720-350x140.jpg"
-                alt=""
+                src={blogImages[item - 1]}
+                alt="Bài viết"
               />
 
               <div className="post-content">
@@ -132,7 +133,6 @@ const Home = () => {
   const [carousel, setCarousel] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -165,13 +165,6 @@ const Home = () => {
     dispatch(addToCart(product));
   };
 
-  const displayedProducts = (() => {
-    const list = [...products];
-    if (priceSort === "asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
-    if (priceSort === "desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
-    return list;
-  })();
-
   return (
     <>
       <Header />
@@ -203,19 +196,6 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="product-toolbar product-toolbar--compact">
-          <span className="sort-label">Sắp xếp</span>
-          <select
-            className="sort-select"
-            value={priceSort}
-            onChange={(e) => setPriceSort(e.target.value as any)}
-          >
-            <option value="default">Mặc định</option>
-            <option value="asc">Giá: Thấp → Cao</option>
-            <option value="desc">Giá: Cao → Thấp</option>
-          </select>
-        </div>
-
         {loading ? (
           <div className="text-center my-5">
             <div className="spinner-border text-primary" role="status">
@@ -232,7 +212,7 @@ const Home = () => {
             responsive={responsive}
             infinite={true}
           >
-            {displayedProducts.map((product) => (
+            {products.map((product) => (
               <div
                 className="product-wrap"
                 key={product.id}
