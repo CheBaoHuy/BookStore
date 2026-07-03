@@ -91,7 +91,9 @@ function Profile() {
             const res = await axios.get(`http://localhost:8080/api/orders/user/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            const localOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+            // Chỉ lấy đơn hàng thuộc về email của người dùng hiện tại
+            const localOrders = JSON.parse(localStorage.getItem("user_orders") || "[]")
+                .filter((o: any) => o.email === user.email);
             // Gộp và sắp xếp đơn hàng
             const merged = [...localOrders, ...(res.data || [])]
                 .filter((o, i, arr) => arr.findIndex(x => x.id === o.id) === i)
@@ -102,7 +104,9 @@ function Profile() {
                 });
             setOrders(merged);
         } catch {
-            const localOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+            // Chỉ lấy đơn hàng thuộc về email của người dùng hiện tại
+            const localOrders = JSON.parse(localStorage.getItem("user_orders") || "[]")
+                .filter((o: any) => o.email === user.email);
             const sorted = [...localOrders].sort((a, b) => {
                 const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                 const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;

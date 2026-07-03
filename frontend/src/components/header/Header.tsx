@@ -79,12 +79,9 @@ export const Header = () => {
                                     </>
                                 ) : (
                                     <li className="menu-item">
-                                        <a href="/login">Tài khoản</a>
+                                        <a href="/login">Đăng nhập</a>
                                     </li>
                                 )}
-                                <li className="menu-item">
-                                    <a href="/checkout">Thanh toán</a>
-                                </li>
                             </ul>
                         </div>
 

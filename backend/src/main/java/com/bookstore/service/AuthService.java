@@ -133,4 +133,47 @@ public class AuthService {
         if (dto.getAvatarLink() != null) user.setAvatar(dto.getAvatarLink());
         return userRepository.save(user);
     }
+
+    public AuthResponse googleLogin(GoogleLoginDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail()).orElse(null);
+        if (user == null) {
+            String emailPrefix = dto.getEmail().split("@")[0];
+            String uniqueUsername = emailPrefix;
+            int counter = 1;
+            while (userRepository.existsByUsername(uniqueUsername)) {
+                uniqueUsername = emailPrefix + counter;
+                counter++;
+            }
+
+            user = User.builder()
+                    .username(uniqueUsername)
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .email(dto.getEmail())
+                    .phone("")
+                    .fullName(dto.getFullName() != null ? dto.getFullName() : emailPrefix)
+                    .avatar(dto.getAvatar())
+                    .role("USER")
+                    .status(true)
+                    .build();
+            userRepository.save(user);
+        } else {
+            if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
+                user.setAvatar(dto.getAvatar());
+                userRepository.save(user);
+            }
+        }
+
+        String token = tokenProvider.generateTokenFromUsername(user.getUsername());
+
+        return AuthResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .userId(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .fullName(user.getFullName())
+                .avatar(user.getAvatar())
+                .build();
+    }
 }
