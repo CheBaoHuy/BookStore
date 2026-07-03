@@ -22,6 +22,7 @@ import "react-multi-carousel/lib/styles.css";
 import centerImg from "../../images/center.jpg";
 import centerImg2 from "../../images/center-2.jpg";
 import centerImg3 from "../../images/center-3.jpg";
+import centerImg4 from "../../images/center-4.jpg";
 import { getBookCover } from "../../common/imageHelper";
 
 // ================= SLIDESHOW =================
@@ -131,6 +132,7 @@ const Home = () => {
   const [carousel, setCarousel] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -163,6 +165,13 @@ const Home = () => {
     dispatch(addToCart(product));
   };
 
+  const displayedProducts = (() => {
+    const list = [...products];
+    if (priceSort === "asc") return list.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+    if (priceSort === "desc") return list.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
+    return list;
+  })();
+
   return (
     <>
       <Header />
@@ -194,6 +203,19 @@ const Home = () => {
           </div>
         </div>
 
+        <div className="product-toolbar product-toolbar--compact">
+          <span className="sort-label">Sắp xếp</span>
+          <select
+            className="sort-select"
+            value={priceSort}
+            onChange={(e) => setPriceSort(e.target.value as any)}
+          >
+            <option value="default">Mặc định</option>
+            <option value="asc">Giá: Thấp → Cao</option>
+            <option value="desc">Giá: Cao → Thấp</option>
+          </select>
+        </div>
+
         {loading ? (
           <div className="text-center my-5">
             <div className="spinner-border text-primary" role="status">
@@ -210,7 +232,7 @@ const Home = () => {
             responsive={responsive}
             infinite={true}
           >
-            {products.map((product) => (
+            {displayedProducts.map((product) => (
               <div
                 className="product-wrap"
                 key={product.id}
