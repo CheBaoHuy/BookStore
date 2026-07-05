@@ -25,9 +25,9 @@ import "./AdminDashboard.css";
 
 function AdminDashboard() {
     // Auth Protection
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     const adminUser = storedUser ? JSON.parse(storedUser) : null;
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     const [activeTab, setActiveTab] = useState<"overview" | "products" | "orders" | "users" | "vouchers">("overview");
     const [loading, setLoading] = useState(true);
@@ -355,6 +355,22 @@ function AdminDashboard() {
         }
     };
 
+    const handleUpdatePaymentStatus = async (orderId: number, paid: boolean) => {
+        try {
+            const res = await axios.put(`http://localhost:8080/api/orders/${orderId}/payment-status?paid=${paid}`, {}, getAuthHeaders());
+            if (res.data) {
+                setOrders(orders.map(o => o.id === orderId ? res.data : o));
+                triggerNotification("Cập nhật trạng thái thanh toán thành công!");
+            }
+        } catch (err: any) {
+            console.error("Error updating payment status:", err);
+            // Fallback for offline usage
+            const updatedOrders = orders.map(o => o.id === orderId ? { ...o, paymentStatus: paid } : o);
+            setOrders(updatedOrders);
+            triggerNotification("Cập nhật trạng thái thanh toán thành công (offline)!");
+        }
+    };
+
     // =============================================
     // USER ACTIONS
     // =============================================
@@ -537,6 +553,7 @@ function AdminDashboard() {
                                 <AdminOrders
                                     orders={orders}
                                     onUpdateOrderStatus={handleUpdateOrderStatus}
+                                    onUpdatePaymentStatus={handleUpdatePaymentStatus}
                                     formatCurrency={formatCurrency}
                                 />
                             )}

@@ -39,9 +39,9 @@ function Profile() {
     const [searchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
 
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     // Unified Dashboard Navigation Tab state
     const [activeTab, setActiveTab] = useState<"profile" | "tracking" | "history">("profile");
@@ -153,7 +153,7 @@ function Profile() {
                     phone: response.data.phone,
                     avatar: response.data.avatar
                 };
-                localStorage.setItem("user", JSON.stringify(updatedSessionUser));
+                sessionStorage.setItem("user", JSON.stringify(updatedSessionUser));
                 setSuccessMsg("Cập nhật thông tin cá nhân thành công!");
                 setTimeout(() => setSuccessMsg(""), 3000);
             }

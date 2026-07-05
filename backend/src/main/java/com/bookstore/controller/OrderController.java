@@ -67,6 +67,21 @@ public class OrderController {
         }
     }
 
+    /** PUT /api/orders/{id}/payment-status?paid={paid}
+     *  Cập nhật trạng thái thanh toán đơn hàng (Admin) */
+    @PutMapping("/{id}/payment-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateOrderPaymentStatus(
+            @PathVariable Long id,
+            @RequestParam boolean paid) {
+        try {
+            Order order = orderService.updateOrderPaymentStatus(id, paid);
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     /** GET /api/orders  (Admin only)
      *  Tất cả đơn hàng */
     @GetMapping
