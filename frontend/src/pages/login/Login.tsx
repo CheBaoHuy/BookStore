@@ -70,8 +70,8 @@ function Login() {
                 });
 
                 if (res.data && res.data.token) {
-                    localStorage.setItem("user", JSON.stringify(res.data));
-                    localStorage.setItem("token", res.data.token);
+                    sessionStorage.setItem("user", JSON.stringify(res.data));
+                    sessionStorage.setItem("token", res.data.token);
                     setSuccess("Đăng nhập bằng Google thành công! Đang chuyển hướng...");
                     setTimeout(() => {
                         window.location.href = "/";
@@ -92,8 +92,8 @@ function Login() {
                     fullName: name,
                     avatar: picture
                 };
-                localStorage.setItem("user", JSON.stringify(mockUser));
-                localStorage.setItem("token", mockUser.token);
+                sessionStorage.setItem("user", JSON.stringify(mockUser));
+                sessionStorage.setItem("token", mockUser.token);
                 setSuccess("Đăng nhập bằng Google (Offline) thành công! Đang chuyển hướng...");
                 setTimeout(() => {
                     window.location.href = "/";
@@ -125,8 +125,8 @@ function Login() {
             });
 
             if (response.data && response.data.token) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-                localStorage.setItem("token", response.data.token);
+                sessionStorage.setItem("user", JSON.stringify(response.data));
+                sessionStorage.setItem("token", response.data.token);
                 setSuccess("Đăng nhập thành công! Đang chuyển hướng...");
                 setTimeout(() => {
                     window.location.href = "/";

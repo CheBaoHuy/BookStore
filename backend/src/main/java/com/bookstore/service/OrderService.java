@@ -17,6 +17,9 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private OrderDetailRepository orderDetailRepository;
 
     @Autowired
@@ -93,8 +96,109 @@ public class OrderService {
         Order order = getOrderById(orderId);
         OrderStatus status = orderStatusRepository.findById(statusId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy trạng thái id: " + statusId));
+
+        Long oldStatusId = order.getOrderStatus() != null ? order.getOrderStatus().getId() : 0L;
+        boolean oldPaymentStatus = order.isPaymentStatus();
+
         order.setOrderStatus(status);
-        return orderRepository.save(order);
+
+        // Automatically set paymentStatus = true if order is successfully delivered (statusId = 4)
+        if (statusId == 4) {
+            order.setPaymentStatus(true);
+        }
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Trigger shipping notification (statusId = 3)
+        if (oldStatusId != 3 && statusId == 3) {
+            triggerShippingNotification(savedOrder);
+        }
+
+        // Trigger delivery success notification (statusId = 4)
+        if (oldStatusId != 4 && statusId == 4) {
+            triggerDeliveredNotification(savedOrder);
+        }
+
+        // Trigger payment success notification if changed to true
+        if (!oldPaymentStatus && savedOrder.isPaymentStatus()) {
+            triggerPaymentSuccessNotification(savedOrder);
+        }
+
+        return savedOrder;
+    }
+
+    public Order updateOrderPaymentStatus(Long orderId, boolean paymentStatus) {
+        Order order = getOrderById(orderId);
+        boolean oldPaymentStatus = order.isPaymentStatus();
+        order.setPaymentStatus(paymentStatus);
+        Order savedOrder = orderRepository.save(order);
+
+        if (!oldPaymentStatus && paymentStatus) {
+            triggerPaymentSuccessNotification(savedOrder);
+        }
+
+        return savedOrder;
+    }
+
+    private void triggerShippingNotification(Order order) {
+        String title = "Đơn hàng #" + order.getId() + " đang được giao";
+        String message = String.format("Đơn hàng #%d của bạn đang được giao. Người giao hàng sẽ sớm liên hệ với bạn.", order.getId());
+
+        // In-app notification
+        notificationService.createNotification(order.getUser(), title, message);
+
+        // Email notification
+        String emailContent = String.format(
+                "Xin chào %s,\n\n" +
+                "Đơn hàng #%d của bạn đã được chuyển sang trạng thái đang giao hàng và đang trên đường tới địa chỉ của bạn.\n\n" +
+                "Thông tin nhận hàng:\n" +
+                "- Địa chỉ: %s\n" +
+                "- Số điện thoại: %s\n" +
+                "- Tổng thanh toán: %,.0f VNĐ\n\n" +
+                "Cảm ơn bạn đã mua hàng tại BookStore!\nTrân trọng.",
+                order.getFullName(), order.getId(), order.getAddress(), order.getPhone(), order.getTotalAmount()
+        );
+        notificationService.sendEmailNotification(order.getEmail(), "BookStore - Đơn hàng đang giao", emailContent);
+    }
+
+    private void triggerDeliveredNotification(Order order) {
+        String title = "Đơn hàng #" + order.getId() + " giao thành công";
+        String message = String.format("Đơn hàng #%d của bạn đã được giao thành công. Cảm ơn bạn đã mua sắm tại BookStore!", order.getId());
+
+        // In-app notification
+        notificationService.createNotification(order.getUser(), title, message);
+
+        // Email notification
+        String emailContent = String.format(
+                "Xin chào %s,\n\n" +
+                "Đơn hàng #%d của bạn đã được giao thành công.\n\n" +
+                "Thông tin đơn hàng:\n" +
+                "- Mã đơn hàng: #%d\n" +
+                "- Tổng thanh toán: %,.0f VNĐ\n\n" +
+                "Cảm ơn bạn đã tin tưởng và đồng hành cùng BookStore!\nTrân trọng.",
+                order.getFullName(), order.getId(), order.getId(), order.getTotalAmount()
+        );
+        notificationService.sendEmailNotification(order.getEmail(), "BookStore - Đơn hàng giao thành công", emailContent);
+    }
+
+    private void triggerPaymentSuccessNotification(Order order) {
+        String title = "Đơn hàng #" + order.getId() + " thanh toán thành công";
+        String message = String.format("Đơn hàng #%d của bạn đã được thanh toán thành công.", order.getId());
+
+        // In-app notification
+        notificationService.createNotification(order.getUser(), title, message);
+
+        // Email notification
+        String emailContent = String.format(
+                "Xin chào %s,\n\n" +
+                "Chúng tôi đã xác nhận thanh toán thành công cho đơn hàng #%d của bạn.\n\n" +
+                "Thông tin thanh toán:\n" +
+                "- Phương thức: %s\n" +
+                "- Tổng số tiền: %,.0f VNĐ\n\n" +
+                "Trân trọng,\nBookStore Team.",
+                order.getFullName(), order.getId(), order.getPaymentMethod(), order.getTotalAmount()
+        );
+        notificationService.sendEmailNotification(order.getEmail(), "BookStore - Xác nhận thanh toán thành công", emailContent);
     }
 
     public List<Order> getAllOrders() {

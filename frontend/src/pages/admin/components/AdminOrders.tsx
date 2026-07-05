@@ -5,12 +5,14 @@ import { AdminPagination } from "./AdminPagination";
 interface AdminOrdersProps {
     orders: Order[];
     onUpdateOrderStatus: (orderId: number, statusId: number) => Promise<void>;
+    onUpdatePaymentStatus: (orderId: number, paid: boolean) => Promise<void>;
     formatCurrency: (val: number | undefined | null) => string;
 }
 
 export const AdminOrders: React.FC<AdminOrdersProps> = ({
     orders,
     onUpdateOrderStatus,
+    onUpdatePaymentStatus,
     formatCurrency
 }) => {
     const [oCurrentPage, setOCurrentPage] = useState<number>(1);
@@ -55,9 +57,19 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                                     </td>
                                     <td>
                                         <div className="text-danger fw-bold">{formatCurrency(o.totalAmount)}</div>
-                                        <span className="badge bg-light text-dark border" style={{ fontSize: "11px" }}>
-                                            {o.paymentMethod}
-                                        </span>
+                                        <div className="d-flex align-items-center gap-1 mt-1">
+                                            <span className="badge bg-light text-dark border" style={{ fontSize: "11px" }}>
+                                                {o.paymentMethod}
+                                            </span>
+                                            <span 
+                                                className={`badge cursor-pointer ${o.paymentStatus ? "bg-success" : "bg-warning text-dark"}`}
+                                                style={{ fontSize: "11px", cursor: "pointer" }}
+                                                onClick={() => onUpdatePaymentStatus(o.id, !o.paymentStatus)}
+                                                title="Nhấn để đổi trạng thái thanh toán"
+                                            >
+                                                {o.paymentStatus ? "Đã thanh toán" : "Chưa thanh toán"}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
                                         <span className={`status-badge status-${o.orderStatus.id}`}>
