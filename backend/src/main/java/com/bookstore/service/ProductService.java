@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ProductService {
@@ -32,6 +36,32 @@ public class ProductService {
     public Page<Product> searchProducts(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return productRepository.searchByKeyword(keyword, pageable);
+    }
+
+    // Gợi ý sản phẩm cho thanh tìm kiếm, ưu tiên title/author và hỗ trợ tìm không dấu
+    public List<Product> getSearchSuggestions(String keyword, int limit) {
+        String normalizedKeyword = normalizeKeyword(keyword);
+        if (normalizedKeyword.isBlank()) {
+            return List.of();
+        }
+
+        List<Product> activeProducts = productRepository.findAll().stream()
+                .filter(Product::isActive)
+                .toList();
+
+        LinkedHashSet<Product> suggestions = new LinkedHashSet<>();
+
+        collectMatchingProducts(suggestions, activeProducts, normalizedKeyword, MatchMode.TITLE_STARTS_WITH, limit);
+        if (suggestions.isEmpty()) {
+            collectMatchingProducts(suggestions, activeProducts, normalizedKeyword, MatchMode.TITLE_WORD_STARTS_WITH, limit);
+        }
+        if (suggestions.isEmpty()) {
+            collectMatchingProducts(suggestions, activeProducts, normalizedKeyword, MatchMode.TITLE_CONTAINS, limit);
+        }
+
+        return new ArrayList<>(suggestions).stream()
+                .limit(limit)
+                .toList();
     }
 
     // Lấy sản phẩm theo category
@@ -107,5 +137,70 @@ public class ProductService {
             category.setParentCategory(categoryData.getParentCategory());
         }
         return categoryRepository.save(category);
+    }
+
+    private void collectMatchingProducts(
+            LinkedHashSet<Product> suggestions,
+            List<Product> products,
+            String keyword,
+            MatchMode matchMode,
+            int limit
+    ) {
+        if (suggestions.size() >= limit) {
+            return;
+        }
+
+        for (Product product : products) {
+            if (suggestions.size() >= limit) {
+                return;
+            }
+
+            if (matchesTitle(product, keyword, matchMode)) {
+                suggestions.add(product);
+            }
+        }
+    }
+
+    private boolean matchesTitle(Product product, String keyword, MatchMode matchMode) {
+        String title = normalizeKeyword(product.getTitle());
+        return switch (matchMode) {
+            case TITLE_STARTS_WITH -> title.startsWith(keyword);
+            case TITLE_WORD_STARTS_WITH -> containsWordStartingWith(title, keyword);
+            case TITLE_CONTAINS -> title.contains(keyword);
+        };
+    }
+
+    private boolean containsWordStartingWith(String text, String keyword) {
+        if (text.isBlank()) {
+            return false;
+        }
+
+        for (String token : text.split("\\s+")) {
+            if (token.startsWith(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String normalizeKeyword(String input) {
+        if (input == null) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .replace('đ', 'd')
+                .replace('Đ', 'D')
+                .toLowerCase(Locale.ROOT)
+                .trim();
+
+        return normalized.replaceAll("\\s+", " ");
+    }
+
+    private enum MatchMode {
+        TITLE_STARTS_WITH,
+        TITLE_WORD_STARTS_WITH,
+        TITLE_CONTAINS
     }
 }
