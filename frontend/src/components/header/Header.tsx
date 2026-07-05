@@ -1,5 +1,6 @@
-import React from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import "./Header.css";
+import axios from "axios";
 
 import {
     FaMapMarkerAlt,
@@ -10,20 +11,97 @@ import {
 import { IoMdPhonePortrait } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { Product } from "../../models";
+import { getBookCover } from "../../common/imageHelper";
+import { useNavigate } from "react-router-dom";
 
 import logo from "../../images/logo_green.png";
 
 export const Header = () => {
+    const navigate = useNavigate();
     const { cartItems } = useSelector((state: RootState) => state.carts);
     const cartCount = cartItems.reduce((total, item) => total + (item.cartTotal || 1), 0);
+    const searchFormRef = useRef<HTMLFormElement | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [suggestions, setSuggestions] = useState<Product[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (!searchFormRef.current?.contains(event.target as Node)) {
+                setIsSearchOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const keyword = searchTerm.trim();
+
+        if (!keyword) {
+            setSuggestions([]);
+            setIsSearching(false);
+            return;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(async () => {
+            setIsSearching(true);
+
+            try {
+                const response = await axios.get<Product[]>("http://localhost:8080/api/products/suggestions", {
+                    params: {
+                        keyword,
+                        limit: 6
+                    },
+                    signal: controller.signal
+                });
+
+                setSuggestions(response.data || []);
+                setIsSearchOpen(true);
+            } catch (error) {
+                if (!axios.isCancel(error)) {
+                    console.error("Lỗi khi tải gợi ý tìm kiếm:", error);
+                    setSuggestions([]);
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setIsSearching(false);
+                }
+            }
+        }, 300);
+
+        return () => {
+            controller.abort();
+            window.clearTimeout(timeoutId);
+        };
+    }, [searchTerm]);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         window.location.href = "/";
+    };
+
+    const handleSelectSuggestion = (productId: number) => {
+        setSearchTerm("");
+        setSuggestions([]);
+        setIsSearchOpen(false);
+        navigate(`/product/${productId}`);
+    };
+
+    const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (suggestions.length > 0) {
+            handleSelectSuggestion(suggestions[0].id);
+        }
     };
 
     return (
@@ -108,14 +186,63 @@ export const Header = () => {
                             <div className="header-right">
 
                                 {/* SEARCH */}
-                                <form className="search-form" role="search">
+                                <form
+                                    ref={searchFormRef}
+                                    className="search-form"
+                                    role="search"
+                                    onSubmit={handleSearchSubmit}
+                                >
                                     <input
                                         type="search"
                                         placeholder="Tìm kiếm sách..."
+                                        value={searchTerm}
+                                        autoComplete="off"
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onFocus={() => {
+                                            if (searchTerm.trim()) {
+                                                setIsSearchOpen(true);
+                                            }
+                                        }}
                                     />
-                                    <button type="submit" aria-label="Tìm kiếm">
+                                    <button type="submit" aria-label="Tìm kiếm" className="search-submit-btn">
                                         <FaSearch />
                                     </button>
+
+                                    {searchTerm.trim() && isSearchOpen && (
+                                        <div className="search-suggestions" aria-label="Gợi ý sản phẩm">
+                                            {isSearching ? (
+                                                <div className="search-suggestion-state">Đang tìm sản phẩm...</div>
+                                            ) : suggestions.length > 0 ? (
+                                                suggestions.map((product) => (
+                                                    <button
+                                                        key={product.id}
+                                                        type="button"
+                                                        className="search-suggestion-item"
+                                                        onClick={() => handleSelectSuggestion(product.id)}
+                                                    >
+                                                        <img
+                                                            className="search-suggestion-image"
+                                                            src={getBookCover(product.image, product.id)}
+                                                            alt={product.title}
+                                                        />
+                                                        <div className="search-suggestion-content">
+                                                            <span className="search-suggestion-title">{product.title}</span>
+                                                            <span className="search-suggestion-meta">
+                                                                {product.author || "Đang cập nhật tác giả"}
+                                                            </span>
+                                                        </div>
+                                                        <span className="search-suggestion-price">
+                                                            {product.currentPrice.toLocaleString("vi-VN")}đ
+                                                        </span>
+                                                    </button>
+                                                ))
+                                            ) : (
+                                                <div className="search-suggestion-state">
+                                                    Không tìm thấy sản phẩm phù hợp.
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </form>
 
                                 {/* CART */}

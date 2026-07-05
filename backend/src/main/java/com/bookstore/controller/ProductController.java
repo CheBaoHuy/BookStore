@@ -45,6 +45,15 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    /** GET /api/products/suggestions?keyword=har&limit=6 */
+    @GetMapping("/products/suggestions")
+    public ResponseEntity<List<Product>> getProductSuggestions(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "6") int limit
+    ) {
+        return ResponseEntity.ok(productService.getSearchSuggestions(keyword, limit));
+    }
+
     /** GET /api/products/{id} */
     @GetMapping("/products/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
