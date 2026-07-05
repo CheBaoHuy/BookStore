@@ -252,10 +252,10 @@ const Home = () => {
             Join <span>100,321</span> Happy Readers
           </h3>
 
-          <button className="sfd-button">
+          <Link to="/register" className="sfd-button text-decoration-none">
             SIGN UP TODAY
             <FaLongArrowAltRight />
-          </button>
+          </Link>
         </div>
       </div>
 
