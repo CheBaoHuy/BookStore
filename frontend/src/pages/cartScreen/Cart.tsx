@@ -7,7 +7,6 @@ import { RootState } from "../../redux/store";
 import { addToCart, removeFromCart, decreaseCart, clearCart, getTotals } from "../../redux/reducer/CartReducer";
 import { Product } from "../../models";
 import { FaCircleCheck, FaTrashCan } from "react-icons/fa6";
-import centerImg4 from "../../images/center-4.jpg"; // Default fallback
 import { getBookCover } from "../../common/imageHelper";
 
 function Cart() {

@@ -7,7 +7,6 @@ import { Product } from "../../models";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import { FaCartPlus, FaHeart, FaStar, FaChevronRight, FaPlus, FaMinus } from "react-icons/fa";
-import centerImg4 from "../../images/center-4.jpg"; // Default fallback
 import { getBookCover } from "../../common/imageHelper";
 import "./ProductDetail.css";
 

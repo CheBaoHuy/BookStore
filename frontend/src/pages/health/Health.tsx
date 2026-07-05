@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import { FaCartPlus, FaRegHeart } from "react-icons/fa";
-import centerImg4 from "../../images/center-4.jpg"; // Default cover
 import { getBookCover } from "../../common/imageHelper";
 
 function Health() {
