@@ -73,6 +73,11 @@ export interface OrderStatus {
     status: string;
 }
 
+export interface RevenueTrendPoint {
+    date: string;
+    revenue: number;
+}
+
 export interface Category {
     id: number;
     parentCategory: Category | null;

@@ -2,6 +2,7 @@ import React from "react";
 import "./About.css";
 import AboutImage from "../../images/LabelImages/about.jpg";
 import { FaArrowRight } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 
@@ -53,9 +54,9 @@ function About() {
                         Chúng tôi luôn cập nhật những ưu đãi tốt nhất, tham gia ngay miễn phí!
                     </p>
                     <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-                        <button className="newsletter-button" type="submit">
+                        <Link to="/register" className="newsletter-button text-decoration-none">
                             Đăng Kí Ngay <FaArrowRight className="button-icon" />
-                        </button>
+                        </Link>
                     </form>
                 </div>
             </div>

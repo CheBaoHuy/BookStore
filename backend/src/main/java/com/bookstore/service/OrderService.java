@@ -1,14 +1,20 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.OrderDto;
+import com.bookstore.dto.RevenueTrendPointDto;
 import com.bookstore.model.*;
 import com.bookstore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderService {
@@ -252,5 +258,57 @@ public class OrderService {
 
     public List<OrderStatus> getAllOrderStatuses() {
         return orderStatusRepository.findAll();
+    }
+
+    public List<RevenueTrendPointDto> getRevenueTrendByDate(LocalDate startDate, LocalDate endDate, Long categoryId) {
+        OrderStatus deliveredStatus = orderStatusRepository.findByStatus("Đã giao hàng")
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trạng thái đơn hàng đã giao!"));
+
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        List<Order> deliveredOrders = orderRepository.findRevenueOrdersInRange(
+                deliveredStatus.getId(),
+                startDateTime,
+                endDateTime
+        );
+
+        Map<LocalDate, BigDecimal> revenueByDate = new LinkedHashMap<>();
+        LocalDate cursor = startDate;
+        while (!cursor.isAfter(endDate)) {
+            revenueByDate.put(cursor, BigDecimal.ZERO);
+            cursor = cursor.plusDays(1);
+        }
+
+        for (Order order : deliveredOrders) {
+            LocalDate orderDate = order.getCreatedAt().toLocalDate();
+            BigDecimal orderRevenue = calculateOrderRevenue(order, categoryId);
+            revenueByDate.computeIfPresent(orderDate, (date, currentRevenue) -> currentRevenue.add(orderRevenue));
+        }
+
+        return revenueByDate.entrySet().stream()
+                .map(entry -> new RevenueTrendPointDto(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    private BigDecimal calculateOrderRevenue(Order order, Long categoryId) {
+        if (categoryId == null) {
+            return order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO;
+        }
+
+        if (order.getOrderDetails() == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return order.getOrderDetails().stream()
+                .filter(detail -> detail.getProduct() != null
+                        && detail.getProduct().getCategory() != null
+                        && categoryId.equals(detail.getProduct().getCategory().getId()))
+                .map(detail -> {
+                    BigDecimal price = detail.getPrice() != null ? detail.getPrice() : BigDecimal.ZERO;
+                    BigDecimal quantity = BigDecimal.valueOf(detail.getQuantity());
+                    return price.multiply(quantity);
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
