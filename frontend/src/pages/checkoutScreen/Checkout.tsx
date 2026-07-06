@@ -25,9 +25,9 @@ function Checkout() {
     const { cartItems, cartTotalAmount } = useSelector((state: RootState) => state.carts);
 
     // Lấy thông tin user đang đăng nhập
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     // Form state
     const [firstName, setFirstName] = useState("");

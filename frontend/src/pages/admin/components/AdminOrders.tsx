@@ -5,12 +5,14 @@ import { AdminPagination } from "./AdminPagination";
 interface AdminOrdersProps {
     orders: Order[];
     onUpdateOrderStatus: (orderId: number, statusId: number) => Promise<void>;
+    onUpdatePaymentStatus: (orderId: number, paid: boolean) => Promise<void>;
     formatCurrency: (val: number | undefined | null) => string;
 }
 
 export const AdminOrders: React.FC<AdminOrdersProps> = ({
     orders,
     onUpdateOrderStatus,
+    onUpdatePaymentStatus,
     formatCurrency
 }) => {
     const [oCurrentPage, setOCurrentPage] = useState<number>(1);
@@ -55,9 +57,19 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                                     </td>
                                     <td>
                                         <div className="text-danger fw-bold">{formatCurrency(o.totalAmount)}</div>
-                                        <span className="badge bg-light text-dark border" style={{ fontSize: "11px" }}>
-                                            {o.paymentMethod}
-                                        </span>
+                                        <div className="d-flex align-items-center gap-1 mt-1">
+                                            <span className="badge bg-light text-dark border" style={{ fontSize: "11px" }}>
+                                                {o.paymentMethod}
+                                            </span>
+                                            <span 
+                                                className={`badge cursor-pointer ${o.paymentStatus ? "bg-success" : "bg-warning text-dark"}`}
+                                                style={{ fontSize: "11px", cursor: "pointer" }}
+                                                onClick={() => onUpdatePaymentStatus(o.id, !o.paymentStatus)}
+                                                title="Nhấn để đổi trạng thái thanh toán"
+                                            >
+                                                {o.paymentStatus ? "Đã thanh toán" : "Chưa thanh toán"}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
                                         <span className={`status-badge status-${o.orderStatus.id}`}>
@@ -69,13 +81,14 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                                             className="form-select form-select-sm border-secondary-subtle"
                                             style={{ width: "160px", fontSize: "13px", fontWeight: "600" }}
                                             value={o.orderStatus.id}
+                                            disabled={o.orderStatus.id === 4 || o.orderStatus.id === 5}
                                             onChange={(e) => onUpdateOrderStatus(o.id, Number(e.target.value))}
                                         >
-                                            <option value={1}>Chờ xác nhận</option>
-                                            <option value={2}>Đã xác nhận</option>
-                                            <option value={3}>Đang giao hàng</option>
-                                            <option value={4}>Đã giao hàng</option>
-                                            <option value={5}>Đã hủy</option>
+                                            <option value={1} disabled={1 < o.orderStatus.id}>Chờ xác nhận</option>
+                                            <option value={2} disabled={2 < o.orderStatus.id}>Đã xác nhận</option>
+                                            <option value={3} disabled={3 < o.orderStatus.id}>Đang giao hàng</option>
+                                            <option value={4} disabled={4 < o.orderStatus.id}>Đã giao hàng</option>
+                                            <option value={5} disabled={5 < o.orderStatus.id}>Đã hủy</option>
                                         </select>
                                     </td>
                                 </tr>

@@ -5,8 +5,10 @@ import axios from "axios";
 import {
     FaMapMarkerAlt,
     FaSearch,
-    FaShoppingCart
+    FaShoppingCart,
+    FaBell
 } from "react-icons/fa";
+import axios from "axios";
 
 import { IoMdPhonePortrait } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -27,8 +29,75 @@ export const Header = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
+    const token = sessionStorage.getItem("token");
+
+    const [notifications, setNotifications] = React.useState<any[]>([]);
+    const [showNotifications, setShowNotifications] = React.useState(false);
+    const [unreadCount, setUnreadCount] = React.useState(0);
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+    const fetchNotifications = React.useCallback(async () => {
+        if (!user) return;
+        const userId = user.userId || user.id;
+        try {
+            const res = await axios.get(`http://localhost:8080/api/notifications/user/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data) {
+                setNotifications(res.data);
+                setUnreadCount(res.data.filter((n: any) => !n.read && !n.isRead).length);
+            }
+        } catch (err) {
+            console.error("Error fetching notifications:", err);
+        }
+    }, [user, token]);
+
+    React.useEffect(() => {
+        if (user) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 20000);
+            return () => clearInterval(interval);
+        }
+    }, [user, fetchNotifications]);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowNotifications(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleMarkAsRead = async (id: number) => {
+        try {
+            await axios.put(`http://localhost:8080/api/notifications/${id}/read`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(notifications.map(n => n.id === id ? { ...n, isRead: true, read: true } : n));
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        } catch (err) {
+            console.error("Error marking notification as read:", err);
+        }
+    };
+
+    const handleMarkAllAsRead = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const userId = user ? (user.userId || user.id) : "";
+        if (!userId) return;
+        try {
+            await axios.put(`http://localhost:8080/api/notifications/user/${userId}/read-all`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(notifications.map(n => ({ ...n, isRead: true, read: true })));
+            setUnreadCount(0);
+        } catch (err) {
+            console.error("Error marking all notifications as read:", err);
+        }
+    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -84,8 +153,8 @@ export const Header = () => {
     }, [searchTerm]);
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("token");
         window.location.href = "/";
     };
 
@@ -244,6 +313,43 @@ export const Header = () => {
                                         </div>
                                     )}
                                 </form>
+
+                                {/* NOTIFICATION BELL */}
+                                {user && (
+                                    <div className="notification-bell-container" ref={dropdownRef}>
+                                        <div className="mini-notification" onClick={() => setShowNotifications(!showNotifications)} aria-label="Thông báo">
+                                            <FaBell />
+                                            {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
+                                        </div>
+                                        {showNotifications && (
+                                            <div className="notification-dropdown">
+                                                <div className="notification-header">
+                                                    <h5>Thông báo</h5>
+                                                    {unreadCount > 0 && (
+                                                        <button className="btn-read-all" onClick={handleMarkAllAsRead}>
+                                                            Đọc tất cả
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <div className="notification-body">
+                                                    {notifications.length === 0 ? (
+                                                        <div className="notification-empty">Không có thông báo mới</div>
+                                                    ) : (
+                                                        notifications.map(n => (
+                                                            <div key={n.id} className={`notification-item ${n.isRead || n.read ? "read" : "unread"}`} onClick={() => handleMarkAsRead(n.id)}>
+                                                                <div className="notification-item-title">{n.title}</div>
+                                                                <div className="notification-item-message">{n.message}</div>
+                                                                <div className="notification-item-time">
+                                                                    {new Date(n.createdAt).toLocaleString("vi-VN")}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* CART */}
                                 <a href="/cart" className="mini-cart-link" aria-label="Giỏ hàng">
