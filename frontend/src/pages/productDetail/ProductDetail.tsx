@@ -7,6 +7,8 @@ import { Product } from "../../models";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import { FaCartPlus, FaHeart, FaStar, FaChevronRight, FaPlus, FaMinus } from "react-icons/fa";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import { getBookCover } from "../../common/imageHelper";
 import "./ProductDetail.css";
 
@@ -15,9 +17,26 @@ function ProductDetail() {
     const dispatch = useDispatch();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+    const [relatedLoading, setRelatedLoading] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [addedToCartSuccess, setAddedToCartSuccess] = useState(false);
     const [activeTab, setActiveTab] = useState<"desc" | "shipping">("desc");
+
+    const relatedResponsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 4
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 3
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 2
+        }
+    };
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -38,6 +57,36 @@ function ProductDetail() {
             fetchProductDetails();
         }
     }, [id]);
+
+    useEffect(() => {
+        const fetchRelatedProducts = async (categoryId: number, productId: number) => {
+            setRelatedLoading(true);
+            try {
+                const response = await axios.get("http://localhost:8080/api/products", {
+                    params: {
+                        categoryId,
+                        page: 0,
+                        size: 12
+                    }
+                });
+
+                const items: Product[] = response.data?.content || [];
+                const filtered = items.filter((p) => p.id !== productId).slice(0, 10);
+                setRelatedProducts(filtered);
+            } catch (error) {
+                console.error("Error fetching related products:", error);
+                setRelatedProducts([]);
+            } finally {
+                setRelatedLoading(false);
+            }
+        };
+
+        if (product?.category?.id && product?.id) {
+            fetchRelatedProducts(product.category.id, product.id);
+        } else {
+            setRelatedProducts([]);
+        }
+    }, [product?.category?.id, product?.id]);
 
     const handleQuantityChange = (type: "inc" | "dec") => {
         if (type === "dec") {
@@ -244,6 +293,58 @@ function ProductDetail() {
                             </p>
                         )}
                     </div>
+                </div>
+
+                <div className="related-products-section">
+                    <div className="related-products-header">
+                        <h3 className="related-products-title">Sản phẩm gợi ý</h3>
+                        <p className="related-products-subtitle">
+                            Các sản phẩm cùng thể loại để bạn tham khảo thêm.
+                        </p>
+                    </div>
+
+                    {relatedLoading ? (
+                        <div className="related-loading">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                            <p className="mt-2 text-muted">Đang tải gợi ý sản phẩm...</p>
+                        </div>
+                    ) : relatedProducts.length === 0 ? (
+                        <div className="related-empty">
+                            <p className="text-muted mb-0">Chưa có sản phẩm gợi ý trong thể loại này.</p>
+                        </div>
+                    ) : (
+                        <Carousel responsive={relatedResponsive} infinite>
+                            {relatedProducts.map((item) => (
+                                <div className="related-card" key={item.id}>
+                                    <Link
+                                        to={`/product/${item.id}`}
+                                        className="related-card-link"
+                                        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                                    >
+                                        <div className="related-card-image">
+                                            <img
+                                                src={getBookCover(item.image, item.id)}
+                                                alt={item.title}
+                                            />
+                                        </div>
+                                        <div className="related-card-content">
+                                            <div className="related-card-title" title={item.title}>
+                                                {item.title}
+                                            </div>
+                                            <div className="related-card-author">
+                                                {item.author || "Chưa cập nhật"}
+                                            </div>
+                                            <div className="related-card-price">
+                                                {item.currentPrice.toLocaleString("vi-VN")} VNĐ
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))}
+                        </Carousel>
+                    )}
                 </div>
             </div>
 
