@@ -213,3 +213,12 @@ export interface RateDto {
     stars: number;
     orderDetailsId: number;
 }
+
+export interface Notification {
+    id: number;
+    user: User;
+    title: string;
+    message: string;
+    isRead: boolean;
+    createdAt: string;
+}
