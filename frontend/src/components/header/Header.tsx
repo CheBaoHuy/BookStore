@@ -8,7 +8,6 @@ import {
     FaShoppingCart,
     FaBell
 } from "react-icons/fa";
-import axios from "axios";
 
 import { IoMdPhonePortrait } from "react-icons/io";
 import { useSelector } from "react-redux";
