@@ -9,6 +9,7 @@ import OrderSuccess from "./pages/checkoutScreen/OrderSuccess";
 import OrderTracking from "./pages/orders/OrderTracking";
 import Forgot from "./pages/forgot/Forgot";
 import About from "./pages/aboutUs/About";
+import FooterInfoPage from "./pages/footerInfo/FooterInfoPage";
 import Learning from "./pages/learning/Learning";
 import Novel from "./pages/novel/Novel";
 import Business from "./pages/business/Business";
@@ -33,6 +34,7 @@ function App() {
         <Route path="/orders" element={<OrderTracking />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/about" element={<About />} />
+        <Route path="/info/:slug" element={<FooterInfoPage />} />
         <Route path="/learning" element={<Learning />} />
         <Route path="/novel" element={<Novel />} />
         <Route path="/business" element={<Business />} />

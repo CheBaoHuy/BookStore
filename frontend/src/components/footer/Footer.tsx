@@ -1,6 +1,7 @@
 
 import React from "react";
 import "./Footer.css";
+import { Link } from "react-router-dom";
 
 import { CiLocationOn, CiMail } from "react-icons/ci";
 import { FaPhone } from "react-icons/fa";
@@ -10,6 +11,24 @@ import logo_green from "../../images/logo_green.png";
 import store_locations from "../../images/store locations.jpg";
 
 export const Footer = () => {
+    const shoppingGuideLinks = [
+        { label: "Hướng dẫn mua hàng", path: "/info/how-to-buy" },
+        { label: "Câu hỏi thường gặp", path: "/info/faq" },
+        { label: "Hệ thống cửa hàng", path: "/info/store-locations" },
+        { label: "Chính sách đổi trả", path: "/info/return-policy" },
+        { label: "Chính sách thanh toán", path: "/info/payment-policy" },
+        { label: "Chính sách vận chuyển", path: "/info/shipment" }
+    ];
+
+    const informationLinks = [
+        { label: "Giới thiệu", path: "/about" },
+        { label: "Thông tin giao hàng", path: "/info/delivery-information" },
+        { label: "Chính sách bảo mật", path: "/info/privacy-policy" },
+        { label: "Chính sách khuyến mãi", path: "/info/discount" },
+        { label: "Chăm sóc khách hàng", path: "/info/customer-service" },
+        { label: "Điều khoản và điều kiện", path: "/info/terms-conditions" }
+    ];
+
     return (
         <>
             <footer>
@@ -23,12 +42,12 @@ export const Footer = () => {
 
                             <div className="footer-logo">
 
-                                <a href="/">
+                                <Link to="/">
                                     <img
                                         src={logo_green}
                                         alt="Book Store Logo"
                                     />
-                                </a>
+                                </Link>
 
                             </div>
 
@@ -70,40 +89,16 @@ export const Footer = () => {
                             <div className="widget-nav-menu">
 
                                 <h2 className="widget-title">
-                                    Shopping Guide
+                                    Hướng dẫn mua sắm
                                 </h2>
 
                                 <ul className="menu-footer-container">
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">How to Buy</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">FAQ</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Store Locations</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Return Policy</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Payment</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Shipment</a>
-                                    </li>
+                                    {shoppingGuideLinks.map((item) => (
+                                        <li className="menu-item" key={item.path}>
+                                            <FaRegCircle className="menu-item-icon" />
+                                            <Link to={item.path}>{item.label}</Link>
+                                        </li>
+                                    ))}
 
                                 </ul>
 
@@ -117,40 +112,16 @@ export const Footer = () => {
                             <div className="widget-nav-menu">
 
                                 <h2 className="widget-title">
-                                    Information
+                                    Thông tin
                                 </h2>
 
                                 <ul className="menu-footer-container">
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">About Us</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Delivery Information</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Privacy Policy</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Discount</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Customer Service</a>
-                                    </li>
-
-                                    <li className="menu-item">
-                                        <FaRegCircle className="menu-item-icon" />
-                                        <a href="/">Terms & Conditions</a>
-                                    </li>
+                                    {informationLinks.map((item) => (
+                                        <li className="menu-item" key={item.path}>
+                                            <FaRegCircle className="menu-item-icon" />
+                                            <Link to={item.path}>{item.label}</Link>
+                                        </li>
+                                    ))}
 
                                 </ul>
 
@@ -164,15 +135,19 @@ export const Footer = () => {
                             <div className="widget-nav-menu">
 
                                 <h2 className="widget-title">
-                                    Store Locations
+                                    <Link to="/info/store-locations" className="footer-title-link">
+                                        Hệ thống cửa hàng
+                                    </Link>
                                 </h2>
 
                                 <div className="text-widget">
 
-                                    <img
-                                        src={store_locations}
-                                        alt="Store Locations"
-                                    />
+                                    <Link to="/info/store-locations" className="footer-image-link">
+                                        <img
+                                            src={store_locations}
+                                            alt="Hệ thống cửa hàng"
+                                        />
+                                    </Link>
 
                                 </div>
 
