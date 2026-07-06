@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.OrderDto;
+import com.bookstore.dto.RevenueCategoryShareDto;
 import com.bookstore.dto.RevenueTrendPointDto;
 import com.bookstore.model.*;
 import com.bookstore.repository.*;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,6 +293,50 @@ public class OrderService {
                 .toList();
     }
 
+    public List<RevenueCategoryShareDto> getRevenueByCategoryInMonth(int year, int month) {
+        OrderStatus deliveredStatus = orderStatusRepository.findByStatus("Đã giao hàng")
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trạng thái đơn hàng đã giao!"));
+
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = startDate.plusMonths(1).atStartOfDay();
+
+        List<Order> deliveredOrders = orderRepository.findRevenueOrdersInRange(
+                deliveredStatus.getId(),
+                startDateTime,
+                endDateTime
+        );
+
+        Map<Long, RevenueCategoryAccumulator> revenueByCategory = new LinkedHashMap<>();
+
+        for (Order order : deliveredOrders) {
+            if (order.getOrderDetails() == null) {
+                continue;
+            }
+
+            for (OrderDetail detail : order.getOrderDetails()) {
+                if (detail.getProduct() == null || detail.getProduct().getCategory() == null) {
+                    continue;
+                }
+
+                Category category = detail.getProduct().getCategory();
+                RevenueCategoryAccumulator accumulator = revenueByCategory.computeIfAbsent(
+                        category.getId(),
+                        key -> new RevenueCategoryAccumulator(category.getId(), category.getName())
+                );
+
+                BigDecimal price = detail.getPrice() != null ? detail.getPrice() : BigDecimal.ZERO;
+                BigDecimal quantity = BigDecimal.valueOf(detail.getQuantity());
+                accumulator.revenue = accumulator.revenue.add(price.multiply(quantity));
+            }
+        }
+
+        return revenueByCategory.values().stream()
+                .sorted(Comparator.comparing(RevenueCategoryAccumulator::getRevenue).reversed())
+                .map(item -> new RevenueCategoryShareDto(item.categoryId, item.categoryName, item.revenue))
+                .toList();
+    }
+
     private BigDecimal calculateOrderRevenue(Order order, Long categoryId) {
         if (categoryId == null) {
             return order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO;
@@ -310,5 +356,20 @@ public class OrderService {
                     return price.multiply(quantity);
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static class RevenueCategoryAccumulator {
+        private final Long categoryId;
+        private final String categoryName;
+        private BigDecimal revenue = BigDecimal.ZERO;
+
+        private RevenueCategoryAccumulator(Long categoryId, String categoryName) {
+            this.categoryId = categoryId;
+            this.categoryName = categoryName;
+        }
+
+        private BigDecimal getRevenue() {
+            return revenue;
+        }
     }
 }

@@ -78,6 +78,12 @@ export interface RevenueTrendPoint {
     revenue: number;
 }
 
+export interface RevenueCategoryShare {
+    categoryId: number;
+    categoryName: string;
+    revenue: number;
+}
+
 export interface Category {
     id: number;
     parentCategory: Category | null;

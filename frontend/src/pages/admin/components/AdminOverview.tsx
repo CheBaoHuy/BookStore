@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { FaChartBar, FaShoppingCart, FaUsers, FaBook } from "react-icons/fa";
-import { Category, Order, Product, RevenueTrendPoint, User } from "../../../models";
+import { FaBook, FaChartBar, FaShoppingCart, FaUsers } from "react-icons/fa";
+import { Category, Order, Product, RevenueCategoryShare, RevenueTrendPoint, User } from "../../../models";
 
 interface AdminOverviewProps {
     products: Product[];
@@ -20,6 +20,9 @@ const padDatePart = (value: number) => String(value).padStart(2, "0");
 const formatDateInput = (date: Date) =>
     `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`;
 
+const formatMonthInput = (date: Date) =>
+    `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}`;
+
 const parseDateString = (date: string) => {
     const [year, month, day] = date.split("-").map(Number);
     return new Date(year, month - 1, day);
@@ -33,6 +36,17 @@ const getOrderDateKey = (createdAt: string) => {
 const formatChartLabel = (date: string) => {
     const parsedDate = parseDateString(date);
     return `${padDatePart(parsedDate.getDate())}/${padDatePart(parsedDate.getMonth() + 1)}`;
+};
+
+const getMonthRange = (monthValue: string) => {
+    const [year, month] = monthValue.split("-").map(Number);
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 0);
+
+    return {
+        startDate: formatDateInput(start),
+        endDate: formatDateInput(end)
+    };
 };
 
 const formatCompactRevenue = (value: number) => {
@@ -56,15 +70,14 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
     setCategoryFilter,
     formatCurrency
 }) => {
-    const token = localStorage.getItem("token");
-    const chartScrollRef = useRef<HTMLDivElement | null>(null);
-    const chartDragStateRef = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     const defaultEndDate = formatDateInput(new Date());
     const defaultStartDate = (() => {
         const date = new Date();
         date.setDate(date.getDate() - 6);
         return formatDateInput(date);
     })();
+    const defaultMonth = formatMonthInput(new Date());
 
     const [startDateInput, setStartDateInput] = useState(defaultStartDate);
     const [endDateInput, setEndDateInput] = useState(defaultEndDate);
@@ -72,17 +85,14 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
         startDate: defaultStartDate,
         endDate: defaultEndDate
     });
+    const [monthlyInput, setMonthlyInput] = useState(defaultMonth);
+    const [appliedMonth, setAppliedMonth] = useState(defaultMonth);
     const [revenueTrend, setRevenueTrend] = useState<RevenueTrendPoint[]>([]);
-    const [chartLoading, setChartLoading] = useState(false);
-    const [chartMessage, setChartMessage] = useState("");
-    const [chartZoom, setChartZoom] = useState(1);
-    const [chartIsActive, setChartIsActive] = useState(false);
-    const [isChartDragging, setIsChartDragging] = useState(false);
-
-    const updateChartScrollState = () => {
-        const element = chartScrollRef.current;
-        if (!element) return;
-    };
+    const [categoryRevenueShare, setCategoryRevenueShare] = useState<RevenueCategoryShare[]>([]);
+    const [barChartLoading, setBarChartLoading] = useState(false);
+    const [pieChartLoading, setPieChartLoading] = useState(false);
+    const [barChartMessage, setBarChartMessage] = useState("");
+    const [pieChartMessage, setPieChartMessage] = useState("");
 
     const filteredOrders = useMemo(() => {
         return orders.filter(o => {
@@ -121,53 +131,37 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
     useEffect(() => {
         let isCancelled = false;
 
+        const getLocalRevenueTrend = (startDate: string, endDate: string): RevenueTrendPoint[] => {
+            const points: RevenueTrendPoint[] = [];
+            const start = parseDateString(startDate);
+            const end = parseDateString(endDate);
+
+            for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+                const dateKey = formatDateInput(new Date(date));
+                const dayRevenue = orders
+                    .filter(order => order.orderStatus?.id === 4)
+                    .filter(order => getOrderDateKey(order.createdAt) === dateKey)
+                    .reduce((sum, order) => sum + Number(order.totalAmount || order.total_amount || 0), 0);
+
+                points.push({
+                    date: dateKey,
+                    revenue: dayRevenue
+                });
+            }
+
+            return points;
+        };
+
         const fetchRevenueTrend = async () => {
-            setChartLoading(true);
-            setChartMessage("");
-
-            const getLocalRevenueTrend = (startDate: string, endDate: string): RevenueTrendPoint[] => {
-                const points: RevenueTrendPoint[] = [];
-                const start = parseDateString(startDate);
-                const end = parseDateString(endDate);
-
-                for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-                    const dateKey = formatDateInput(new Date(date));
-                    const dayRevenue = orders
-                        .filter(o => o.orderStatus?.id === 4)
-                        .filter(o => getOrderDateKey(o.createdAt) === dateKey)
-                        .reduce((sum, order) => {
-                            if (categoryFilter === "all") {
-                                return sum + Number(order.totalAmount || order.total_amount || 0);
-                            }
-
-                            const details = order.orderDetails || [];
-                            return sum + details
-                                .filter((detail: any) => detail.product?.category?.id === Number(categoryFilter))
-                                .reduce((detailSum: number, detail: any) =>
-                                    detailSum + Number(detail.price || 0) * Number(detail.quantity || 0), 0);
-                        }, 0);
-
-                    points.push({
-                        date: dateKey,
-                        revenue: dayRevenue
-                    });
-                }
-
-                return points;
-            };
+            setBarChartLoading(true);
+            setBarChartMessage("");
 
             try {
-                const params: Record<string, string | number> = {
-                    startDate: appliedDateRange.startDate,
-                    endDate: appliedDateRange.endDate
-                };
-
-                if (categoryFilter !== "all") {
-                    params.categoryId = Number(categoryFilter);
-                }
-
                 const response = await axios.get("http://localhost:8080/api/orders/revenue-trend", {
-                    params,
+                    params: {
+                        startDate: appliedDateRange.startDate,
+                        endDate: appliedDateRange.endDate
+                    },
                     headers: token ? { Authorization: `Bearer ${token}` } : undefined
                 });
 
@@ -180,11 +174,11 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             } catch {
                 if (!isCancelled) {
                     setRevenueTrend(getLocalRevenueTrend(appliedDateRange.startDate, appliedDateRange.endDate));
-                    setChartMessage("Không lấy được thống kê từ server, biểu đồ đang dùng dữ liệu đơn hàng hiện có.");
+                    setBarChartMessage("Không lấy được biểu đồ cột từ server, hệ thống đang dùng dữ liệu đơn hàng hiện có.");
                 }
             } finally {
                 if (!isCancelled) {
-                    setChartLoading(false);
+                    setBarChartLoading(false);
                 }
             }
         };
@@ -194,118 +188,113 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
         return () => {
             isCancelled = true;
         };
-    }, [appliedDateRange, categoryFilter, orders, token]);
+    }, [appliedDateRange, orders, token]);
 
     useEffect(() => {
-        updateChartScrollState();
+        let isCancelled = false;
 
-        const handleResize = () => updateChartScrollState();
-        window.addEventListener("resize", handleResize);
+        const getLocalCategoryShare = (monthValue: string): RevenueCategoryShare[] => {
+            const { startDate, endDate } = getMonthRange(monthValue);
+            const start = parseDateString(startDate);
+            const end = parseDateString(endDate);
+            const endOfDay = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999);
+            const categoryMap: Record<number, RevenueCategoryShare> = {};
+
+            orders
+                .filter(order => order.orderStatus?.id === 4)
+                .filter(order => {
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate >= start && orderDate <= endOfDay;
+                })
+                .forEach(order => {
+                    const details = Array.isArray(order.orderDetails) ? order.orderDetails : [];
+                    details.forEach((detail: any) => {
+                        const category = detail.product?.category;
+                        if (!category?.id) return;
+
+                        if (!categoryMap[category.id]) {
+                            categoryMap[category.id] = {
+                                categoryId: category.id,
+                                categoryName: category.name,
+                                revenue: 0
+                            };
+                        }
+
+                        categoryMap[category.id].revenue += Number(detail.price || 0) * Number(detail.quantity || 0);
+                    });
+                });
+
+            return Object.values(categoryMap).sort((a, b) => b.revenue - a.revenue);
+        };
+
+        const fetchRevenueCategoryShare = async () => {
+            setPieChartLoading(true);
+            setPieChartMessage("");
+
+            try {
+                const response = await axios.get("http://localhost:8080/api/orders/revenue-category-share", {
+                    params: {
+                        month: appliedMonth
+                    },
+                    headers: token ? { Authorization: `Bearer ${token}` } : undefined
+                });
+
+                if (!isCancelled) {
+                    setCategoryRevenueShare((response.data || []).map((item: RevenueCategoryShare) => ({
+                        categoryId: Number(item.categoryId),
+                        categoryName: item.categoryName,
+                        revenue: Number(item.revenue || 0)
+                    })));
+                }
+            } catch {
+                if (!isCancelled) {
+                    setCategoryRevenueShare(getLocalCategoryShare(appliedMonth));
+                    setPieChartMessage("Không lấy được biểu đồ tròn từ server, hệ thống đang dùng dữ liệu đơn hàng hiện có.");
+                }
+            } finally {
+                if (!isCancelled) {
+                    setPieChartLoading(false);
+                }
+            }
+        };
+
+        fetchRevenueCategoryShare();
 
         return () => {
-            window.removeEventListener("resize", handleResize);
+            isCancelled = true;
         };
-    }, [revenueTrend, chartLoading]);
-
-    useEffect(() => {
-        const stopChartDrag = () => {
-            chartDragStateRef.current.isDragging = false;
-            setIsChartDragging(false);
-        };
-
-        window.addEventListener("mouseup", stopChartDrag);
-
-        return () => {
-            window.removeEventListener("mouseup", stopChartDrag);
-        };
-    }, []);
-
-    useEffect(() => {
-        const element = chartScrollRef.current;
-        if (!element) return;
-
-        const handleNativeWheel = (event: WheelEvent) => {
-            if (!chartIsActive || revenueTrend.length === 0) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const currentZoom = chartZoom;
-            const zoomStep = event.deltaY < 0 ? 0.2 : -0.2;
-            const nextZoom = Math.min(3, Math.max(1, Number((currentZoom + zoomStep).toFixed(2))));
-
-            if (nextZoom === currentZoom) return;
-
-            const rect = element.getBoundingClientRect();
-            const pointerOffsetX = event.clientX - rect.left;
-            const scrollAnchor = element.scrollLeft + pointerOffsetX;
-            const zoomRatio = nextZoom / currentZoom;
-
-            setChartZoom(nextZoom);
-
-            requestAnimationFrame(() => {
-                element.scrollLeft = Math.max(0, scrollAnchor * zoomRatio - pointerOffsetX);
-                updateChartScrollState();
-            });
-        };
-
-        element.addEventListener("wheel", handleNativeWheel, { passive: false });
-
-        return () => {
-            element.removeEventListener("wheel", handleNativeWheel);
-        };
-    }, [chartIsActive, revenueTrend.length, chartZoom]);
+    }, [appliedMonth, orders, token]);
 
     const handleApplyDateRange = () => {
         if (!startDateInput || !endDateInput) {
-            setChartMessage("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
+            setBarChartMessage("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
             return;
         }
 
         if (startDateInput > endDateInput) {
-            setChartMessage("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+            setBarChartMessage("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
             return;
         }
 
-        setChartMessage("");
+        setBarChartMessage("");
         setAppliedDateRange({
             startDate: startDateInput,
             endDate: endDateInput
         });
     };
 
-    const handleChartMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-        const element = chartScrollRef.current;
-        if (!element || chartPoints.length === 0) return;
+    const handleApplyMonth = () => {
+        if (!monthlyInput) {
+            setPieChartMessage("Vui lòng chọn tháng cần thống kê.");
+            return;
+        }
 
-        chartDragStateRef.current = {
-            isDragging: true,
-            startX: event.clientX,
-            scrollLeft: element.scrollLeft
-        };
-
-        setChartIsActive(true);
-        setIsChartDragging(true);
-        element.focus();
-    };
-
-    const handleChartMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        const element = chartScrollRef.current;
-        if (!element || !chartDragStateRef.current.isDragging) return;
-
-        event.preventDefault();
-        const deltaX = event.clientX - chartDragStateRef.current.startX;
-        element.scrollLeft = chartDragStateRef.current.scrollLeft - deltaX;
-        updateChartScrollState();
-    };
-
-    const handleChartMouseUp = () => {
-        chartDragStateRef.current.isDragging = false;
-        setIsChartDragging(false);
+        setPieChartMessage("");
+        setAppliedMonth(monthlyInput);
     };
 
     const statsRevenue = filteredOrders
-        .filter(o => o.orderStatus && o.orderStatus.id === 4)
+        .filter(o => o.orderStatus?.id === 4)
         .reduce((sum, o) => {
             if (categoryFilter === "all") {
                 return sum + Number(o.totalAmount || o.total_amount || 0);
@@ -324,7 +313,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
     const statsUsersCount = new Set(filteredOrders.map(o => o.email)).size || users.length;
 
     const statsBooksCount = filteredOrders
-        .filter(o => o.orderStatus && o.orderStatus.id === 4)
+        .filter(o => o.orderStatus?.id === 4)
         .reduce((set, o) => {
             const details = o.orderDetails || [];
             details.forEach((detail: any) => {
@@ -370,70 +359,43 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             .slice(0, 5);
     }, [filteredOrders, categoryFilter]);
 
-    const categoryShare = useMemo(() => {
-        const shareMap: Record<number, { categoryName: string; quantity: number; revenue: number }> = {};
+    const barChartMaxRevenue = Math.max(...revenueTrend.map(point => Number(point.revenue || 0)), 1);
+    const barChartInnerWidth = Math.max(760, revenueTrend.length * 78);
 
-        filteredOrders
-            .filter(o => o.orderStatus?.id === 4)
-            .forEach(o => {
-                const details = o.orderDetails || [];
-                details.forEach((detail: any) => {
-                    if (!detail.product?.category) return;
+    const pieChartSegments = useMemo(() => {
+        const topItems = categoryRevenueShare.slice(0, 5);
+        const remainingRevenue = categoryRevenueShare
+            .slice(5)
+            .reduce((sum, item) => sum + Number(item.revenue || 0), 0);
 
-                    const category = detail.product.category;
-                    if (!shareMap[category.id]) {
-                        shareMap[category.id] = {
-                            categoryName: category.name,
-                            quantity: 0,
-                            revenue: 0
-                        };
-                    }
+        const mergedItems = remainingRevenue > 0
+            ? [...topItems, { categoryId: 0, categoryName: "Khác", revenue: remainingRevenue }]
+            : topItems;
 
-                    shareMap[category.id].quantity += Number(detail.quantity || 0);
-                    shareMap[category.id].revenue += Number(detail.price || 0) * Number(detail.quantity || 0);
-                });
-            });
+        const total = mergedItems.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
+        const colors = ["#2563eb", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#64748b"];
+        let currentAngle = 0;
 
-        const sorted = Object.values(shareMap).sort((a, b) => b.revenue - a.revenue);
-        const totalShareRevenue = sorted.reduce((sum, item) => sum + item.revenue, 0);
+        return mergedItems.map((item, index) => {
+            const percentage = total > 0 ? (Number(item.revenue || 0) / total) * 100 : 0;
+            const startAngle = currentAngle;
+            currentAngle += percentage * 3.6;
 
-        return sorted
-            .map(item => ({
+            return {
                 ...item,
-                percentage: totalShareRevenue > 0 ? Math.round((item.revenue / totalShareRevenue) * 100) : 0
-            }))
-            .slice(0, 5);
-    }, [filteredOrders]);
+                percentage,
+                color: colors[index % colors.length],
+                startAngle,
+                endAngle: currentAngle
+            };
+        });
+    }, [categoryRevenueShare]);
 
-    const chartLogicalWidth = Math.max(980, revenueTrend.length * 140);
-    const chartLogicalHeight = 230;
-    const chartRenderedWidth = Math.round(chartLogicalWidth * chartZoom);
-    const chartRenderedHeight = Math.round(chartLogicalHeight * chartZoom);
-    const chartBaseline = 175;
-    const chartStartX = 50;
-    const chartEndX = chartLogicalWidth - 40;
-    const chartStep = revenueTrend.length > 1 ? (chartEndX - chartStartX) / (revenueTrend.length - 1) : 0;
-    const maxRevenue = Math.max(...revenueTrend.map(point => Number(point.revenue || 0)), 100000);
-    const chartPoints = revenueTrend.map((point, index) => {
-        const value = Number(point.revenue || 0);
-        const x = revenueTrend.length > 1 ? chartStartX + chartStep * index : chartLogicalWidth / 2;
-        const y = chartBaseline - (value / maxRevenue) * 120;
-
-        return {
-            x,
-            y,
-            value,
-            label: formatChartLabel(point.date),
-            date: point.date
-        };
-    });
-
-    const linePath = chartPoints
-        .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-        .join(" ");
-    const areaPath = chartPoints.length > 0
-        ? `${linePath} L ${chartPoints[chartPoints.length - 1].x} ${chartBaseline} L ${chartPoints[0].x} ${chartBaseline} Z`
-        : "";
+    const pieChartBackground = pieChartSegments.length === 0
+        ? "#e2e8f0"
+        : `conic-gradient(${pieChartSegments
+            .map(segment => `${segment.color} ${segment.startAngle}deg ${segment.endAngle}deg`)
+            .join(", ")})`;
 
     return (
         <div className="admin-tab-content">
@@ -506,9 +468,9 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
                 <div className="chart-panel">
                     <div className="chart-panel-header">
                         <div>
-                            <h4 className="chart-title">Xu hướng doanh thu theo ngày</h4>
+                            <h4 className="chart-title">Biểu đồ cột doanh thu theo ngày</h4>
                             <p className="chart-subtitle">
-                                Chọn khoảng thời gian từ ngày này đến ngày kia để xem biểu đồ doanh thu.
+                                Chọn khoảng ngày để xem doanh thu cửa hàng theo từng ngày.
                             </p>
                         </div>
 
@@ -539,129 +501,130 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
                                 type="button"
                                 className="btn-apply-range"
                                 onClick={handleApplyDateRange}
-                                disabled={chartLoading}
+                                disabled={barChartLoading}
                             >
-                                {chartLoading ? "Đang tải..." : "Hiển thị biểu đồ"}
+                                {barChartLoading ? "Đang tải..." : "Xem biểu đồ cột"}
                             </button>
                         </div>
                     </div>
 
                     <div className="chart-range-caption">
                         Khoảng đang xem: <strong>{formatChartLabel(appliedDateRange.startDate)}</strong> đến{" "}
-                        <strong>{formatChartLabel(appliedDateRange.endDate)}</strong> • Zoom: <strong>{Math.round(chartZoom * 100)}%</strong>
+                        <strong>{formatChartLabel(appliedDateRange.endDate)}</strong>
                     </div>
 
-                    {chartMessage && <div className="chart-message">{chartMessage}</div>}
+                    {barChartMessage && <div className="chart-message">{barChartMessage}</div>}
 
-                    <div className="chart-scroll-shell">
-                        <div
-                            ref={chartScrollRef}
-                            className={`chart-container chart-scroll-container ${chartIsActive ? "active" : ""} ${isChartDragging ? "dragging" : ""}`}
-                            onScroll={updateChartScrollState}
-                            onClick={() => {
-                                setChartIsActive(true);
-                                chartScrollRef.current?.focus();
-                            }}
-                            onMouseDown={handleChartMouseDown}
-                            onMouseMove={handleChartMouseMove}
-                            onMouseUp={handleChartMouseUp}
-                            onMouseLeave={handleChartMouseUp}
-                            onBlur={() => setChartIsActive(false)}
-                            tabIndex={0}
-                            role="application"
-                            aria-label="Biểu đồ doanh thu, click để kích hoạt phóng to bằng lăn chuột"
-                        >
-                        {chartLoading ? (
-                            <div className="chart-empty-state">Đang tải dữ liệu biểu đồ...</div>
-                        ) : chartPoints.length === 0 ? (
-                            <div className="chart-empty-state">Không có dữ liệu doanh thu trong khoảng thời gian này.</div>
-                        ) : (
-                            <div
-                                className="chart-canvas"
-                                style={{
-                                    width: `${chartRenderedWidth}px`,
-                                    height: `${chartRenderedHeight}px`
-                                }}
-                            >
-                                <svg
-                                    width={chartRenderedWidth}
-                                    height={chartRenderedHeight}
-                                    viewBox={`0 0 ${chartLogicalWidth} ${chartLogicalHeight}`}
-                                    preserveAspectRatio="xMinYMin meet"
-                                >
-                                    <defs>
-                                        <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
-                                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
-                                        </linearGradient>
-                                    </defs>
+                    {barChartLoading ? (
+                        <div className="chart-empty-state">Đang tải dữ liệu biểu đồ cột...</div>
+                    ) : revenueTrend.length === 0 ? (
+                        <div className="chart-empty-state">Không có dữ liệu doanh thu trong khoảng thời gian này.</div>
+                    ) : (
+                        <div className="bar-chart-shell">
+                            <div className="bar-chart-scroll">
+                                <div className="bar-chart-inner" style={{ width: `${barChartInnerWidth}px` }}>
+                                    {revenueTrend.map((point) => {
+                                        const revenue = Number(point.revenue || 0);
+                                        const heightPercent = Math.max((revenue / barChartMaxRevenue) * 100, revenue > 0 ? 6 : 0);
 
-                                    <line x1="40" y1="55" x2={chartLogicalWidth - 30} y2="55" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                                    <line x1="40" y1="115" x2={chartLogicalWidth - 30} y2="115" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                                    <line x1="40" y1={chartBaseline} x2={chartLogicalWidth - 30} y2={chartBaseline} stroke="#e2e8f0" strokeWidth="1.5" />
-
-                                    {areaPath && <path d={areaPath} fill="url(#chart-grad)" />}
-                                    {linePath && (
-                                        <path
-                                            d={linePath}
-                                            fill="none"
-                                            stroke="#2563eb"
-                                            strokeWidth="3"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    )}
-
-                                    {chartPoints.map((point, index) => (
-                                        <g key={`${point.date}-${index}`} className="chart-dot-group">
-                                            <circle cx={point.x} cy={point.y} r="5" fill="#2563eb" stroke="#ffffff" strokeWidth="2" />
-                                            <text x={point.x} y={point.y - 14} textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a" className="chart-tooltip">
-                                                {point.value > 0 ? formatCompactRevenue(point.value) : ""}
-                                            </text>
-                                            <text x={point.x} y={chartBaseline + 20} textAnchor="middle" fontSize="10" fontWeight="600" fill="#94a3b8">
-                                                {point.label}
-                                            </text>
-                                        </g>
-                                    ))}
-                                </svg>
+                                        return (
+                                            <div className="bar-chart-column" key={point.date}>
+                                                <div className="bar-chart-value" title={formatCurrency(revenue)}>
+                                                    {revenue > 0 ? formatCompactRevenue(revenue) : "0"}
+                                                </div>
+                                                <div className="bar-chart-track">
+                                                    <div
+                                                        className="bar-chart-bar"
+                                                        style={{ height: `${heightPercent}%` }}
+                                                        title={`${point.date}: ${formatCurrency(revenue)}`}
+                                                    ></div>
+                                                </div>
+                                                <div className="bar-chart-label">{formatChartLabel(point.date)}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        )}
                         </div>
-                    </div>
+                    )}
 
-                    <div className="chart-zoom-hint">
-                        Giữ nguyên kích thước biểu đồ, kéo ngang bằng chuột để xem thêm dữ liệu. Click vào biểu đồ rồi lăn chuột để phóng to.
+                    <div className="chart-hint">
+                        Khi khoảng ngày dài, biểu đồ giữ nguyên kích cỡ cột và cho phép kéo ngang để xem tiếp dữ liệu.
                     </div>
                 </div>
 
                 <div className="chart-panel">
-                    <h4 className="chart-title">Cơ cấu doanh thu danh mục</h4>
-                    <div className="category-share-list">
-                        {categoryShare.length === 0 ? (
-                            <div className="text-center text-muted py-5" style={{ fontSize: "14px" }}>
-                                Không có dữ liệu danh mục trong thời gian này
-                            </div>
-                        ) : (
-                            categoryShare.map((category, index) => {
-                                const colors = ["#3b82f6", "#10b981", "#f59e0b", "#7c3aed", "#ec4899"];
-                                const color = colors[index % colors.length];
+                    <div className="chart-panel-header">
+                        <div>
+                            <h4 className="chart-title">Biểu đồ tròn doanh thu theo danh mục</h4>
+                            <p className="chart-subtitle">
+                                Chọn một tháng để xem tỷ trọng doanh thu của từng loại danh mục hàng hoá.
+                            </p>
+                        </div>
 
-                                return (
-                                    <div key={`${category.categoryName}-${index}`} className="category-share-item">
-                                        <div className="cs-info d-flex justify-content-between mb-1">
-                                            <span className="cs-name">{category.categoryName}</span>
-                                            <span className="cs-val fw-bold">
-                                                {formatCurrency(category.revenue)} ({category.percentage}%)
-                                            </span>
-                                        </div>
-                                        <div className="cs-bar-wrap">
-                                            <div className="cs-bar" style={{ width: `${category.percentage}%`, backgroundColor: color }}></div>
+                        <div className="chart-date-filters">
+                            <div className="chart-date-group">
+                                <label htmlFor="revenue-month-input">Tháng</label>
+                                <input
+                                    id="revenue-month-input"
+                                    type="month"
+                                    className="chart-date-input"
+                                    value={monthlyInput}
+                                    onChange={(e) => setMonthlyInput(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn-apply-range"
+                                onClick={handleApplyMonth}
+                                disabled={pieChartLoading}
+                            >
+                                {pieChartLoading ? "Đang tải..." : "Xem biểu đồ tròn"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="chart-range-caption">
+                        Tháng đang xem: <strong>{appliedMonth}</strong>
+                    </div>
+
+                    {pieChartMessage && <div className="chart-message">{pieChartMessage}</div>}
+
+                    {pieChartLoading ? (
+                        <div className="chart-empty-state">Đang tải dữ liệu biểu đồ tròn...</div>
+                    ) : pieChartSegments.length === 0 ? (
+                        <div className="chart-empty-state">Không có doanh thu danh mục trong tháng đã chọn.</div>
+                    ) : (
+                        <div className="pie-chart-layout">
+                            <div className="pie-chart-visual-wrap">
+                                <div className="pie-chart-visual" style={{ background: pieChartBackground }}>
+                                    <div className="pie-chart-center">
+                                        <span>Tổng doanh thu</span>
+                                        <strong>
+                                            {formatCurrency(
+                                                pieChartSegments.reduce((sum, item) => sum + Number(item.revenue || 0), 0)
+                                            )}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pie-chart-legend">
+                                {pieChartSegments.map((segment) => (
+                                    <div className="pie-legend-item" key={`${segment.categoryId}-${segment.categoryName}`}>
+                                        <span className="pie-legend-dot" style={{ backgroundColor: segment.color }}></span>
+                                        <div className="pie-legend-text">
+                                            <div className="pie-legend-name">{segment.categoryName}</div>
+                                            <div className="pie-legend-value">
+                                                {formatCurrency(segment.revenue)} ({segment.percentage.toFixed(segment.percentage >= 10 ? 0 : 1)}%)
+                                            </div>
                                         </div>
                                     </div>
-                                );
-                            })
-                        )}
-                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

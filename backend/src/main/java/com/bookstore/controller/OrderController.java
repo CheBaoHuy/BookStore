@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.OrderDto;
+import com.bookstore.dto.RevenueCategoryShareDto;
 import com.bookstore.dto.RevenueTrendPointDto;
 import com.bookstore.model.Order;
 import com.bookstore.model.OrderStatus;
@@ -13,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
@@ -114,5 +116,18 @@ public class OrderController {
 
         List<RevenueTrendPointDto> revenueTrend = orderService.getRevenueTrendByDate(startDate, endDate, categoryId);
         return ResponseEntity.ok(revenueTrend);
+    }
+
+    /** GET /api/orders/revenue-category-share?month=yyyy-MM
+     *  Thống kê doanh thu theo danh mục trong một tháng (Admin) */
+    @GetMapping("/revenue-category-share")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getRevenueCategoryShare(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
+        List<RevenueCategoryShareDto> categoryShare = orderService.getRevenueByCategoryInMonth(
+                month.getYear(),
+                month.getMonthValue()
+        );
+        return ResponseEntity.ok(categoryShare);
     }
 }
