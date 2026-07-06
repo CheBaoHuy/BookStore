@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.OrderDto;
+import com.bookstore.dto.RevenueTrendPointDto;
 import com.bookstore.model.Order;
 import com.bookstore.model.OrderStatus;
 import com.bookstore.service.OrderService;
@@ -8,8 +9,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -80,5 +83,21 @@ public class OrderController {
     @GetMapping("/statuses")
     public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
         return ResponseEntity.ok(orderService.getAllOrderStatuses());
+    }
+
+    /** GET /api/orders/revenue-trend?startDate=yyyy-MM-dd&endDate=yyyy-MM-dd
+     *  Thống kê xu hướng doanh thu theo ngày (Admin) */
+    @GetMapping("/revenue-trend")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getRevenueTrend(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long categoryId) {
+        if (startDate.isAfter(endDate)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Ngày bắt đầu không được lớn hơn ngày kết thúc."));
+        }
+
+        List<RevenueTrendPointDto> revenueTrend = orderService.getRevenueTrendByDate(startDate, endDate, categoryId);
+        return ResponseEntity.ok(revenueTrend);
     }
 }
