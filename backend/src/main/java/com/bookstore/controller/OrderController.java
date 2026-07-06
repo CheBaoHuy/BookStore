@@ -58,7 +58,7 @@ public class OrderController {
     /** PUT /api/orders/{id}/status?statusId={statusId}
      *  Cập nhật trạng thái đơn hàng (Admin) */
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable Long id,
             @RequestParam Long statusId) {

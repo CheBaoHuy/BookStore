@@ -7,6 +7,8 @@ import com.bookstore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -100,6 +102,23 @@ public class OrderService {
 
     public Order updateOrderStatus(Long orderId, Long statusId) {
         Order order = getOrderById(orderId);
+
+        // Kiểm tra quyền: chỉ ADMIN mới có thể cập nhật trạng thái đơn hàng, trừ trường hợp USER tự hủy (statusId = 5) đơn hàng của chính mình.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (!isAdmin) {
+                if (statusId != 5) {
+                    throw new RuntimeException("Bạn không có quyền thực hiện thao tác này!");
+                }
+                String currentUsername = authentication.getName();
+                if (order.getUser() == null || !order.getUser().getUsername().equals(currentUsername)) {
+                    throw new RuntimeException("Bạn không thể hủy đơn hàng của người khác!");
+                }
+            }
+        }
+
         OrderStatus status = orderStatusRepository.findById(statusId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy trạng thái id: " + statusId));
 
@@ -200,16 +219,32 @@ public class OrderService {
                 );
                 break;
             case 5: // Đã hủy
-                title = "Đơn hàng #" + order.getId() + " đã bị hủy";
-                message = String.format("Đơn hàng #%d của bạn đã bị hủy.", order.getId());
-                emailSubject = "BookStore - Đơn hàng đã bị hủy";
-                emailContent = String.format(
-                        "Xin chào %s,\n\n" +
-                        "Đơn hàng #%d của bạn đã bị hủy trên hệ thống.\n" +
-                        "Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ bộ phận hỗ trợ khách hàng của BookStore.\n\n" +
-                        "Trân trọng.",
-                        order.getFullName(), order.getId()
-                );
+                boolean isOnlinePaid = order.isPaymentStatus() && order.getPaymentMethod() != null && !order.getPaymentMethod().equalsIgnoreCase("COD");
+                if (isOnlinePaid) {
+                    title = "Đơn hàng #" + order.getId() + " đã bị hủy & Hoàn tiền";
+                    message = String.format("Đơn hàng #%d của bạn đã bị hủy. Số tiền %,.0f VNĐ đã được thực hiện hoàn tiền về tài khoản/ví thanh toán của bạn.", order.getId(), order.getTotalAmount());
+                    emailSubject = "BookStore - Đơn hàng đã bị hủy và Thông báo hoàn tiền";
+                    emailContent = String.format(
+                            "Xin chào %s,\n\n" +
+                            "Đơn hàng #%d của bạn đã bị hủy trên hệ thống.\n" +
+                            "Do đơn hàng đã được thanh toán trực tuyến qua %s với số tiền %,.0f VNĐ, chúng tôi đã tiến hành hoàn trả số tiền này về tài khoản/ví điện tử của bạn.\n" +
+                            "Số tiền hoàn sẽ được cập nhật trong vòng 1-3 ngày làm việc tùy thuộc vào ngân hàng/ví điện tử của bạn.\n\n" +
+                            "Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ bộ phận hỗ trợ khách hàng của BookStore.\n\n" +
+                            "Trân trọng,\nBookStore Team.",
+                            order.getFullName(), order.getId(), order.getPaymentMethod(), order.getTotalAmount()
+                    );
+                } else {
+                    title = "Đơn hàng #" + order.getId() + " đã bị hủy";
+                    message = String.format("Đơn hàng #%d của bạn đã bị hủy.", order.getId());
+                    emailSubject = "BookStore - Đơn hàng đã bị hủy";
+                    emailContent = String.format(
+                            "Xin chào %s,\n\n" +
+                            "Đơn hàng #%d của bạn đã bị hủy trên hệ thống.\n" +
+                            "Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ bộ phận hỗ trợ khách hàng của BookStore.\n\n" +
+                            "Trân trọng.",
+                            order.getFullName(), order.getId()
+                    );
+                }
                 break;
             default: // Chờ xác nhận (1) hoặc các trạng thái khác
                 title = "Đơn hàng #" + order.getId() + " cập nhật trạng thái";
