@@ -53,6 +53,28 @@ public class AuthController {
         }
     }
 
+    /** POST /api/auth/forgot-password/verify-otp */
+    @PostMapping("/forgot-password/verify-otp")
+    public ResponseEntity<?> verifyForgotPasswordOtp(@Valid @RequestBody VerifyOtpDto dto) {
+        try {
+            String message = authService.verifyForgotPasswordOtp(dto);
+            return ResponseEntity.ok(Map.of("message", message));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    /** POST /api/auth/forgot-password/reset */
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<?> resetPasswordWithOtp(@Valid @RequestBody ResetPasswordDto dto) {
+        try {
+            String message = authService.resetPasswordWithOtp(dto);
+            return ResponseEntity.ok(Map.of("message", message));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     /** GET /api/auth/me */
     @GetMapping("/me")
     public ResponseEntity<?> getMe(@AuthenticationPrincipal UserDetails userDetails) {

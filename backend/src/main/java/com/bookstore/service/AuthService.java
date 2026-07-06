@@ -13,10 +13,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class AuthService {
+    private static final int OTP_EXPIRY_MINUTES = 10;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -95,29 +99,68 @@ public class AuthService {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy email trong hệ thống!"));
 
-        String tempPassword = UUID.randomUUID().toString().substring(0, 8);
-        user.setPassword(passwordEncoder.encode(tempPassword));
-        userRepository.save(user);
-
-        if (mailSender != null) {
-            try {
-                SimpleMailMessage message = new SimpleMailMessage();
-                message.setTo(user.getEmail());
-                message.setSubject("BookStore - Đặt lại mật khẩu");
-                message.setText(String.format(
-                        "Xin chào %s,\n\nMật khẩu tạm thời của bạn là: %s\n\n" +
-                        "Vui lòng đăng nhập và đổi mật khẩu ngay.\n\nTrân trọng,\nBookStore",
-                        user.getFullName() != null ? user.getFullName() : user.getUsername(),
-                        tempPassword
-                ));
-                mailSender.send(message);
-            } catch (Exception e) {
-                // Log error but don't throw - password already reset
-                System.err.println("Không thể gửi email: " + e.getMessage());
-            }
+        if (mailSender == null) {
+            throw new RuntimeException("Chức năng gửi email chưa được cấu hình. Vui lòng kiểm tra Gmail SMTP.");
         }
 
-        return "Mật khẩu tạm thời đã được gửi đến email của bạn.";
+        String otp = generateOtp();
+        user.setResetPasswordOtp(passwordEncoder.encode(otp));
+        user.setResetPasswordOtpExpiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
+        user.setResetPasswordVerifiedAt(null);
+        userRepository.save(user);
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(user.getEmail());
+            message.setSubject("BookStore - Mã OTP đặt lại mật khẩu");
+            message.setText(String.format(
+                    "Xin chào %s,\n\nMã OTP để đặt lại mật khẩu của bạn là: %s\n" +
+                            "Mã có hiệu lực trong %d phút.\n\n" +
+                            "Nếu bạn không yêu cầu thao tác này, hãy bỏ qua email này.\n\nTrân trọng,\nBookStore",
+                    user.getFullName() != null ? user.getFullName() : user.getUsername(),
+                    otp,
+                    OTP_EXPIRY_MINUTES
+            ));
+            mailSender.send(message);
+        } catch (Exception e) {
+            clearResetPasswordState(user);
+            userRepository.save(user);
+            throw new RuntimeException("Không thể gửi OTP đến email của bạn. Vui lòng kiểm tra cấu hình Gmail SMTP.");
+        }
+
+        return "Mã OTP đã được gửi đến email của bạn.";
+    }
+
+    public String verifyForgotPasswordOtp(VerifyOtpDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy email trong hệ thống!"));
+
+        validateOtp(user, dto.getOtp());
+        user.setResetPasswordVerifiedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        return "Xác minh OTP thành công.";
+    }
+
+    public String resetPasswordWithOtp(ResetPasswordDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy email trong hệ thống!"));
+
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new RuntimeException("Xác nhận mật khẩu không khớp.");
+        }
+
+        validateOtp(user, dto.getOtp());
+
+        if (user.getResetPasswordVerifiedAt() == null) {
+            throw new RuntimeException("Vui lòng xác minh OTP trước khi đặt lại mật khẩu.");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        clearResetPasswordState(user);
+        userRepository.save(user);
+
+        return "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.";
     }
 
     public User getUserProfile(String username) {
@@ -175,5 +218,32 @@ public class AuthService {
                 .fullName(user.getFullName())
                 .avatar(user.getAvatar())
                 .build();
+    }
+
+    private void validateOtp(User user, String otp) {
+        if (user.getResetPasswordOtp() == null || user.getResetPasswordOtpExpiresAt() == null) {
+            throw new RuntimeException("OTP không tồn tại hoặc đã được sử dụng. Vui lòng yêu cầu mã mới.");
+        }
+
+        if (user.getResetPasswordOtpExpiresAt().isBefore(LocalDateTime.now())) {
+            clearResetPasswordState(user);
+            userRepository.save(user);
+            throw new RuntimeException("OTP đã hết hạn. Vui lòng yêu cầu mã mới.");
+        }
+
+        if (!passwordEncoder.matches(otp, user.getResetPasswordOtp())) {
+            throw new RuntimeException("OTP không chính xác.");
+        }
+    }
+
+    private void clearResetPasswordState(User user) {
+        user.setResetPasswordOtp(null);
+        user.setResetPasswordOtpExpiresAt(null);
+        user.setResetPasswordVerifiedAt(null);
+    }
+
+    private String generateOtp() {
+        int otp = 100000 + new Random().nextInt(900000);
+        return String.valueOf(otp);
     }
 }

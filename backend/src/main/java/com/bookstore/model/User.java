@@ -45,6 +45,15 @@ public class User {
     @Builder.Default
     private String role = "USER";
 
+    @Column(name = "reset_password_otp", length = 255)
+    private String resetPasswordOtp;
+
+    @Column(name = "reset_password_otp_expires_at")
+    private LocalDateTime resetPasswordOtpExpiresAt;
+
+    @Column(name = "reset_password_verified_at")
+    private LocalDateTime resetPasswordVerifiedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
