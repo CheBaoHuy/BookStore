@@ -506,7 +506,7 @@ function Profile() {
                                                             <span className="ot-status-badge" style={{ color: status.color, background: status.bg }}>
                                                                 {status.icon} {status.label}
                                                             </span>
-                                                            <div className="ot-order-amount">{order.totalAmount.toLocaleString("vi-VN")}₫</div>
+                                                            <div className="ot-order-amount">{(order.totalAmount ?? 0).toLocaleString("vi-VN")}₫</div>
                                                         </div>
                                                     </div>
 
@@ -547,7 +547,7 @@ function Profile() {
                                                                     <div className="ot-detail-title">💳 Thanh toán</div>
                                                                     <div className="ot-detail-row"><span>Phương thức</span><strong>{order.paymentMethod}</strong></div>
                                                                     <div className="ot-detail-row"><span>Tổng tiền</span>
-                                                                        <strong className="ot-price">{order.totalAmount.toLocaleString("vi-VN")}₫</strong>
+                                                                        <strong className="ot-price">{(order.totalAmount ?? 0).toLocaleString("vi-VN")}₫</strong>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -630,7 +630,7 @@ function Profile() {
                                                             <span className="ot-status-badge" style={{ color: status.color, background: status.bg }}>
                                                                 {status.icon} {status.label}
                                                             </span>
-                                                            <div className="ot-order-amount">{order.totalAmount.toLocaleString("vi-VN")}₫</div>
+                                                            <div className="ot-order-amount">{(order.totalAmount ?? 0).toLocaleString("vi-VN")}₫</div>
                                                         </div>
                                                     </div>
 
@@ -654,7 +654,7 @@ function Profile() {
                                                                         </strong>
                                                                     </div>
                                                                     <div className="ot-detail-row"><span>Tổng tiền</span>
-                                                                        <strong className="ot-price">{order.totalAmount.toLocaleString("vi-VN")}₫</strong>
+                                                                        <strong className="ot-price">{(order.totalAmount ?? 0).toLocaleString("vi-VN")}₫</strong>
                                                                     </div>
                                                                 </div>
                                                             </div>
