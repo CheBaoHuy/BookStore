@@ -22,6 +22,7 @@ const STATUS_CONFIG: Record<number, { label: string; color: string; bg: string; 
 function Profile() {
     const [searchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
+    const orderIdParam = searchParams.get("orderId");
 
     const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -58,6 +59,26 @@ function Profile() {
             setActiveTab("profile");
         }
     }, [tabParam]);
+
+    useEffect(() => {
+        if (!orderIdParam || orders.length === 0) {
+            return;
+        }
+
+        const matchedOrder = orders.find((order) => String(order.id) === String(orderIdParam));
+        if (!matchedOrder) {
+            return;
+        }
+
+        setSelectedOrder(matchedOrder);
+        setSearchId(String(matchedOrder.id));
+
+        if (matchedOrder.orderStatus.id === 4 || matchedOrder.orderStatus.id === 5) {
+            setActiveTab("history");
+        } else {
+            setActiveTab("tracking");
+        }
+    }, [orderIdParam, orders]);
 
     // Pre-fill profile form fields
     useEffect(() => {

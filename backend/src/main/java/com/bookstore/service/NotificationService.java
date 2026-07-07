@@ -20,10 +20,15 @@ public class NotificationService {
     private JavaMailSender mailSender;
 
     public Notification createNotification(User user, String title, String message) {
+        return createNotification(user, title, message, null);
+    }
+
+    public Notification createNotification(User user, String title, String message, String targetUrl) {
         Notification notification = Notification.builder()
                 .user(user)
                 .title(title)
                 .message(message)
+                .targetUrl(targetUrl)
                 .isRead(false)
                 .build();
         return notificationRepository.save(notification);
@@ -64,4 +69,5 @@ public class NotificationService {
             System.err.println("❌ JavaMailSender chưa được cấu hình hoặc null");
         }
     }
+
 }

@@ -111,11 +111,22 @@ export interface Review {
     rating: number,
     comment: string,
     adminReply?: string | null;
+    replies?: ReviewReply[];
     createdAt: string,
     updatedAt: string,
     adminRepliedAt?: string | null;
     adminRepliedBy?: string | null;
     status: boolean
+}
+
+export interface ReviewReply {
+    id: number;
+    userId?: number | null;
+    authorName: string;
+    authorRole: string;
+    message: string;
+    createdAt: string;
+    updatedAt?: string | null;
 }
 export interface Pageable {
     pageNumber: number;
@@ -263,6 +274,7 @@ export interface Notification {
     user: User;
     title: string;
     message: string;
+    targetUrl?: string | null;
     isRead: boolean;
     read?: boolean;
     createdAt: string;
