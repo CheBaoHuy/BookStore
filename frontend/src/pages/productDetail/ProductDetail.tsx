@@ -297,7 +297,7 @@ function ProductDetail() {
         if (!token || !currentUserId) {
             return false;
         }
-        return isAdmin || String(review.userId) === String(currentUserId);
+        return isAdmin || String(review.user?.id) === String(currentUserId);
     };
 
     if (loading) {

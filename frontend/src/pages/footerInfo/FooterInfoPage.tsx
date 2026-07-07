@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { FaArrowRight, FaCheckCircle, FaChevronRight, FaHeadset, FaMapMarkerAlt, FaShieldAlt, FaTruck } from "react-icons/fa";
 import { Header } from "../../components/header/Header";
@@ -351,6 +351,10 @@ const footerInfoMap: Record<string, InfoContent> = {
 
 function FooterInfoPage() {
     const { slug } = useParams<{ slug: string }>();
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [slug]);
 
     if (!slug || !footerInfoMap[slug]) {
         return <Navigate to="/" replace />;
