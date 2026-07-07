@@ -50,6 +50,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Auth endpoints - public
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/reviews/my-reviewed-order-details", "/api/reviews/my-eligible-products").authenticated()
                 // Products - GET is public
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()

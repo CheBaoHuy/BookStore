@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import {
     FaBook,
+    FaComments,
     FaShoppingCart,
     FaUsers,
     FaPercentage,
@@ -14,12 +15,14 @@ import {
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import { Product, Order, User, Category } from "../../models";
+import { ReviewAdminSummary } from "../../models";
 import { Voucher } from "./types";
 import { AdminOverview } from "./components/AdminOverview";
 import { AdminProducts } from "./components/AdminProducts";
 import { AdminOrders } from "./components/AdminOrders";
 import { AdminUsers } from "./components/AdminUsers";
 import { AdminVouchers } from "./components/AdminVouchers";
+import { AdminReviews } from "./components/AdminReviews";
 import { ProductModal } from "./components/ProductModal";
 import "./AdminDashboard.css";
 
@@ -27,9 +30,9 @@ function AdminDashboard() {
     // Auth Protection
     const storedUser = sessionStorage.getItem("user");
     const adminUser = storedUser ? JSON.parse(storedUser) : null;
-    const token = sessionStorage.getItem("token");
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
-    const [activeTab, setActiveTab] = useState<"overview" | "products" | "orders" | "users" | "vouchers">("overview");
+    const [activeTab, setActiveTab] = useState<"overview" | "products" | "orders" | "users" | "vouchers" | "reviews">("overview");
     const [loading, setLoading] = useState(true);
 
     // Dynamic Lists State
@@ -38,6 +41,12 @@ function AdminDashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
+    const [reviewSummary, setReviewSummary] = useState<ReviewAdminSummary>({
+        totalReviews: 0,
+        pendingReplies: 0,
+        repliedReviews: 0,
+        averageRating: 0
+    });
 
     // Statistics Filter States
     const [timeFilter, setTimeFilter] = useState<"all" | "today" | "7days" | "30days" | "month">("all");
@@ -61,9 +70,23 @@ function AdminDashboard() {
     useEffect(() => {
         if (adminUser && adminUser.role === "ADMIN") {
             fetchInitialData();
+            fetchReviewSummary();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (!adminUser || adminUser.role !== "ADMIN") {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            fetchReviewSummary();
+        }, 20000);
+
+        return () => window.clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [adminUser?.role, token]);
 
     // =============================================
     // MOCK DATA (fallback khi backend offline)
@@ -229,6 +252,17 @@ function AdminDashboard() {
         }
 
         setLoading(false);
+    };
+
+    const fetchReviewSummary = async () => {
+        try {
+            const response = await axios.get<ReviewAdminSummary>("http://localhost:8080/api/admin/reviews/summary", getAuthHeaders());
+            if (response.data) {
+                setReviewSummary(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching review summary:", error);
+        }
     };
 
     // Access Denied Banner
@@ -492,6 +526,15 @@ function AdminDashboard() {
                             <FaShoppingCart /> Đơn hàng ({orders.length})
                         </button>
                         <button
+                            className={`side-menu-item ${activeTab === "reviews" ? "active" : ""}`}
+                            onClick={() => setActiveTab("reviews")}
+                        >
+                            <FaComments /> Đánh giá
+                            {reviewSummary.pendingReplies > 0 && (
+                                <span className="side-menu-badge">{reviewSummary.pendingReplies}</span>
+                            )}
+                        </button>
+                        <button
                             className={`side-menu-item ${activeTab === "users" ? "active" : ""}`}
                             onClick={() => setActiveTab("users")}
                         >
@@ -536,6 +579,7 @@ function AdminDashboard() {
                                     categoryFilter={categoryFilter}
                                     setCategoryFilter={setCategoryFilter}
                                     formatCurrency={formatCurrency}
+                                    reviewSummary={reviewSummary}
                                 />
                             )}
 
@@ -556,6 +600,10 @@ function AdminDashboard() {
                                     onUpdatePaymentStatus={handleUpdatePaymentStatus}
                                     formatCurrency={formatCurrency}
                                 />
+                            )}
+
+                            {activeTab === "reviews" && (
+                                <AdminReviews onNotify={triggerNotification} onReviewChanged={fetchReviewSummary} />
                             )}
 
                             {activeTab === "users" && (

@@ -8,9 +8,6 @@ import lombok.Data;
 @Data
 public class RateDto {
 
-    @NotNull(message = "userId không được để trống")
-    private Long userId;
-
     @NotNull(message = "productId không được để trống")
     private Long productId;
 

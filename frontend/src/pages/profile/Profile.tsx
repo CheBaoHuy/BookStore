@@ -3,29 +3,13 @@ import axios from "axios";
 import { Link, useSearchParams } from "react-router-dom";
 import {
     FaUser, FaEnvelope, FaPhone, FaLink, FaSave, FaArrowLeft, FaUserCircle,
-    FaBox, FaCheckCircle, FaTruck, FaTimesCircle, FaClock, FaSearch, FaHistory, FaShoppingBag
+    FaBox, FaCheckCircle, FaTruck, FaTimesCircle, FaClock, FaSearch, FaHistory, FaShoppingBag, FaStar
 } from "react-icons/fa";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
+import PopupRating from "../../components/address/PopupRating";
+import { Order, ReviewEligibility } from "../../models";
 import "./Profile.css";
-
-interface OrderStatus {
-    id: number;
-    status: string;
-}
-
-interface Order {
-    id: number;
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    totalAmount: number;
-    paymentMethod: string;
-    note?: string;
-    createdAt: string;
-    orderStatus: OrderStatus;
-}
 
 const STATUS_CONFIG: Record<number, { label: string; color: string; bg: string; icon: React.ReactNode; step: number }> = {
     1: { label: "Chờ xác nhận", color: "#d97706", bg: "#fef3c7", icon: <FaClock />, step: 1 },
@@ -60,6 +44,9 @@ function Profile() {
     const [searchId, setSearchId] = useState("");
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [trackingFilterStatus, setTrackingFilterStatus] = useState<number | "all">("all");
+    const [reviewEligibilities, setReviewEligibilities] = useState<ReviewEligibility[]>([]);
+    const [ratingModalOpen, setRatingModalOpen] = useState(false);
+    const [selectedReviewItem, setSelectedReviewItem] = useState<ReviewEligibility | null>(null);
 
     // Sync activeTab from url parameters
     useEffect(() => {
@@ -79,6 +66,7 @@ function Profile() {
             setPhone(user.phone || "");
             setAvatarLink(user.avatar || "");
             fetchOrders();
+            fetchReviewEligibilities();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -116,6 +104,33 @@ function Profile() {
         } finally {
             setOrdersLoading(false);
         }
+    };
+
+    const fetchReviewEligibilities = async () => {
+        if (!token) {
+            setReviewEligibilities([]);
+            return;
+        }
+
+        try {
+            const res = await axios.get("http://localhost:8080/api/reviews/my-eligible-products", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setReviewEligibilities(res.data || []);
+        } catch (error) {
+            console.error("Error fetching review eligibilities:", error);
+            setReviewEligibilities([]);
+        }
+    };
+
+    const openRatingModal = (item: ReviewEligibility) => {
+        setSelectedReviewItem(item);
+        setRatingModalOpen(true);
+    };
+
+    const closeRatingModal = () => {
+        setRatingModalOpen(false);
+        setSelectedReviewItem(null);
     };
 
     const handleSaveProfile = async (e: React.FormEvent) => {
@@ -235,6 +250,20 @@ function Profile() {
         const matchesSearch = searchId ? String(o.id).includes(searchId.trim()) : true;
         return isCompletedOrCancelled && matchesSearch;
     });
+
+    const getReviewItemsByOrder = (orderId: number) =>
+        reviewEligibilities.filter(item => item.orderId === orderId);
+
+    const ratingDetail = selectedReviewItem
+        ? {
+            id: selectedReviewItem.orderDetailId,
+            product: {
+                id: selectedReviewItem.productId,
+                name: selectedReviewItem.productTitle
+            },
+            quantity: selectedReviewItem.quantity
+        }
+        : null;
 
     return (
         <div className="profile-page-wrapper">
@@ -560,6 +589,7 @@ function Profile() {
                                         {historyOrders.map(order => {
                                             const status = STATUS_CONFIG[order.orderStatus.id] || STATUS_CONFIG[1];
                                             const isSelected = selectedOrder?.id === order.id;
+                                            const reviewItems = getReviewItemsByOrder(order.id);
 
                                             return (
                                                 <div
@@ -608,6 +638,50 @@ function Profile() {
                                                                 </div>
                                                             </div>
 
+                                                            {order.orderStatus.id === 4 && (
+                                                                <div className="review-history-section">
+                                                                    <div className="review-history-header">
+                                                                        <div>
+                                                                            <h4>Đánh giá sản phẩm đã mua</h4>
+                                                                            <p>Quý khách có thể đánh giá từng sản phẩm đã nhận để chia sẻ trải nghiệm thực tế.</p>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {reviewItems.length === 0 ? (
+                                                                        <div className="review-history-empty">
+                                                                            Chưa có sản phẩm nào trong đơn hàng này đủ điều kiện hiển thị để đánh giá.
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="review-history-list">
+                                                                            {reviewItems.map((item) => (
+                                                                                <div className="review-history-item" key={item.orderDetailId}>
+                                                                                    <div className="review-history-item-main">
+                                                                                        <div className="review-history-product">
+                                                                                            <span className="review-history-product-title">{item.productTitle}</span>
+                                                                                            <span className="review-history-product-meta">
+                                                                                                Số lượng: {item.quantity}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        {item.reviewed ? (
+                                                                                            <span className="review-status-tag reviewed">
+                                                                                                <FaCheckCircle /> Đã đánh giá
+                                                                                            </span>
+                                                                                        ) : (
+                                                                                            <button
+                                                                                                className="btn-review-product"
+                                                                                                onClick={() => openRatingModal(item)}
+                                                                                            >
+                                                                                                <FaStar /> Đánh giá ngay
+                                                                                            </button>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
                                                             <div className="ot-card-actions">
                                                                 <button className="btn-ot-reorder" onClick={() => window.location.href = "/"}>
                                                                     Mua lại sách
@@ -628,6 +702,15 @@ function Profile() {
                     </main>
                 </div>
             </div>
+
+            <PopupRating
+                open={ratingModalOpen}
+                handleClose={closeRatingModal}
+                detail={ratingDetail}
+                user={user}
+                token={token}
+                onSuccess={fetchReviewEligibilities}
+            />
 
             <Footer />
         </div>
