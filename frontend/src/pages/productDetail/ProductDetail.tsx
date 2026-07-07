@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/reducer/CartReducer";
@@ -15,6 +15,7 @@ import "./ProductDetail.css";
 
 function ProductDetail() {
     const { id } = useParams<{ id: string }>();
+    const [searchParams] = useSearchParams();
     const dispatch = useDispatch();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ function ProductDetail() {
     const sessionUser = storedUser ? JSON.parse(storedUser) : null;
     const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     const isAdmin = sessionUser?.role === "ADMIN";
+    const currentUserId = sessionUser?.userId || sessionUser?.id;
 
     const relatedResponsive = {
         desktop: {
@@ -51,6 +53,17 @@ function ProductDetail() {
             items: 2
         }
     };
+
+    useEffect(() => {
+        const tab = searchParams.get("tab");
+        if (tab === "reviews") {
+            setActiveTab("reviews");
+        } else if (tab === "shipping") {
+            setActiveTab("shipping");
+        } else {
+            setActiveTab("desc");
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -213,17 +226,17 @@ function ProductDetail() {
         }
     };
 
-    const handleAdminReplySubmit = async (reviewId: number) => {
-        const reply = (replyDrafts[reviewId] ?? reviews.find((item) => item.id === reviewId)?.adminReply ?? "").trim();
+    const handleReviewReplySubmit = async (reviewId: number) => {
+        const reply = (replyDrafts[reviewId] ?? "").trim();
         if (!reply || !token) {
             return;
         }
 
         try {
             setSubmittingReplyId(reviewId);
-            const response = await axios.put(
-                `http://localhost:8080/api/admin/reviews/${reviewId}/reply`,
-                { reply },
+            const response = await axios.post(
+                `http://localhost:8080/api/reviews/${reviewId}/replies`,
+                { message: reply },
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -278,6 +291,13 @@ function ProductDetail() {
             hour: "2-digit",
             minute: "2-digit"
         });
+    };
+
+    const canReplyToReview = (review: Review) => {
+        if (!token || !currentUserId) {
+            return false;
+        }
+        return isAdmin || String(review.userId) === String(currentUserId);
     };
 
     if (loading) {
@@ -525,25 +545,31 @@ function ProductDetail() {
                                                     {review.comment?.trim() || "Khách hàng đã đánh giá sản phẩm này mà không để lại bình luận chi tiết."}
                                                 </p>
 
-                                                {review.adminReply && (
-                                                    <div className="detail-admin-reply">
-                                                        <div className="detail-admin-reply-title">
-                                                            Phản hồi từ BookStore
-                                                        </div>
-                                                        <p>{review.adminReply}</p>
-                                                        <span>
-                                                            {review.adminRepliedBy ? `${review.adminRepliedBy} - ` : ""}
-                                                            {formatReviewDate(review.adminRepliedAt)}
-                                                        </span>
+                                                {!!review.replies?.length && (
+                                                    <div className="detail-review-thread">
+                                                        {review.replies.map((reply) => (
+                                                            <div
+                                                                key={reply.id}
+                                                                className={`detail-thread-message ${reply.authorRole === "ADMIN" ? "admin" : "user"}`}
+                                                            >
+                                                                <div className="detail-thread-meta">
+                                                                    <strong>{reply.authorRole === "ADMIN" ? "BookStore" : reply.authorName}</strong>
+                                                                    <span>{formatReviewDate(reply.createdAt)}</span>
+                                                                </div>
+                                                                <p>{reply.message}</p>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 )}
 
-                                                {isAdmin && token && (
+                                                {canReplyToReview(review) && (
                                                     <div className="detail-admin-reply-editor">
                                                         <textarea
                                                             rows={3}
-                                                            placeholder="Nhập phản hồi của quản trị viên ngay tại bình luận này..."
-                                                            value={replyDrafts[review.id] ?? review.adminReply ?? ""}
+                                                            placeholder={isAdmin
+                                                                ? "Nhập phản hồi của quản trị viên ngay tại bình luận này..."
+                                                                : "Nhập phản hồi của bạn để trao đổi thêm với BookStore..."}
+                                                            value={replyDrafts[review.id] ?? ""}
                                                             onChange={(e) =>
                                                                 setReplyDrafts((prev) => ({
                                                                     ...prev,
@@ -554,13 +580,13 @@ function ProductDetail() {
                                                         <button
                                                             type="button"
                                                             className="detail-admin-reply-btn"
-                                                            onClick={() => handleAdminReplySubmit(review.id)}
+                                                            onClick={() => handleReviewReplySubmit(review.id)}
                                                             disabled={submittingReplyId === review.id}
                                                         >
                                                             <FaPaperPlane />
                                                             {submittingReplyId === review.id
                                                                 ? "Đang gửi..."
-                                                                : review.adminReply ? "Cập nhật phản hồi" : "Phản hồi bình luận"}
+                                                                : isAdmin ? "Phản hồi bình luận" : "Gửi trả lời"}
                                                         </button>
                                                     </div>
                                                 )}

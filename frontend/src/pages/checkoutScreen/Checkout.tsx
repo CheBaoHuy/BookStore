@@ -25,9 +25,9 @@ function Checkout() {
     const { cartItems, cartTotalAmount } = useSelector((state: RootState) => state.carts);
 
     // Lấy thông tin user đang đăng nhập
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = sessionStorage.getItem("token");
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
     // Form state
     const [firstName, setFirstName] = useState("");
@@ -263,24 +263,15 @@ function Checkout() {
 
         let orderId: number | null = null;
 
-        // Thử gọi API
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
             const userId = user ? (user.userId || user.id) : "";
             const res = await axios.post(`http://localhost:8080/api/orders?userId=${userId}`, orderPayload, { headers });
             orderId = res.data?.id || null;
-        } catch {
-            // Backend offline → lưu vào localStorage để demo
-            orderId = tempOrderId;
-            const savedOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
-            const newOrder = {
-                ...orderPayload,
-                id: orderId,
-                createdAt: new Date().toISOString(),
-                orderStatus: { id: 1, status: "Chờ xác nhận" },
-            };
-            savedOrders.push(newOrder);
-            localStorage.setItem("user_orders", JSON.stringify(savedOrders));
+        } catch (err: any) {
+            setLoading(false);
+            setErrorMsg(err.response?.data?.message || "Không thể tạo đơn hàng trên hệ thống. Vui lòng đăng nhập lại và thử lại.");
+            return;
         }
 
         // Xóa cart sau khi đặt
@@ -311,17 +302,10 @@ function Checkout() {
                     paymentStatus: true
                 }, { headers });
                 orderId = res.data?.id || null;
-            } catch {
-                const savedOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
-                const newOrder = {
-                    ...pendingOrderPayload,
-                    id: orderId,
-                    createdAt: new Date().toISOString(),
-                    orderStatus: { id: 1, status: "Chờ xác nhận" },
-                    paymentStatus: true
-                };
-                savedOrders.push(newOrder);
-                localStorage.setItem("user_orders", JSON.stringify(savedOrders));
+            } catch (err: any) {
+                setErrorMsg(err.response?.data?.message || "Không thể tạo đơn hàng trên hệ thống. Vui lòng đăng nhập lại và thử lại.");
+                setShowQRModal(false);
+                return;
             }
 
             dispatch(clearCart());

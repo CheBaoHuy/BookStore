@@ -80,9 +80,9 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
 
         try {
             setSubmittingId(reviewId);
-            const response = await axios.put(
-                `http://localhost:8080/api/admin/reviews/${reviewId}/reply`,
-                { reply },
+            const response = await axios.post(
+                `http://localhost:8080/api/reviews/${reviewId}/replies`,
+                { message: reply },
                 {
                     headers: token ? { Authorization: `Bearer ${token}` } : undefined
                 }
@@ -153,14 +153,17 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
                                 {review.comment?.trim() || "Khách hàng chưa để lại nội dung bình luận chi tiết."}
                             </div>
 
-                            {review.adminReply && (
+                            {!!review.replies?.length && (
                                 <div className="admin-review-replied-box">
-                                    <strong>Phản hồi hiện tại</strong>
-                                    <p>{review.adminReply}</p>
-                                    <span>
-                                        {review.adminRepliedBy ? `${review.adminRepliedBy} - ` : ""}
-                                        {formatDate(review.adminRepliedAt)}
-                                    </span>
+                                    <strong>Trao đổi hiện tại</strong>
+                                    {review.replies.map((reply) => (
+                                        <div key={reply.id} className="admin-review-thread-item">
+                                            <p>
+                                                <strong>{reply.authorRole === "ADMIN" ? "BookStore" : reply.authorName}:</strong> {reply.message}
+                                            </p>
+                                            <span>{formatDate(reply.createdAt)}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
@@ -168,7 +171,7 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
                                 <textarea
                                     rows={4}
                                     placeholder="Nhập phản hồi của quản trị viên để tăng tương tác với khách hàng..."
-                                    value={replyDrafts[review.id] ?? review.adminReply ?? ""}
+                                    value={replyDrafts[review.id] ?? ""}
                                     onChange={(e) =>
                                         setReplyDrafts((prev) => ({ ...prev, [review.id]: e.target.value }))
                                     }
@@ -179,7 +182,7 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
                                     disabled={submittingId === review.id}
                                 >
                                     <FaPaperPlane />
-                                    {submittingId === review.id ? "Đang gửi..." : review.adminReply ? "Cập nhật phản hồi" : "Gửi phản hồi"}
+                                    {submittingId === review.id ? "Đang gửi..." : "Gửi phản hồi"}
                                 </button>
                             </div>
                         </article>

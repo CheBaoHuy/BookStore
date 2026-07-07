@@ -37,6 +37,9 @@ public class AuthService {
     @Autowired(required = false)
     private JavaMailSender mailSender;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public AuthResponse register(RegisterDto dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại!");
@@ -56,6 +59,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        notifyAdminsAboutNewUser(user, false);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -199,6 +203,7 @@ public class AuthService {
                     .status(true)
                     .build();
             userRepository.save(user);
+            notifyAdminsAboutNewUser(user, true);
         } else {
             if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
                 user.setAvatar(dto.getAvatar());
@@ -245,5 +250,23 @@ public class AuthService {
     private String generateOtp() {
         int otp = 100000 + new Random().nextInt(900000);
         return String.valueOf(otp);
+    }
+
+    private void notifyAdminsAboutNewUser(User user, boolean isGoogleRegistration) {
+        List<User> admins = userRepository.findByRole("ADMIN");
+        if (admins.isEmpty()) {
+            return;
+        }
+
+        String displayName = user.getFullName() != null && !user.getFullName().isBlank()
+                ? user.getFullName()
+                : user.getUsername();
+        String registerSource = isGoogleRegistration ? "qua Google" : "thành công";
+        String title = "Khách hàng đăng ký tài khoản mới";
+        String message = displayName + " vừa đăng ký tài khoản "
+                + registerSource + " với email " + user.getEmail() + ".";
+        String targetUrl = "/admin?tab=users";
+
+        admins.forEach(admin -> notificationService.createNotification(admin, title, message, targetUrl));
     }
 }

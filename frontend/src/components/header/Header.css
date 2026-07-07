@@ -522,11 +522,56 @@
   background: #e6fced;
 }
 
+.notification-item-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.notification-item-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notification-item-badge-users {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.notification-item-badge-orders {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.notification-item-badge-reviews {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.notification-item-badge-replies {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.notification-item-badge-general {
+  background: #e2e8f0;
+  color: #475569;
+}
+
 .notification-item-title {
   font-size: 13.5px;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 3px;
+  margin-bottom: 0;
 }
 
 .notification-item-message {
