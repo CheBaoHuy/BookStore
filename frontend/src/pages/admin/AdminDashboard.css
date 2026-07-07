@@ -723,6 +723,12 @@
     font-size: 12px;
 }
 
+.admin-review-thread-item + .admin-review-thread-item {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(29, 78, 216, 0.2);
+}
+
 .admin-review-reply-editor {
     margin-top: 16px;
     display: flex;

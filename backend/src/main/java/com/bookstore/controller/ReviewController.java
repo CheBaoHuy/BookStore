@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.AdminReplyDto;
+import com.bookstore.dto.CreateReviewReplyDto;
 import com.bookstore.dto.ProductReviewStatsDto;
 import com.bookstore.dto.RateDto;
 import com.bookstore.dto.ReviewAdminSummaryDto;
@@ -80,6 +81,19 @@ public class ReviewController {
             @Valid @RequestBody AdminReplyDto dto) {
         try {
             ReviewSummaryDto review = reviewService.replyToReview(reviewId, userDetails.getUsername(), dto);
+            return ResponseEntity.ok(review);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/reviews/{reviewId}/replies")
+    public ResponseEntity<?> addReply(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody CreateReviewReplyDto dto) {
+        try {
+            ReviewSummaryDto review = reviewService.addReply(reviewId, userDetails.getUsername(), dto);
             return ResponseEntity.ok(review);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

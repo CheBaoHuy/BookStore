@@ -89,6 +89,7 @@ public class OrderService {
         }
         orderDetailRepository.saveAll(details);
         savedOrder.setOrderDetails(details);
+        notifyAdminsAboutNewOrder(savedOrder);
 
         return savedOrder;
     }
@@ -172,6 +173,7 @@ public class OrderService {
 
     private void triggerOrderStatusNotification(Order order, Long statusId) {
         String statusName = order.getOrderStatus() != null ? order.getOrderStatus().getStatus() : "Chờ xác nhận";
+        String targetUrl = "/profile?orderId=" + order.getId();
 
         String title;
         String message;
@@ -262,18 +264,43 @@ public class OrderService {
         }
 
         // 1. In-app notification
-        notificationService.createNotification(order.getUser(), title, message);
+        notificationService.createNotification(order.getUser(), title, message, targetUrl);
 
         // 2. Email notification
         notificationService.sendEmailNotification(order.getEmail(), emailSubject, emailContent);
     }
 
+    private void notifyAdminsAboutNewOrder(Order order) {
+        if (order.getUser() == null) {
+            return;
+        }
+
+        List<User> admins = userRepository.findByRole("ADMIN");
+        if (admins.isEmpty()) {
+            return;
+        }
+
+        String displayName = order.getUser().getFullName() != null && !order.getUser().getFullName().isBlank()
+                ? order.getUser().getFullName()
+                : order.getUser().getUsername();
+        String title = "Khách hàng vừa đặt đơn hàng mới";
+        String message = String.format(
+                "%s vừa đặt đơn hàng #%d với tổng giá trị %,.0f VNĐ.",
+                displayName,
+                order.getId(),
+                order.getTotalAmount()
+        );
+        String targetUrl = "/admin?tab=orders";
+
+        admins.forEach(admin -> notificationService.createNotification(admin, title, message, targetUrl));
+    }
     private void triggerPaymentSuccessNotification(Order order) {
         String title = "Đơn hàng #" + order.getId() + " thanh toán thành công";
         String message = String.format("Đơn hàng #%d của bạn đã được thanh toán thành công.", order.getId());
+        String targetUrl = "/profile?orderId=" + order.getId();
 
         // In-app notification
-        notificationService.createNotification(order.getUser(), title, message);
+        notificationService.createNotification(order.getUser(), title, message, targetUrl);
 
         // Email notification
         String emailContent = String.format(

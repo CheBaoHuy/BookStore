@@ -1,6 +1,7 @@
 package com.bookstore.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ReviewSummaryDto(
         Long id,
@@ -15,6 +16,7 @@ public record ReviewSummaryDto(
         int rating,
         String comment,
         String adminReply,
+        List<ReviewReplyDto> replies,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime adminRepliedAt,

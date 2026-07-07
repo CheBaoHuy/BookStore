@@ -28,6 +28,9 @@ public class Notification {
     @Column(nullable = false, length = 1000)
     private String message;
 
+    @Column(name = "target_url", length = 500)
+    private String targetUrl;
+
     @Column(name = "is_read", nullable = false)
     @Builder.Default
     private boolean isRead = false;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
     FaBook,
     FaComments,
@@ -27,6 +27,7 @@ import { ProductModal } from "./components/ProductModal";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
+    const [searchParams] = useSearchParams();
     // Auth Protection
     const storedUser = sessionStorage.getItem("user");
     const adminUser = storedUser ? JSON.parse(storedUser) : null;
@@ -74,6 +75,15 @@ function AdminDashboard() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const tab = searchParams.get("tab");
+        if (tab === "products" || tab === "orders" || tab === "users" || tab === "vouchers" || tab === "reviews") {
+            setActiveTab(tab);
+            return;
+        }
+        setActiveTab("overview");
+    }, [searchParams]);
 
     useEffect(() => {
         if (!adminUser || adminUser.role !== "ADMIN") {

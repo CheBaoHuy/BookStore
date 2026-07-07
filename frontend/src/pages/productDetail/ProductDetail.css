@@ -549,30 +549,52 @@
     line-height: 1.8;
 }
 
-.detail-admin-reply {
+.detail-review-thread {
     margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-thread-message {
     padding: 14px 16px;
     border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.detail-thread-message.admin {
     background: #eff6ff;
-    border: 1px solid #bfdbfe;
+    border-color: #bfdbfe;
 }
 
-.detail-admin-reply-title {
+.detail-thread-message.user {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.detail-thread-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.detail-thread-meta strong {
     font-size: 13px;
-    font-weight: 800;
-    color: #1d4ed8;
-    margin-bottom: 6px;
+    color: #0f172a;
 }
 
-.detail-admin-reply p {
-    margin: 0 0 8px;
-    color: #1e3a8a;
-    line-height: 1.7;
-}
-
-.detail-admin-reply span {
+.detail-thread-meta span {
     font-size: 12px;
     color: #64748b;
+}
+
+.detail-thread-message p {
+    margin: 0;
+    line-height: 1.7;
+    color: #334155;
 }
 
 .detail-admin-reply-editor {

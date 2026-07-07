@@ -12,7 +12,7 @@ import {
 import { IoMdPhonePortrait } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { Product } from "../../models";
+import { Notification, Product } from "../../models";
 import { getBookCover } from "../../common/imageHelper";
 import { useNavigate } from "react-router-dom";
 
@@ -30,9 +30,9 @@ export const Header = () => {
 
     const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = sessionStorage.getItem("token");
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
-    const [notifications, setNotifications] = React.useState<any[]>([]);
+    const [notifications, setNotifications] = React.useState<Notification[]>([]);
     const [showNotifications, setShowNotifications] = React.useState(false);
     const [unreadCount, setUnreadCount] = React.useState(0);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -46,7 +46,7 @@ export const Header = () => {
             });
             if (res.data) {
                 setNotifications(res.data);
-                setUnreadCount(res.data.filter((n: any) => !n.read && !n.isRead).length);
+                setUnreadCount(res.data.filter((n: Notification) => !n.read && !n.isRead).length);
             }
         } catch (err) {
             console.error("Error fetching notifications:", err);
@@ -60,6 +60,14 @@ export const Header = () => {
             return () => clearInterval(interval);
         }
     }, [user, fetchNotifications]);
+
+    const handleToggleNotifications = async () => {
+        const nextOpenState = !showNotifications;
+        if (nextOpenState) {
+            await fetchNotifications();
+        }
+        setShowNotifications(nextOpenState);
+    };
 
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -80,6 +88,114 @@ export const Header = () => {
             setUnreadCount(prev => Math.max(0, prev - 1));
         } catch (err) {
             console.error("Error marking notification as read:", err);
+        }
+    };
+
+    const getNotificationCategory = (notification: Notification) => {
+        const content = `${notification.title || ""} ${notification.message || ""}`.toLowerCase();
+        const targetUrl = notification.targetUrl || "";
+
+        if (/đăng ký|tài khoản mới|người dùng mới|khách hàng mới/.test(content) || targetUrl.includes("tab=users")) {
+            return { label: "Người dùng mới", tone: "users" };
+        }
+
+        if (/đặt đơn hàng|đơn hàng mới|vừa đặt đơn hàng|đặt hàng/.test(content) || targetUrl.includes("tab=orders")) {
+            return { label: "Đơn hàng mới", tone: "orders" };
+        }
+
+        if (/đánh giá mới/.test(content) || /vừa đánh giá/.test(content)) {
+            return { label: "Đánh giá", tone: "reviews" };
+        }
+
+        if (/bình luận|phản hồi|trả lời/.test(content)) {
+            return { label: "Phản hồi", tone: "replies" };
+        }
+
+        if (/đơn hàng/.test(content)) {
+            return { label: "Đơn hàng", tone: "orders" };
+        }
+
+        return { label: "Thông báo", tone: "general" };
+    };
+
+    const resolveNotificationTarget = async (notification: Notification) => {
+        if (notification.targetUrl) {
+            return notification.targetUrl;
+        }
+
+        const content = `${notification.title || ""} ${notification.message || ""}`;
+        const lowerContent = content.toLowerCase();
+        const orderMatch = content.match(/#(\d+)/);
+
+        if (user?.role === "ADMIN") {
+            if (/đăng ký|tài khoản mới|người dùng mới|khách hàng mới/i.test(content)) {
+                return "/admin?tab=users";
+            }
+
+            if (/đặt đơn hàng|đơn hàng mới|vừa đặt đơn hàng|đặt hàng/i.test(content)) {
+                return "/admin?tab=orders";
+            }
+        }
+
+        if (orderMatch) {
+            const orderId = orderMatch[1];
+            if (user?.role === "ADMIN" && /đơn hàng/i.test(content)) {
+                return "/admin?tab=orders";
+            }
+            return `/profile?orderId=${orderId}`;
+        }
+
+        if (/đánh giá|bình luận|phản hồi/i.test(content)) {
+            const productTitleMatch = content.match(/"([^"]+)"/);
+            const productTitle = productTitleMatch?.[1]?.trim();
+
+            if (productTitle) {
+                try {
+                    const response = await axios.get<Product[]>("http://localhost:8080/api/products/suggestions", {
+                        params: {
+                            keyword: productTitle,
+                            limit: 1
+                        }
+                    });
+
+                    const matchedProduct = response.data?.find((item) => item.title?.trim() === productTitle)
+                        || response.data?.[0];
+
+                    if (matchedProduct?.id) {
+                        return `/product/${matchedProduct.id}?tab=reviews`;
+                    }
+                } catch (error) {
+                    console.error("Không thể xác định sản phẩm từ thông báo:", error);
+                }
+            }
+
+            if (user?.role === "ADMIN") {
+                return "/admin?tab=reviews";
+            }
+
+            if (lowerContent.includes("admin đã trả lời") || lowerContent.includes("bookstore đã phản hồi")) {
+                return "/profile?tab=history";
+            }
+
+            return "/profile?tab=history";
+        }
+
+        return null;
+    };
+
+    const handleNotificationClick = async (notification: Notification) => {
+        const targetUrl = await resolveNotificationTarget(notification);
+
+        try {
+            await handleMarkAsRead(notification.id);
+        } catch (error) {
+            console.error("Error handling notification click:", error);
+        }
+
+        setShowNotifications(false);
+
+        if (targetUrl) {
+            navigate(targetUrl);
         }
     };
 
@@ -154,6 +270,8 @@ export const Header = () => {
     const handleLogout = () => {
         sessionStorage.removeItem("user");
         sessionStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
         window.location.href = "/";
     };
 
@@ -316,7 +434,7 @@ export const Header = () => {
                                 {/* NOTIFICATION BELL */}
                                 {user && (
                                     <div className="notification-bell-container" ref={dropdownRef}>
-                                        <div className="mini-notification" onClick={() => setShowNotifications(!showNotifications)} aria-label="Thông báo">
+                                        <div className="mini-notification" onClick={handleToggleNotifications} aria-label="Thông báo">
                                             <FaBell />
                                             {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
                                         </div>
@@ -334,15 +452,23 @@ export const Header = () => {
                                                     {notifications.length === 0 ? (
                                                         <div className="notification-empty">Không có thông báo mới</div>
                                                     ) : (
-                                                        notifications.map(n => (
-                                                            <div key={n.id} className={`notification-item ${n.isRead || n.read ? "read" : "unread"}`} onClick={() => handleMarkAsRead(n.id)}>
-                                                                <div className="notification-item-title">{n.title}</div>
-                                                                <div className="notification-item-message">{n.message}</div>
-                                                                <div className="notification-item-time">
-                                                                    {new Date(n.createdAt).toLocaleString("vi-VN")}
+                                                        notifications.map(n => {
+                                                            const category = getNotificationCategory(n);
+                                                            return (
+                                                                <div key={n.id} className={`notification-item ${n.isRead || n.read ? "read" : "unread"}`} onClick={() => handleNotificationClick(n)}>
+                                                                    <div className="notification-item-head">
+                                                                        <span className={`notification-item-badge notification-item-badge-${category.tone}`}>
+                                                                            {category.label}
+                                                                        </span>
+                                                                        <div className="notification-item-title">{n.title}</div>
+                                                                    </div>
+                                                                    <div className="notification-item-message">{n.message}</div>
+                                                                    <div className="notification-item-time">
+                                                                        {new Date(n.createdAt).toLocaleString("vi-VN")}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ))
+                                                            );
+                                                        })
                                                     )}
                                                 </div>
                                             </div>
