@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -60,6 +61,7 @@ public class AuthService {
 
         userRepository.save(user);
         notifyAdminsAboutNewUser(user, false);
+        sendWelcomeNotificationToUser(user);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -204,6 +206,7 @@ public class AuthService {
                     .build();
             userRepository.save(user);
             notifyAdminsAboutNewUser(user, true);
+            sendWelcomeNotificationToUser(user);
         } else {
             if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
                 user.setAvatar(dto.getAvatar());
@@ -268,5 +271,16 @@ public class AuthService {
         String targetUrl = "/admin?tab=users";
 
         admins.forEach(admin -> notificationService.createNotification(admin, title, message, targetUrl));
+    }
+
+    private void sendWelcomeNotificationToUser(User user) {
+        String displayName = user.getFullName() != null && !user.getFullName().isBlank()
+                ? user.getFullName()
+                : user.getUsername();
+        String title = "Chào mừng bạn đến với BookStore! 🎉";
+        String message = "Xin chào " + displayName + "! Tài khoản của bạn đã được tạo thành công. "
+                + "Khám phá hàng ngàn đầu sách hấp dẫn và trải nghiệm mua sắm tuyệt vời tại BookStore nhé!";
+        String targetUrl = "/profile";
+        notificationService.createNotification(user, title, message, targetUrl);
     }
 }
