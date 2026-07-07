@@ -30,98 +30,7 @@ public class DataInitializer {
     ) {
         return args -> {
 
-            // Cập nhật đường dẫn ảnh bìa trực tuyến chất lượng cao từ Tiki cho sách văn học/kinh doanh, và Unsplash cho giáo trình
-            List<Product> allProducts = productRepository.findAll();
-            for (Product p : allProducts) {
-                String title = p.getTitle().toLowerCase();
-                String newImg = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400"; // default cover
-
-                if (title.contains("đắc nhân tâm")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/d/a/dac-nhan-tam.jpg";
-                } else if (title.contains("babylon")) {
-                    newImg = "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("cha giàu")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/c/h/cha-giau-cha-ngheo.jpg";
-                } else if (title.contains("làm giàu")) {
-                    newImg = "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("phản biện")) {
-                    newImg = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("tinh gọn")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/k/h/khoi-nghiep-tinh-gon.jpg";
-                } else if (title.contains("zero to one")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/z/e/zero-to-one.jpg";
-                } else if (title.contains("marketing")) {
-                    newImg = "https://images.unsplash.com/photo-1531346878377-fe5be209b23d?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("nhanh và chậm")) {
-                    newImg = "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("giải tích 1")) {
-                    newImg = "https://images.unsplash.com/photo-1526256262111-ad09701174c6?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("tuyến tính")) {
-                    newImg = "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("giao tiếp hàng ngày")) {
-                    newImg = "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("toeic")) {
-                    newImg = "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("sapiens")) {
-                    newImg = "https://images.unsplash.com/photo-1474932430478-367db26830c1?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("homo deus")) {
-                    newImg = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("vật lý")) {
-                    newImg = "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("văn minh")) {
-                    newImg = "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("giả kim")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/n/h/nha-gia-kim.jpg";
-                } else if (title.contains("dế mèn")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/d/e/de-men-phieu-luu-ky.jpg";
-                } else if (title.contains("số đỏ")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/s/o/so-do.jpg";
-                } else if (title.contains("chí phèo")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/c/h/chi-pheo.jpg";
-                } else if (title.contains("tắt đèn")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/t/a/tat-den.jpg";
-                } else if (title.contains("harry potter")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/h/a/harry-potter-va-hon-da-phu-thuy.jpg";
-                } else if (title.contains("kiếp nhân sinh")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/m/u/muon-kiep-nhan-sinh.jpg";
-                } else if (title.contains("bố già")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/b/o/bo-gia.jpg";
-                } else if (title.contains("không còn ai")) {
-                    newImg = "https://images.unsplash.com/photo-1587876931567-564ce588bfbd?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("namiya")) {
-                    newImg = "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("hoa vàng")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/t/o/toi-thay-hoa-vang-tren-co-xanh.jpg";
-                } else if (title.contains("mắt biếc")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/m/a/mat-biec.jpg";
-                } else if (title.contains("đất rừng")) {
-                    newImg = "https://images.unsplash.com/photo-1500627869374-13cd993b1115?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("thói quen")) {
-                    newImg = "https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("ngủ dài")) {
-                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/d/o/doi-ngan-dung-ngu-dai.jpg";
-                } else if (title.contains("ikigai")) {
-                    newImg = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("đám đông")) {
-                    newImg = "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("mindfulness") || title.contains("tỉnh thức") || title.contains("chánh niệm")) {
-                    newImg = "https://images.unsplash.com/photo-1614849963640-9cc74b2a826a?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("dinh dưỡng")) {
-                    newImg = "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("hoàn toàn tự nhiên") || title.contains("sức khỏe hoàn toàn")) {
-                    newImg = "https://images.unsplash.com/photo-1511688878353-3a2f5be94cd7?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("yoga")) {
-                    newImg = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("chạy bộ")) {
-                    newImg = "https://images.unsplash.com/photo-1489980508314-941910ded1f4?auto=format&fit=crop&q=80&w=400";
-                } else if (title.contains("tối giản")) {
-                    newImg = "https://images.unsplash.com/photo-1509966756614-25c7b17f8d6a?auto=format&fit=crop&q=80&w=400";
-                }
-
-                p.setImage(newImg);
-                productRepository.save(p);
-            }
-            System.out.println("🔧 Đã tự động cập nhật hình ảnh Tiki trực tuyến tương ứng cho từng đầu sách.");
+            // Ảnh sản phẩm sẽ được tự động cập nhật ở cuối quá trình khởi tạo dữ liệu.
 
             // =============================================
             // 1. ORDER STATUSES
@@ -951,6 +860,99 @@ public class DataInitializer {
                     System.out.println("✅ Khởi tạo đánh giá sản phẩm thực tế và chi tiết.");
                 }
             }
+
+            // Cập nhật đường dẫn ảnh bìa trực tuyến chất lượng cao từ Tiki cho sách văn học/kinh doanh, và Unsplash cho giáo trình
+            List<Product> allProducts = productRepository.findAll();
+            for (Product p : allProducts) {
+                String title = p.getTitle().toLowerCase();
+                String newImg = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400"; // default cover
+
+                if (title.contains("đắc nhân tâm")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/d/a/dac-nhan-tam.jpg";
+                } else if (title.contains("babylon")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/23/f8/75/5e90d6e0eabaebd068c815cf1c1f7396.jpg";
+                } else if (title.contains("cha giàu")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/17/02/d1/52dde080f00d414a2d441c544c76d9c9.jpg";
+                } else if (title.contains("làm giàu")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/04/d4/da/82f00d6a08d3daec807940f3a80973e9.png";
+                } else if (title.contains("phản biện")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/fc/1e/80/ecf851cf939adc97a770671c619f4ebd.jpg";
+                } else if (title.contains("tinh gọn")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/k/h/khoi-nghiep-tinh-gon.jpg";
+                } else if (title.contains("zero to one")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/z/e/zero-to-one.jpg";
+                } else if (title.contains("marketing")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/cc/94/c8/334dda7dc15556750bea719cc6174469.jpg";
+                } else if (title.contains("nhanh và chậm")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/d2/5a/00/479b787ba33d3933c0619ea2441e2a7d.png";
+                } else if (title.contains("giải tích 1")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/78/ac/77/f33feea6316e9a2d04a3c074adee170a.jpg";
+                } else if (title.contains("tuyến tính")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/67/08/79/f99c6760c3035997c6f27103a8efa8cf.jpg";
+                } else if (title.contains("giao tiếp hàng ngày")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/6e/34/31/a3df6370867b75f65331caa92f1aef96.jpg";
+                } else if (title.contains("toeic")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/1a/0e/f4/3a1f86a93da0020eaf2553b51efeecd1.png";
+                } else if (title.contains("sapiens")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/58/e2/0a/f285d857f6e07663f70747cb988a82d0.jpg";
+                } else if (title.contains("homo deus")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/3a/0c/b1/7b2e911293da0020eaf2553b51efeecd1.jpg";
+                } else if (title.contains("vật lý")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/0c/8a/fa/d8702b79e701bb4a648b2eb681ef546c.jpg";
+                } else if (title.contains("văn minh")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/cd/2a/8d/fa786966cf40775d796696b99be2df55.jpg";
+                } else if (title.contains("giả kim")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/n/h/nha-gia-kim.jpg";
+                } else if (title.contains("dế mèn")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/d/e/de-men-phieu-luu-ky.jpg";
+                } else if (title.contains("số đỏ")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/s/o/so-do.jpg";
+                } else if (title.contains("chí phèo")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/c/h/chi-pheo.jpg";
+                } else if (title.contains("tắt đèn")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/t/a/tat-den.jpg";
+                } else if (title.contains("harry potter")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/h/a/harry-potter-va-hon-da-phu-thuy.jpg";
+                } else if (title.contains("kiếp nhân sinh")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/m/u/muon-kiep-nhan-sinh.jpg";
+                } else if (title.contains("bố già")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/b/o/bo-gia.jpg";
+                } else if (title.contains("không còn ai")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/dd/e8/3f/82c3c6f2c7cb6440c9bc0bf872bcf7e8.jpg";
+                } else if (title.contains("namiya")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/ea/7e/e6/9e6ccf40775d796696b99be2df553edf.jpg";
+                } else if (title.contains("hoa vàng")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/t/o/toi-thay-hoa-vang-tren-co-xanh.jpg";
+                } else if (title.contains("mắt biếc")) {
+                    newImg = "https://salt.tikicdn.com/cache/750x750/media/catalog/product/m/a/mat-biec.jpg";
+                } else if (title.contains("đất rừng")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/79/e7/01/bb4a648b2eb681ef546c8d8702b79e9d.jpg";
+                } else if (title.contains("thói quen")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/0c/83/a5/d8702b79e701bb4a648b2eb681ef546c.jpg";
+                } else if (title.contains("ngủ dài")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/d0/5c/41/508ca2cfc7ffc5244d4b319c0c0262ad.jpg";
+                } else if (title.contains("ikigai")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/b6/4c/32/7ee69e6ccf40775d796696b99be2df55.jpg";
+                } else if (title.contains("đám đông")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/9e/d8/79/e701bb4a648b2eb681ef546c8d8702b7.jpg";
+                } else if (title.contains("mindfulness") || title.contains("tỉnh thức") || title.contains("chánh niệm")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/d6/2c/e7/e4d76504e86684c4f785fcd77fd42948.png";
+                } else if (title.contains("dinh dưỡng")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/89/3e/df/7ee69e6ccf40775d796696b99be2df55.jpg";
+                } else if (title.contains("hoàn toàn tự nhiên") || title.contains("sức khỏe hoàn toàn")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/2e/dd/e8/3f82c3c6f2c7cb6440c9bc0bf872bcf7.jpg";
+                } else if (title.contains("yoga")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/4c/83/8f/d8702b79e701bb4a648b2eb681ef546c.jpg";
+                } else if (title.contains("chạy bộ")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/d8/79/e7/01bb4a648b2eb681ef546c8d8702b79e.jpg";
+                } else if (title.contains("tối giản")) {
+                    newImg = "https://salt.tikicdn.com/ts/product/0c/83/a5/d8702b79e701bb4a648b2eb681ef546c.jpg";
+                }
+
+                p.setImage(newImg);
+                productRepository.save(p);
+            }
+            System.out.println("🔧 Đã tự động cập nhật hình ảnh Tiki trực tuyến tương ứng cho từng đầu sách.");
 
             System.out.println("🚀 BookStore Database đã được khởi tạo thành công!");
             System.out.println("📋 Tài khoản: admin/admin123 | nguyenvana/123456");

@@ -28,9 +28,12 @@ export const Header = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    const storedUser = sessionStorage.getItem("user");
-    const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = sessionStorage.getItem("token");
+    const user = React.useMemo(() => {
+        const storedUser = sessionStorage.getItem("user");
+        return storedUser ? JSON.parse(storedUser) : null;
+    }, []);
+
+    const token = React.useMemo(() => sessionStorage.getItem("token"), []);
 
     const [notifications, setNotifications] = React.useState<any[]>([]);
     const [showNotifications, setShowNotifications] = React.useState(false);
