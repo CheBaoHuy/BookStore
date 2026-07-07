@@ -54,7 +54,7 @@ export interface Order {
     shipping_cost?: number;
     createdAt: string;
     orderStatus: OrderStatus;
-    orderDetails?: any[];
+    orderDetails?: OrderDetail[];
 }
 export interface Rate {
     id: number;
@@ -100,11 +100,21 @@ export interface CategoryResponse {
 }
 export interface Review {
     id: number,
-    user: User;
+    orderId?: number | null;
+    orderDetailId?: number | null;
+    productId?: number | null;
+    productTitle?: string | null;
+    productImage?: string | null;
+    user?: User;
+    username?: string;
+    fullName?: string;
     rating: number,
     comment: string,
-    createAt: string,
-    updateAt: string,
+    adminReply?: string | null;
+    createdAt: string,
+    updatedAt: string,
+    adminRepliedAt?: string | null;
+    adminRepliedBy?: string | null;
     status: boolean
 }
 export interface Pageable {
@@ -195,7 +205,14 @@ export interface OrderDto {
     shippingCost: number;
     totalAmount: number;
     products: Product[];
-    orderDetails: any[];
+    orderDetails: OrderDetail[];
+}
+
+export interface OrderDetail {
+    id: number;
+    product: Product;
+    quantity: number;
+    price: number;
 }
 
 export interface AddressDto {
@@ -213,11 +230,32 @@ export interface AddressDto {
 }
 
 export interface RateDto {
-    userId: number;
     productId: number;
     content: string;
     stars: number;
     orderDetailsId: number;
+}
+
+export interface ReviewStats {
+    averageRating: number;
+    totalReviews: number;
+}
+
+export interface ReviewEligibility {
+    orderDetailId: number;
+    orderId: number;
+    productId: number;
+    productTitle: string;
+    productImage: string | null;
+    quantity: number;
+    reviewed: boolean;
+}
+
+export interface ReviewAdminSummary {
+    totalReviews: number;
+    pendingReplies: number;
+    repliedReviews: number;
+    averageRating: number;
 }
 
 export interface Notification {
@@ -226,5 +264,6 @@ export interface Notification {
     title: string;
     message: string;
     isRead: boolean;
+    read?: boolean;
     createdAt: string;
 }

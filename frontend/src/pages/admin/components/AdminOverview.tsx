@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { FaBook, FaChartBar, FaShoppingCart, FaUsers } from "react-icons/fa";
-import { Category, Order, Product, RevenueCategoryShare, RevenueTrendPoint, User } from "../../../models";
+import { FaBook, FaChartBar, FaComments, FaShoppingCart, FaUsers } from "react-icons/fa";
+import { Category, Order, Product, RevenueCategoryShare, RevenueTrendPoint, ReviewAdminSummary, User } from "../../../models";
 
 interface AdminOverviewProps {
     products: Product[];
@@ -13,6 +13,7 @@ interface AdminOverviewProps {
     categoryFilter: string;
     setCategoryFilter: (val: string) => void;
     formatCurrency: (val: number | undefined | null) => string;
+    reviewSummary: ReviewAdminSummary;
 }
 
 const padDatePart = (value: number) => String(value).padStart(2, "0");
@@ -68,7 +69,8 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
     setTimeFilter,
     categoryFilter,
     setCategoryFilter,
-    formatCurrency
+    formatCurrency,
+    reviewSummary
 }) => {
     const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     const defaultEndDate = formatDateInput(new Date());
@@ -460,6 +462,13 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
                     <div className="stat-details">
                         <span>Đầu sách đã bán</span>
                         <h3>{statsBooksCount} cuốn</h3>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon-wrapper reviews"><FaComments /></div>
+                    <div className="stat-details">
+                        <span>Đánh giá chờ phản hồi</span>
+                        <h3>{reviewSummary.pendingReplies} đánh giá</h3>
                     </div>
                 </div>
             </div>

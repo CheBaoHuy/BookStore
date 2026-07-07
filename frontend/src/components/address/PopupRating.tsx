@@ -4,7 +4,7 @@ import './PopupRating.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
-import {AddressDto, RateDto} from "../../models";
+import { AddressDto } from "../../models";
 
 const style = {
     position: 'absolute' as const,
@@ -50,40 +50,57 @@ interface PopupRatingProps {
         quantity: number;
     } | null;
     user: User;
+    token?: string | null;
+    onSuccess?: () => void;
 }
 
-const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, user }) => {
+const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, user, token, onSuccess }) => {
     const [stars, setStars] = useState<number | null>(0);
     const [reviewContent, setReviewContent] = useState<string>('');
+    const [submitting, setSubmitting] = useState(false);
 
 
     if (!detail) {
         return null;
     }
 
-    const handleSubmit = () => {
-        postReview();
-        handleClose();
+    const handleSubmit = async () => {
+        const success = await postReview();
+        if (success) {
+            handleClose();
+        }
     };
 
     const postReview = async () => {
+        if (!stars || stars < 1) {
+            toast.error('Vui lòng chọn số sao đánh giá!');
+            return false;
+        }
+
         const postData = {
-            userId: user.id,
             orderDetailsId: detail.id,
             productId: detail.product.id,
             stars: stars,
             content: reviewContent
         };
         try {
-            const response = await axios.post<RateDto>('http://localhost:8080/api/v1/review/createRate', postData)
+            setSubmitting(true);
+            const response = await axios.post('http://localhost:8080/api/reviews', postData, {
+                headers: token ? { Authorization: `Bearer ${token}` } : undefined
+            });
             setReviewContent('')
             setStars(0)
             console.log("success")
             toast.success('Đánh giá thành công!');
             console.log(response);
+            onSuccess?.();
+            return true;
         } catch (error) {
             toast.error('Đánh giá thất bại!');
             console.error(error);
+            return false;
+        } finally {
+            setSubmitting(false);
         }
     }
 
@@ -122,8 +139,8 @@ const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, us
                     <button className={"rate_button"} onClick={handleClose} >
                         Hủy
                     </button>
-                    <button className={"rate_button"} onClick={handleSubmit}>
-                        Gửi đánh giá
+                    <button className={"rate_button"} onClick={handleSubmit} disabled={submitting}>
+                        {submitting ? "Đang gửi..." : "Gửi đánh giá"}
                     </button>
 
                 </div>

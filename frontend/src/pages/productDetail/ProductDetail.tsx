@@ -3,13 +3,14 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/reducer/CartReducer";
-import { Product } from "../../models";
+import { Product, Review, ReviewEligibility, ReviewStats, ReviewsPage } from "../../models";
 import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
-import { FaCartPlus, FaHeart, FaStar, FaChevronRight, FaPlus, FaMinus } from "react-icons/fa";
+import { FaCartPlus, FaHeart, FaPaperPlane, FaStar, FaChevronRight, FaPlus, FaMinus } from "react-icons/fa";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { getBookCover } from "../../common/imageHelper";
+import PopupRating from "../../components/address/PopupRating";
 import "./ProductDetail.css";
 
 function ProductDetail() {
@@ -19,9 +20,22 @@ function ProductDetail() {
     const [loading, setLoading] = useState(true);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [relatedLoading, setRelatedLoading] = useState(false);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewStats, setReviewStats] = useState<ReviewStats>({ averageRating: 0, totalReviews: 0 });
+    const [reviewEligibility, setReviewEligibility] = useState<ReviewEligibility | null>(null);
+    const [reviewEligibilityLoading, setReviewEligibilityLoading] = useState(false);
+    const [ratingModalOpen, setRatingModalOpen] = useState(false);
+    const [replyDrafts, setReplyDrafts] = useState<Record<number, string>>({});
+    const [submittingReplyId, setSubmittingReplyId] = useState<number | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [addedToCartSuccess, setAddedToCartSuccess] = useState(false);
-    const [activeTab, setActiveTab] = useState<"desc" | "shipping">("desc");
+    const [activeTab, setActiveTab] = useState<"desc" | "reviews" | "shipping">("desc");
+
+    const storedUser = sessionStorage.getItem("user");
+    const sessionUser = storedUser ? JSON.parse(storedUser) : null;
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const isAdmin = sessionUser?.role === "ADMIN";
 
     const relatedResponsive = {
         desktop: {
@@ -88,6 +102,64 @@ function ProductDetail() {
         }
     }, [product?.category?.id, product?.id]);
 
+    useEffect(() => {
+        const fetchReviewData = async (productId: string) => {
+            setReviewsLoading(true);
+            try {
+                const [reviewsRes, statsRes] = await Promise.all([
+                    axios.get<ReviewsPage>(`http://localhost:8080/api/products/${productId}/reviews`, {
+                        params: { page: 0, size: 10 }
+                    }),
+                    axios.get<ReviewStats>(`http://localhost:8080/api/products/${productId}/reviews/stats`)
+                ]);
+
+                setReviews(reviewsRes.data?.content || []);
+                setReviewStats(statsRes.data || { averageRating: 0, totalReviews: 0 });
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+                setReviews([]);
+                setReviewStats({ averageRating: 0, totalReviews: 0 });
+            } finally {
+                setReviewsLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchReviewData(id);
+        }
+    }, [id]);
+
+    useEffect(() => {
+        const fetchReviewEligibility = async (productId: number) => {
+            if (!token) {
+                setReviewEligibility(null);
+                return;
+            }
+
+            setReviewEligibilityLoading(true);
+            try {
+                const res = await axios.get<ReviewEligibility[]>("http://localhost:8080/api/reviews/my-eligible-products", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const items = res.data || [];
+                const eligible = items.find((item) => item.productId === productId && !item.reviewed) || null;
+                setReviewEligibility(eligible);
+            } catch (error) {
+                console.error("Error fetching review eligibility:", error);
+                setReviewEligibility(null);
+            } finally {
+                setReviewEligibilityLoading(false);
+            }
+        };
+
+        if (id) {
+            const productId = Number(id);
+            if (!Number.isNaN(productId)) {
+                fetchReviewEligibility(productId);
+            }
+        }
+    }, [id, token]);
+
     const handleQuantityChange = (type: "inc" | "dec") => {
         if (type === "dec") {
             if (quantity > 1) setQuantity(quantity - 1);
@@ -104,6 +176,108 @@ function ProductDetail() {
             setAddedToCartSuccess(true);
             setTimeout(() => setAddedToCartSuccess(false), 3000);
         }
+    };
+
+    const refreshReviewSection = async (productId: string) => {
+        try {
+            const [reviewsRes, statsRes] = await Promise.all([
+                axios.get<ReviewsPage>(`http://localhost:8080/api/products/${productId}/reviews`, {
+                    params: { page: 0, size: 10 }
+                }),
+                axios.get<ReviewStats>(`http://localhost:8080/api/products/${productId}/reviews/stats`)
+            ]);
+
+            setReviews(reviewsRes.data?.content || []);
+            setReviewStats(statsRes.data || { averageRating: 0, totalReviews: 0 });
+        } catch (error) {
+            console.error("Error refreshing reviews:", error);
+        }
+    };
+
+    const refreshReviewEligibility = async (productId: number) => {
+        if (!token) {
+            setReviewEligibility(null);
+            return;
+        }
+
+        try {
+            const res = await axios.get<ReviewEligibility[]>("http://localhost:8080/api/reviews/my-eligible-products", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const items = res.data || [];
+            const eligible = items.find((item) => item.productId === productId && !item.reviewed) || null;
+            setReviewEligibility(eligible);
+        } catch (error) {
+            console.error("Error refreshing review eligibility:", error);
+            setReviewEligibility(null);
+        }
+    };
+
+    const handleAdminReplySubmit = async (reviewId: number) => {
+        const reply = (replyDrafts[reviewId] ?? reviews.find((item) => item.id === reviewId)?.adminReply ?? "").trim();
+        if (!reply || !token) {
+            return;
+        }
+
+        try {
+            setSubmittingReplyId(reviewId);
+            const response = await axios.put(
+                `http://localhost:8080/api/admin/reviews/${reviewId}/reply`,
+                { reply },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            setReviews((prev) => prev.map((item) => item.id === reviewId ? response.data : item));
+            setReplyDrafts((prev) => ({ ...prev, [reviewId]: "" }));
+        } catch (error) {
+            console.error("Error replying review from product detail:", error);
+        } finally {
+            setSubmittingReplyId(null);
+        }
+    };
+
+    const ratingDetail = reviewEligibility
+        ? {
+            id: reviewEligibility.orderDetailId,
+            product: {
+                id: reviewEligibility.productId,
+                name: reviewEligibility.productTitle
+            },
+            quantity: reviewEligibility.quantity
+        }
+        : null;
+
+    const ratingUser = sessionUser
+        ? {
+            id: sessionUser.userId || sessionUser.id,
+            fullName: sessionUser.fullName || "",
+            email: sessionUser.email || "",
+            phone: sessionUser.phone || "",
+            avatar: sessionUser.avatar || "",
+            username: sessionUser.username || "",
+            address: sessionUser.address || []
+        }
+        : null;
+
+    const renderStars = (rating: number) =>
+        Array.from({ length: 5 }, (_, index) => (
+            <FaStar key={index} className={index < Math.round(rating) ? "active" : ""} />
+        ));
+
+    const formatReviewDate = (value?: string | null) => {
+        if (!value) {
+            return "";
+        }
+
+        return new Date(value).toLocaleString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
     };
 
     if (loading) {
@@ -194,10 +368,12 @@ function ProductDetail() {
 
                             {/* Ratings stars */}
                             <div className="detail-stars-row">
-                                <div className="detail-stars">
-                                    <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
+                                <div className="detail-stars dynamic-stars">
+                                    {renderStars(reviewStats.averageRating)}
                                 </div>
-                                <span className="detail-rating-count">(5.0 / 5.0 - 12 đánh giá)</span>
+                                <span className="detail-rating-count">
+                                    ({reviewStats.averageRating.toFixed(1)} / 5.0 - {reviewStats.totalReviews} đánh giá)
+                                </span>
                             </div>
 
                             <hr style={{ border: "0", borderTop: "1px solid #e2e8f0", margin: "24px 0" }} />
@@ -275,6 +451,12 @@ function ProductDetail() {
                             Mô tả chi tiết
                         </button>
                         <button
+                            className={`detail-tab-btn ${activeTab === "reviews" ? "active" : ""}`}
+                            onClick={() => setActiveTab("reviews")}
+                        >
+                            Đánh giá & bình luận
+                        </button>
+                        <button
                             className={`detail-tab-btn ${activeTab === "shipping" ? "active" : ""}`}
                             onClick={() => setActiveTab("shipping")}
                         >
@@ -284,6 +466,109 @@ function ProductDetail() {
                     <div className="detail-tabs-content">
                         {activeTab === "desc" ? (
                             <p style={{ margin: 0 }}>{product.description || "Nội dung đang được cập nhật."}</p>
+                        ) : activeTab === "reviews" ? (
+                            <div className="detail-review-panel">
+                                <div className="detail-review-summary">
+                                    <div className="detail-review-score">
+                                        <strong>{reviewStats.averageRating.toFixed(1)}</strong>
+                                        <span>Điểm trung bình</span>
+                                    </div>
+                                    <div className="detail-review-meta">
+                                        <div className="detail-stars dynamic-stars">
+                                            {renderStars(reviewStats.averageRating)}
+                                        </div>
+                                        <p>{reviewStats.totalReviews} đánh giá từ khách hàng đã mua sản phẩm</p>
+                                    </div>
+                                    <div className="detail-review-actions">
+                                        {reviewEligibilityLoading ? (
+                                            <span className="detail-review-action-hint">Đang kiểm tra điều kiện đánh giá...</span>
+                                        ) : token && reviewEligibility && ratingUser ? (
+                                            <button
+                                                className="detail-review-action-btn"
+                                                onClick={() => setRatingModalOpen(true)}
+                                            >
+                                                Đánh giá sản phẩm
+                                            </button>
+                                        ) : token ? (
+                                            <span className="detail-review-action-hint">
+                                                Bạn đã đánh giá sản phẩm này hoặc chưa có đơn hàng đã giao thành công.
+                                            </span>
+                                        ) : (
+                                            <span className="detail-review-action-hint">
+                                                Đăng nhập để đánh giá sau khi nhận hàng.
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {reviewsLoading ? (
+                                    <div className="detail-review-empty">Đang tải đánh giá của khách hàng...</div>
+                                ) : reviews.length === 0 ? (
+                                    <div className="detail-review-empty">
+                                        Chưa có đánh giá nào cho sản phẩm này. Sau khi mua và nhận hàng thành công, khách hàng có thể để lại nhận xét tại trang hồ sơ.
+                                    </div>
+                                ) : (
+                                    <div className="detail-review-list">
+                                        {reviews.map((review) => (
+                                            <article className="detail-review-card" key={review.id}>
+                                                <div className="detail-review-card-head">
+                                                    <div>
+                                                        <h4>{review.fullName || review.username || "Khách hàng BookStore"}</h4>
+                                                        <span>{formatReviewDate(review.createdAt)}</span>
+                                                    </div>
+                                                    <div className="detail-stars detail-review-stars">
+                                                        {renderStars(review.rating)}
+                                                    </div>
+                                                </div>
+
+                                                <p className="detail-review-comment">
+                                                    {review.comment?.trim() || "Khách hàng đã đánh giá sản phẩm này mà không để lại bình luận chi tiết."}
+                                                </p>
+
+                                                {review.adminReply && (
+                                                    <div className="detail-admin-reply">
+                                                        <div className="detail-admin-reply-title">
+                                                            Phản hồi từ BookStore
+                                                        </div>
+                                                        <p>{review.adminReply}</p>
+                                                        <span>
+                                                            {review.adminRepliedBy ? `${review.adminRepliedBy} - ` : ""}
+                                                            {formatReviewDate(review.adminRepliedAt)}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {isAdmin && token && (
+                                                    <div className="detail-admin-reply-editor">
+                                                        <textarea
+                                                            rows={3}
+                                                            placeholder="Nhập phản hồi của quản trị viên ngay tại bình luận này..."
+                                                            value={replyDrafts[review.id] ?? review.adminReply ?? ""}
+                                                            onChange={(e) =>
+                                                                setReplyDrafts((prev) => ({
+                                                                    ...prev,
+                                                                    [review.id]: e.target.value
+                                                                }))
+                                                            }
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="detail-admin-reply-btn"
+                                                            onClick={() => handleAdminReplySubmit(review.id)}
+                                                            disabled={submittingReplyId === review.id}
+                                                        >
+                                                            <FaPaperPlane />
+                                                            {submittingReplyId === review.id
+                                                                ? "Đang gửi..."
+                                                                : review.adminReply ? "Cập nhật phản hồi" : "Phản hồi bình luận"}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </article>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <p style={{ margin: 0 }}>
                                 - Giao hàng toàn quốc với tốc độ nhanh chóng.<br />
@@ -347,6 +632,25 @@ function ProductDetail() {
                     )}
                 </div>
             </div>
+
+            {ratingUser && (
+                <PopupRating
+                    open={ratingModalOpen}
+                    handleClose={() => setRatingModalOpen(false)}
+                    detail={ratingDetail}
+                    user={ratingUser}
+                    token={token}
+                    onSuccess={() => {
+                        if (id) {
+                            const productId = Number(id);
+                            refreshReviewSection(id);
+                            if (!Number.isNaN(productId)) {
+                                refreshReviewEligibility(productId);
+                            }
+                        }
+                    }}
+                />
+            )}
 
             <Footer />
         </div>
