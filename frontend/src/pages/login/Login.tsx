@@ -4,7 +4,7 @@ import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import logo from "../../images/logo_green.png";
 import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
-import axios from "axios";
+import axios from "../../config/api";
 
 function Login() {
     const [username, setUsername] = useState("");
@@ -63,7 +63,7 @@ function Login() {
 
             try {
                 // Call Google Auth Endpoint on backend
-                const res = await axios.post("http://localhost:8080/api/auth/google", {
+                const res = await axios.post("/auth/google", {
                     email: email,
                     fullName: name,
                     avatar: picture
@@ -123,7 +123,7 @@ function Login() {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/login", {
+            const response = await axios.post("/auth/login", {
                 username,
                 password
             });

@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import "./Header.css";
-import axios from "axios";
+import axios from "../../config/api";
 
 import {
     FaMapMarkerAlt,
@@ -44,7 +44,7 @@ export const Header = () => {
         if (!user) return;
         const userId = user.userId || user.id;
         try {
-            const res = await axios.get(`http://localhost:8080/api/notifications/user/${userId}`, {
+            const res = await axios.get(`/notifications/user/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data) {
@@ -84,7 +84,7 @@ export const Header = () => {
 
     const handleMarkAsRead = async (id: number) => {
         try {
-            await axios.put(`http://localhost:8080/api/notifications/${id}/read`, {}, {
+            await axios.put(`/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.map(n => n.id === id ? { ...n, isRead: true, read: true } : n));
@@ -154,7 +154,7 @@ export const Header = () => {
 
             if (productTitle) {
                 try {
-                    const response = await axios.get<Product[]>("http://localhost:8080/api/products/suggestions", {
+                    const response = await axios.get<Product[]>("/products/suggestions", {
                         params: {
                             keyword: productTitle,
                             limit: 1
@@ -207,7 +207,7 @@ export const Header = () => {
         const userId = user ? (user.userId || user.id) : "";
         if (!userId) return;
         try {
-            await axios.put(`http://localhost:8080/api/notifications/user/${userId}/read-all`, {}, {
+            await axios.put(`/notifications/user/${userId}/read-all`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.map(n => ({ ...n, isRead: true, read: true })));
@@ -242,7 +242,7 @@ export const Header = () => {
             setIsSearching(true);
 
             try {
-                const response = await axios.get<Product[]>("http://localhost:8080/api/products/suggestions", {
+                const response = await axios.get<Product[]>("/products/suggestions", {
                     params: {
                         keyword,
                         limit: 6

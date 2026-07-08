@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../config/api";
 import { Link, useSearchParams } from "react-router-dom";
 import {
     FaUser, FaEnvelope, FaPhone, FaLink, FaSave, FaArrowLeft, FaUserCircle,
@@ -97,7 +97,7 @@ function Profile() {
         setOrdersLoading(true);
         const userId = user.userId || user.id || "";
         try {
-            const res = await axios.get(`http://localhost:8080/api/orders/user/${userId}`, {
+            const res = await axios.get(`/orders/user/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Chỉ lấy đơn hàng thuộc về email của người dùng hiện tại
@@ -134,7 +134,7 @@ function Profile() {
         }
 
         try {
-            const res = await axios.get("http://localhost:8080/api/reviews/my-eligible-products", {
+            const res = await axios.get("/reviews/my-eligible-products", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setReviewEligibilities(res.data || []);
@@ -167,7 +167,7 @@ function Profile() {
         setProfileLoading(true);
         try {
             const response = await axios.put(
-                "http://localhost:8080/api/auth/profile",
+                "/auth/profile",
                 {
                     username: user.username,
                     fullName: fullName,
@@ -223,7 +223,7 @@ function Profile() {
 
             // Gọi API cập nhật lên database
             try {
-                axios.put(`http://localhost:8080/api/orders/${orderId}/status?statusId=5`, {}, {
+                axios.put(`/orders/${orderId}/status?statusId=5`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } catch (err) {

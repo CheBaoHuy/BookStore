@@ -3,7 +3,7 @@ import { Modal, Box, Typography, Rating, TextField } from '@mui/material';
 import './PopupRating.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from "axios";
+import axios from "../../config/api";
 import { AddressDto } from "../../models";
 
 const style = {
@@ -85,7 +85,7 @@ const PopupRating: React.FC<PopupRatingProps> = ({ open, handleClose, detail, us
         };
         try {
             setSubmitting(true);
-            const response = await axios.post('http://localhost:8080/api/reviews', postData, {
+            const response = await axios.post('/reviews', postData, {
                 headers: token ? { Authorization: `Bearer ${token}` } : undefined
             });
             setReviewContent('')

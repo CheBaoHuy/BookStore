@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import axios from "axios";
+import axios from "../../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import "./Forgot.css";
 import { Header } from "../../components/header/Header";
@@ -36,7 +36,7 @@ function Forgot() {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/forgot-password", {
+            const response = await axios.post("/auth/forgot-password", {
                 email: email.trim()
             });
             setStep(2);
@@ -60,7 +60,7 @@ function Forgot() {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/forgot-password/verify-otp", {
+            const response = await axios.post("/auth/forgot-password/verify-otp", {
                 email: email.trim(),
                 otp: otp.trim()
             });
@@ -95,7 +95,7 @@ function Forgot() {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/forgot-password/reset", {
+            const response = await axios.post("/auth/forgot-password/reset", {
                 email: email.trim(),
                 otp: otp.trim(),
                 newPassword,
