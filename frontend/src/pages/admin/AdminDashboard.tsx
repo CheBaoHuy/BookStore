@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../config/api";
 import { Link, useSearchParams } from "react-router-dom";
 import {
     FaBook,
@@ -198,7 +198,7 @@ function AdminDashboard() {
 
         // --- Products ---
         try {
-            const prodRes = await axios.get("http://localhost:8080/api/products?page=0&size=100");
+            const prodRes = await axios.get("/products?page=0&size=100");
             if (prodRes.data && prodRes.data.content) setProducts(prodRes.data.content);
         } catch {
             setProducts(MOCK_PRODUCTS as any);
@@ -207,7 +207,7 @@ function AdminDashboard() {
 
         // --- Categories ---
         try {
-            const catRes = await axios.get("http://localhost:8080/api/categories");
+            const catRes = await axios.get("/categories");
             if (catRes.data) setCategories(catRes.data);
         } catch {
             setCategories(MOCK_CATEGORIES as any);
@@ -215,7 +215,7 @@ function AdminDashboard() {
 
         // --- Orders ---
         try {
-            const orderRes = await axios.get("http://localhost:8080/api/orders", getAuthHeaders());
+            const orderRes = await axios.get("/orders", getAuthHeaders());
             if (orderRes.data) {
                 const localUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
                 const merged = [...localUserOrders, ...orderRes.data]
@@ -234,7 +234,7 @@ function AdminDashboard() {
 
         // --- Users ---
         try {
-            const userRes = await axios.get("http://localhost:8080/api/users", getAuthHeaders());
+            const userRes = await axios.get("/users", getAuthHeaders());
             if (userRes.data) setUsers(userRes.data);
         } catch {
             setUsers(MOCK_USERS as any);
@@ -266,7 +266,7 @@ function AdminDashboard() {
 
     const fetchReviewSummary = async () => {
         try {
-            const response = await axios.get<ReviewAdminSummary>("http://localhost:8080/api/admin/reviews/summary", getAuthHeaders());
+            const response = await axios.get<ReviewAdminSummary>("/admin/reviews/summary", getAuthHeaders());
             if (response.data) {
                 setReviewSummary(response.data);
             }
@@ -323,14 +323,14 @@ function AdminDashboard() {
         try {
             if (editingProduct) {
                 // Edit Request
-                const res = await axios.put(`http://localhost:8080/api/products/${editingProduct.id}`, productPayload, getAuthHeaders());
+                const res = await axios.put(`/products/${editingProduct.id}`, productPayload, getAuthHeaders());
                 if (res.data) {
                     setProducts(products.map(p => p.id === editingProduct.id ? res.data : p));
                     triggerNotification("Cập nhật sản phẩm thành công!");
                 }
             } else {
                 // Create Request
-                const res = await axios.post("http://localhost:8080/api/products", productPayload, getAuthHeaders());
+                const res = await axios.post("/products", productPayload, getAuthHeaders());
                 if (res.data) {
                     setProducts([res.data, ...products]);
                     triggerNotification("Thêm sản phẩm mới thành công!");
@@ -346,7 +346,7 @@ function AdminDashboard() {
     const handleDeleteProduct = async (id: number) => {
         if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
         try {
-            await axios.delete(`http://localhost:8080/api/products/${id}`, getAuthHeaders());
+            await axios.delete(`/products/${id}`, getAuthHeaders());
             setProducts(products.filter(p => p.id !== id));
             triggerNotification("Xóa sản phẩm thành công!");
         } catch (err: any) {
@@ -360,7 +360,7 @@ function AdminDashboard() {
     // =============================================
     const handleUpdateOrderStatus = async (orderId: number, statusId: number) => {
         try {
-            const res = await axios.put(`http://localhost:8080/api/orders/${orderId}/status?statusId=${statusId}`, {}, getAuthHeaders());
+            const res = await axios.put(`/orders/${orderId}/status?statusId=${statusId}`, {}, getAuthHeaders());
             if (res.data) {
                 setOrders(orders.map(o => o.id === orderId ? res.data : o));
                 triggerNotification("Cập nhật trạng thái đơn hàng thành công!");
@@ -401,7 +401,7 @@ function AdminDashboard() {
 
     const handleUpdatePaymentStatus = async (orderId: number, paid: boolean) => {
         try {
-            const res = await axios.put(`http://localhost:8080/api/orders/${orderId}/payment-status?paid=${paid}`, {}, getAuthHeaders());
+            const res = await axios.put(`/orders/${orderId}/payment-status?paid=${paid}`, {}, getAuthHeaders());
             if (res.data) {
                 setOrders(orders.map(o => o.id === orderId ? res.data : o));
                 triggerNotification("Cập nhật trạng thái thanh toán thành công!");
@@ -420,7 +420,7 @@ function AdminDashboard() {
     // =============================================
     const handleToggleUserStatus = async (userId: number, currentStatus: boolean) => {
         try {
-            const res = await axios.put(`http://localhost:8080/api/users/${userId}/status?status=${!currentStatus}`, {}, getAuthHeaders());
+            const res = await axios.put(`/users/${userId}/status?status=${!currentStatus}`, {}, getAuthHeaders());
             if (res.data) {
                 setUsers(users.map(u => u.id === userId ? res.data : u));
                 triggerNotification(`${!currentStatus ? "Mở khóa" : "Khóa"} tài khoản thành công!`);
@@ -438,7 +438,7 @@ function AdminDashboard() {
             return;
         }
         try {
-            const res = await axios.put(`http://localhost:8080/api/users/${userId}/role?role=${nextRole}`, {}, getAuthHeaders());
+            const res = await axios.put(`/users/${userId}/role?role=${nextRole}`, {}, getAuthHeaders());
             if (res.data) {
                 setUsers(users.map(u => u.id === userId ? res.data : u));
                 triggerNotification(`Đã đổi quyền thành công sang ${nextRole}!`);
@@ -456,7 +456,7 @@ function AdminDashboard() {
         }
         if (!window.confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) return;
         try {
-            await axios.delete(`http://localhost:8080/api/users/${userId}`, getAuthHeaders());
+            await axios.delete(`/users/${userId}`, getAuthHeaders());
             setUsers(users.filter(u => u.id !== userId));
             triggerNotification("Xóa tài khoản thành công!");
         } catch (err: any) {

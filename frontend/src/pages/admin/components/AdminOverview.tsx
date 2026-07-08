@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 import { FaBook, FaChartBar, FaComments, FaShoppingCart, FaUsers } from "react-icons/fa";
 import { Category, Order, Product, RevenueCategoryShare, RevenueTrendPoint, ReviewAdminSummary, User } from "../../../models";
 
@@ -159,7 +159,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             setBarChartMessage("");
 
             try {
-                const response = await axios.get("http://localhost:8080/api/orders/revenue-trend", {
+                const response = await axios.get("/orders/revenue-trend", {
                     params: {
                         startDate: appliedDateRange.startDate,
                         endDate: appliedDateRange.endDate
@@ -234,7 +234,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({
             setPieChartMessage("");
 
             try {
-                const response = await axios.get("http://localhost:8080/api/orders/revenue-category-share", {
+                const response = await axios.get("/orders/revenue-category-share", {
                     params: {
                         month: appliedMonth
                     },

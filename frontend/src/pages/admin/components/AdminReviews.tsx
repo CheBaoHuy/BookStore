@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 import { FaPaperPlane, FaRegCommentDots, FaStar } from "react-icons/fa";
 import { Review } from "../../../models";
 
@@ -24,7 +24,7 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
     const fetchReviews = async () => {
         setLoading(true);
         try {
-            const response = await axios.get<Review[]>("http://localhost:8080/api/admin/reviews", {
+            const response = await axios.get<Review[]>("/admin/reviews", {
                 headers: token ? { Authorization: `Bearer ${token}` } : undefined
             });
             setReviews(response.data || []);
@@ -81,7 +81,7 @@ export function AdminReviews({ onNotify, onReviewChanged }: AdminReviewsProps) {
         try {
             setSubmittingId(reviewId);
             const response = await axios.post(
-                `http://localhost:8080/api/reviews/${reviewId}/replies`,
+                `/reviews/${reviewId}/replies`,
                 { message: reply },
                 {
                     headers: token ? { Authorization: `Bearer ${token}` } : undefined

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../config/api";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/reducer/CartReducer";
 import { Product } from "../../models";
@@ -19,7 +19,7 @@ function Business() {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("http://localhost:8080/api/products?categoryId=3");
+                const response = await axios.get("/products?categoryId=3");
                 if (response.data && response.data.content) {
                     setProducts(response.data.content);
                 } else {

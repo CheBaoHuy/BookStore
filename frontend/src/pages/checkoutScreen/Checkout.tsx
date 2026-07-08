@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { clearCart } from "../../redux/reducer/CartReducer";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../config/api";
 import { FaTag, FaTimesCircle, FaTruck, FaLock, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { fetchData } from "../../services/AddressAPI";
@@ -266,7 +266,7 @@ function Checkout() {
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
             const userId = user ? (user.userId || user.id) : "";
-            const res = await axios.post(`http://localhost:8080/api/orders?userId=${userId}`, orderPayload, { headers });
+            const res = await axios.post(`/orders?userId=${userId}`, orderPayload, { headers });
             orderId = res.data?.id || null;
         } catch (err: any) {
             setLoading(false);
@@ -297,7 +297,7 @@ function Checkout() {
             try {
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
                 const userId = user ? (user.userId || user.id) : "";
-                const res = await axios.post(`http://localhost:8080/api/orders?userId=${userId}`, {
+                const res = await axios.post(`/orders?userId=${userId}`, {
                     ...pendingOrderPayload,
                     paymentStatus: true
                 }, { headers });

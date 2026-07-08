@@ -4,7 +4,7 @@ import { Header } from "../../components/header/Header";
 import { Footer } from "../../components/footer/Footer";
 import logo from "../../images/logo_green.png";
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaUserPlus } from "react-icons/fa";
-import axios from "axios";
+import axios from "../../config/api";
 
 function Register() {
     const [username, setUsername] = useState("");
@@ -38,7 +38,7 @@ function Register() {
 
         setLoading(true);
         try {
-            await axios.post("http://localhost:8080/api/auth/register", {
+            await axios.post("/auth/register", {
                 username,
                 email,
                 phone,

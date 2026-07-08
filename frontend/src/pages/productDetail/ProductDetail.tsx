@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import axios from "../../config/api";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/reducer/CartReducer";
 import { Product, Review, ReviewEligibility, ReviewStats, ReviewsPage } from "../../models";
@@ -69,7 +69,7 @@ function ProductDetail() {
         const fetchProductDetails = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/${id}`);
+                const response = await axios.get(`/products/${id}`);
                 if (response.data) {
                     setProduct(response.data);
                 }
@@ -89,7 +89,7 @@ function ProductDetail() {
         const fetchRelatedProducts = async (categoryId: number, productId: number) => {
             setRelatedLoading(true);
             try {
-                const response = await axios.get("http://localhost:8080/api/products", {
+                const response = await axios.get("/products", {
                     params: {
                         categoryId,
                         page: 0,
@@ -120,10 +120,10 @@ function ProductDetail() {
             setReviewsLoading(true);
             try {
                 const [reviewsRes, statsRes] = await Promise.all([
-                    axios.get<ReviewsPage>(`http://localhost:8080/api/products/${productId}/reviews`, {
+                    axios.get<ReviewsPage>(`/products/${productId}/reviews`, {
                         params: { page: 0, size: 10 }
                     }),
-                    axios.get<ReviewStats>(`http://localhost:8080/api/products/${productId}/reviews/stats`)
+                    axios.get<ReviewStats>(`/products/${productId}/reviews/stats`)
                 ]);
 
                 setReviews(reviewsRes.data?.content || []);
@@ -151,7 +151,7 @@ function ProductDetail() {
 
             setReviewEligibilityLoading(true);
             try {
-                const res = await axios.get<ReviewEligibility[]>("http://localhost:8080/api/reviews/my-eligible-products", {
+                const res = await axios.get<ReviewEligibility[]>("/reviews/my-eligible-products", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const items = res.data || [];
@@ -194,10 +194,10 @@ function ProductDetail() {
     const refreshReviewSection = async (productId: string) => {
         try {
             const [reviewsRes, statsRes] = await Promise.all([
-                axios.get<ReviewsPage>(`http://localhost:8080/api/products/${productId}/reviews`, {
+                axios.get<ReviewsPage>(`/products/${productId}/reviews`, {
                     params: { page: 0, size: 10 }
                 }),
-                axios.get<ReviewStats>(`http://localhost:8080/api/products/${productId}/reviews/stats`)
+                axios.get<ReviewStats>(`/products/${productId}/reviews/stats`)
             ]);
 
             setReviews(reviewsRes.data?.content || []);
@@ -214,7 +214,7 @@ function ProductDetail() {
         }
 
         try {
-            const res = await axios.get<ReviewEligibility[]>("http://localhost:8080/api/reviews/my-eligible-products", {
+            const res = await axios.get<ReviewEligibility[]>("/reviews/my-eligible-products", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const items = res.data || [];
@@ -235,7 +235,7 @@ function ProductDetail() {
         try {
             setSubmittingReplyId(reviewId);
             const response = await axios.post(
-                `http://localhost:8080/api/reviews/${reviewId}/replies`,
+                `/reviews/${reviewId}/replies`,
                 { message: reply },
                 {
                     headers: { Authorization: `Bearer ${token}` }

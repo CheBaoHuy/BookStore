@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Home.css";
-import axios from "axios";
+import axios from "../../config/api";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/reducer/CartReducer";
 import { Product } from "../../models";
@@ -138,11 +138,11 @@ const Home = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let url = "http://localhost:8080/api/products?size=8";
+        let url = "/products?size=8";
         if (carousel === 2) {
-          url = "http://localhost:8080/api/products?categoryId=2&size=8"; // Category ID 2 = Tiểu thuyết
+          url = "/products?categoryId=2&size=8"; // Category ID 2 = Tiểu thuyết
         } else if (carousel === 3) {
-          url = "http://localhost:8080/api/products?categoryId=1&size=8"; // Category ID 1 = Học tập
+          url = "/products?categoryId=1&size=8"; // Category ID 1 = Học tập
         }
         const response = await axios.get(url);
         if (response.data && response.data.content) {
